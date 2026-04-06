@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Kontakti Mobiili</title>
+  <style>
+    :root {
+      --bg: #0a0d12;
+      --bg-2: #0f141c;
+      --panel: rgba(20, 27, 39, 0.92);
+      --panel-2: rgba(17, 23, 33, 0.96);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #ecf2ff;
+      --muted: #98a4bb;
+      --blue-soft: rgba(94, 160, 255, 0.16);
+      --purple-soft: rgba(166, 108, 255, 0.18);
+      --red-soft: rgba(255, 107, 127, 0.16);
+      --green-soft: rgba(82, 212, 154, 0.16);
+      --amber-soft: rgba(246, 190, 79, 0.16);
+      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+      --radius-xl: 24px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(94,160,255,0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(166,108,255,0.12), transparent 28%),
+        linear-gradient(180deg, #0a0d12 0%, #0d1118 100%);
+      color: var(--text);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 18px 14px 28px;
+    }
+
+    body.light-theme {
+      background:
+        radial-gradient(circle at top left, rgba(94,160,255,0.10), transparent 32%),
+        radial-gradient(circle at top right, rgba(166,108,255,0.08), transparent 30%),
+        linear-gradient(180deg, #eef3fb 0%, #e7edf7 100%);
+      color: #162033;
+    }
+
+    .phone {
+      width: 100%;
+      max-width: 430px;
+      min-height: calc(100vh - 36px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(18px);
+    }
+
+    body.light-theme .phone {
+      background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(246,249,253,0.94));
+      border-color: rgba(17,24,39,0.08);
+      box-shadow: 0 20px 50px rgba(31,41,55,0.16);
+    }
+
+    .screen,
+    .subscreen {
+      padding: 18px 16px 22px;
+    }
+
+    .subscreen {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      background:
+        radial-gradient(circle at top left, rgba(94,160,255,0.16), transparent 30%),
+        radial-gradient(circle at top right, rgba(166,108,255,0.12), transparent 28%),
+        linear-gradient(180deg, #0a0d12 0%, #0d1118 100%);
+      overflow-y: auto;
+    }
+
+    body.light-theme .screen,
+    body.light-theme .subscreen {
+      background:
+        radial-gradient(circle at top left, rgba(94,160,255,0.08), transparent 30%),
+        radial-gradient(circle at top right, rgba(166,108,255,0.06), transparent 28%),
+        linear-gradient(180deg, #f6f9fd 0%, #edf3fb 100%);
+      color: #162033;
+    }
+
+    .hidden { display: none !important; }
+
+    .splash {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 28px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(94,160,255,0.18), transparent 24%),
+        radial-gradient(circle at 70% 20%, rgba(166,108,255,0.12), transparent 22%),
+        linear-gradient(180deg, rgba(6,8,12,0.995), rgba(8,10,14,0.995));
+      animation: splashFade 3.2s ease forwards;
+      pointer-events: none;
+    }
+
+    .splash-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      transform: translateY(6px) scale(0.98);
+      opacity: 0;
+      animation: splashRise 1.2s ease 0.15s forwards;
+    }
+
+    .splash-logo {
+      width: 106px;
+      height: 106px;
+      border-radius: 30px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.22), transparent 36%),
+        linear-gradient(135deg, rgba(94,160,255,0.34), rgba(166,108,255,0.28));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 34px rgba(94,160,255,0.16), 0 0 58px rgba(166,108,255,0.12);
+      position: relative;
+    }
+
+    .splash-logo::after {
+      content: "";
+      position: absolute;
+      inset: -22px;
+      border-radius: 36px;
+      border: 1px solid rgba(255,255,255,0.04);
+      opacity: 0.6;
+    }
+
+    .splash-mark { font-size: 42px; font-weight: 800; letter-spacing: 0.06em; }
+    .splash-eyebrow { color: var(--muted); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; }
+    .splash-title { font-size: 34px; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+    .splash-sub { font-size: 14px; color: var(--muted); }
+
+    .topbar,
+    .sub-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 12px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.18), transparent 35%),
+        linear-gradient(135deg, rgba(94,160,255,0.24), rgba(166,108,255,0.22));
+      border: 1px solid rgba(255,255,255,0.09);
+      box-shadow: 0 0 24px rgba(94,160,255,0.18);
+      flex: 0 0 auto;
+    }
+
+    .logo-mark { font-size: 18px; font-weight: 800; letter-spacing: 0.04em; }
+    .title-wrap, .sub-title-wrap { min-width: 0; flex: 1; }
+    .eyebrow { color: var(--muted); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 2px; }
+    .title, .sub-title { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sub-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+    .top-actions { display: flex; gap: 10px; }
+
+    .icon-btn,
+    .back-btn,
+    .sub-icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: inherit;
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    .section-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.14em; margin: 20px 2px 10px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+    .tile {
+      position: relative;
+      min-height: 124px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .tile::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 45%);
+      opacity: 0.7;
+    }
+
+    .tile[data-open], .tile[data-summary] { cursor: pointer; }
+    .tile:hover { border-color: rgba(255,255,255,0.16); box-shadow: 0 14px 34px rgba(0,0,0,0.28); }
+    .tile[data-open]:hover, .tile[data-summary]:hover { transform: translateY(-1px); }
+    .tile:active { transform: scale(0.985); }
+
+    .tile.primary.blue { background: linear-gradient(180deg, rgba(21,32,48,0.96), rgba(14,20,29,0.96)); }
+    .tile.primary.purple { background: linear-gradient(180deg, rgba(29,22,42,0.96), rgba(18,14,27,0.96)); }
+    .tile.primary.neutral, .tile.cozy.neutral { background: linear-gradient(180deg, rgba(20,27,39,0.96), rgba(13,18,27,0.96)); }
+    .tile.cozy { min-height: 110px; }
+    .tile.cozy:not([data-open]):not([data-summary]) { cursor: default; }
+
+    body.light-theme .tile,
+    body.light-theme .summary-card,
+    body.light-theme .detail-card,
+    body.light-theme .form-card,
+    body.light-theme .call-card,
+    body.light-theme .customer-card,
+    body.light-theme .note-card,
+    body.light-theme .search-wrap,
+    body.light-theme .customer-mini,
+    body.light-theme .detail-hero {
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(244,247,252,0.98));
+      border-color: rgba(17,24,39,0.08);
+      color: #162033;
+      box-shadow: 0 10px 24px rgba(31,41,55,0.08);
+    }
+
+    body.light-theme .tile.primary.blue { background: linear-gradient(180deg, rgba(231,240,255,0.98), rgba(220,233,252,0.98)); }
+    body.light-theme .tile.primary.purple { background: linear-gradient(180deg, rgba(242,234,255,0.98), rgba(233,225,251,0.98)); }
+    body.light-theme .tile.primary.neutral,
+    body.light-theme .tile.cozy.neutral { background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(243,247,252,0.98)); }
+
+    .tile-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 18px; }
+    .tile-icon { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.05); font-size: 18px; }
+    .tile.blue .tile-icon { background: var(--blue-soft); }
+    .tile.purple .tile-icon { background: var(--purple-soft); }
+    .tile.red .tile-icon { background: var(--red-soft); }
+    .tile.green .tile-icon { background: var(--green-soft); }
+    .tile.amber .tile-icon { background: var(--amber-soft); }
+    .tile-badge { font-size: 12px; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); border-radius: 999px; padding: 6px 8px; line-height: 1; }
+    .tile-label { font-size: 15px; font-weight: 600; line-height: 1.18; letter-spacing: -0.02em; max-width: 90%; }
+    .tile-number { position: absolute; right: 14px; bottom: 12px; font-size: 32px; font-weight: 700; letter-spacing: -0.04em; color: rgba(236,242,255,0.98); }
+    body.light-theme .tile-number { color: #162033; }
+    .tile-footnote { position: absolute; left: 14px; bottom: 14px; font-size: 12px; color: var(--muted); }
+    .settings .tile-number { display: none; }
+
+    .summary-card,
+    .detail-card,
+    .form-card {
+      margin-top: 16px;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(14,20,30,0.86), rgba(11,16,24,0.9));
+      padding: 16px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.24);
+    }
+
+    .summary-head,
+    .results-head,
+    .detail-head,
+    .form-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .summary-title,
+    .results-title,
+    .detail-title,
+    .form-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+
+    .summary-sub,
+    .results-sub,
+    .detail-sub,
+    .form-sub,
+    .call-company,
+    .customer-company,
+    .call-meta,
+    .customer-meta,
+    .detail-key,
+    .note-card-meta,
+    .customer-mini-sub,
+    .tile-footnote,
+    .eyebrow,
+    .sub-sub {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .now-pill,
+    .tile-badge,
+    .pill,
+    .icon-btn,
+    .back-btn,
+    .sub-icon-btn,
+    .action-btn,
+    .detail-action,
+    .form-btn,
+    .quick-pick,
+    .field input,
+    .field textarea,
+    .field select,
+    .nav-item.active {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    body.light-theme .now-pill,
+    body.light-theme .tile-badge,
+    body.light-theme .pill,
+    body.light-theme .icon-btn,
+    body.light-theme .back-btn,
+    body.light-theme .sub-icon-btn,
+    body.light-theme .action-btn,
+    body.light-theme .detail-action,
+    body.light-theme .form-btn,
+    body.light-theme .quick-pick,
+    body.light-theme .field input,
+    body.light-theme .field textarea,
+    body.light-theme .field select,
+    body.light-theme .nav-item.active {
+      background: rgba(255,255,255,0.88);
+      border-color: rgba(17,24,39,0.10);
+      color: #162033;
+    }
+
+    .now-pill { border-radius: 999px; padding: 8px 10px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+
+    .bottom-bar {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 10px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .nav-item { border-radius: 16px; padding: 12px 6px; text-align: center; color: var(--muted); font-size: 0; line-height: 1; background: transparent; border: 1px solid transparent; min-height: 54px; display: grid; place-items: center; cursor: pointer; }
+    .nav-item:active { transform: scale(0.96); }
+    .nav-item .nav-icon { display: block; font-size: 21px; }
+    .nav-item.active { color: var(--text); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+    body.light-theme .nav-item { color: #5b687d; }
+
+    .search-wrap { display: flex; align-items: center; gap: 10px; border-radius: 18px; padding: 12px 14px; margin-bottom: 14px; }
+    .search-icon { font-size: 17px; color: var(--muted); }
+    .search-input { flex: 1; background: transparent; border: 0; outline: none; color: inherit; font-size: 14px; font-family: inherit; }
+    .search-input::placeholder { color: var(--muted); }
+    .search-focus { margin-bottom: 6px; }
+
+    .call-list,
+    .customer-list,
+    .note-list { display: grid; gap: 10px; }
+
+    .call-card,
+    .customer-card,
+    .note-card { border-radius: 18px; padding: 14px; }
+
+    .customer-card.match {
+      border-color: rgba(94,160,255,0.22);
+      box-shadow: 0 0 0 1px rgba(94,160,255,0.08) inset, 0 12px 28px rgba(0,0,0,0.18);
+      background: linear-gradient(180deg, rgba(21,32,48,0.94), rgba(14,20,29,0.96));
+    }
+
+    body.light-theme .customer-card.match { background: linear-gradient(180deg, rgba(234,243,255,0.98), rgba(224,236,252,0.98)); }
+
+    .call-head,
+    .call-meta,
+    .call-actions,
+    .customer-head,
+    .customer-meta,
+    .customer-actions,
+    .detail-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .call-head, .customer-head { margin-bottom: 8px; }
+    .call-name, .customer-name { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+    .status-pack { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .pill { padding: 6px 8px; border-radius: 999px; font-size: 11px; line-height: 1; white-space: nowrap; }
+    .pill.priority { background: var(--purple-soft); color: #dcc8ff; }
+    .pill.overdue { background: var(--red-soft); color: #ffc3cb; }
+    .pill.done { background: var(--green-soft); color: #baf1d8; }
+    .pill.meeting { background: var(--amber-soft); color: #ffe1a5; }
+    .pill.match { background: var(--blue-soft); color: #d6e6ff; }
+    .call-meta, .customer-meta { margin-bottom: 10px; }
+    .call-note, .customer-note, .note-card-text { font-size: 13px; line-height: 1.35; margin-bottom: 12px; }
+    .call-actions, .customer-actions { justify-content: flex-start; }
+
+    .action-btn,
+    .detail-action,
+    .form-btn {
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    .action-btn.primary,
+    .detail-action.primary,
+    .form-btn.primary {
+      background: rgba(94,160,255,0.12);
+      border-color: rgba(94,160,255,0.22);
+      box-shadow: 0 0 0 1px rgba(94,160,255,0.08) inset;
+    }
+
+    .detail-hero {
+      border-radius: 22px;
+      padding: 16px;
+      margin-bottom: 14px;
+      background: linear-gradient(180deg, rgba(21,32,48,0.94), rgba(14,20,29,0.96));
+      border: 1px solid rgba(94,160,255,0.16);
+      box-shadow: 0 0 0 1px rgba(94,160,255,0.06) inset, 0 18px 45px rgba(0,0,0,0.24);
+    }
+
+    body.light-theme .detail-hero { background: linear-gradient(180deg, rgba(234,243,255,0.98), rgba(224,236,252,0.98)); }
+    .detail-name { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 6px; }
+    .detail-company { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+    .detail-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .detail-grid { display: grid; gap: 10px; }
+    .detail-row { align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    body.light-theme .detail-row { border-bottom-color: rgba(17,24,39,0.06); }
+    .detail-row:last-child { border-bottom: 0; }
+    .detail-key { min-width: 110px; }
+    .detail-value { font-size: 13px; text-align: right; max-width: 60%; }
+    .detail-link { color: inherit; text-decoration: none; border-bottom: 1px dashed rgba(255,255,255,0.18); }
+    body.light-theme .detail-link { border-bottom-color: rgba(17,24,39,0.18); }
+    .detail-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+    .note-card-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+
+    .customer-mini {
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 14px;
+      background: linear-gradient(180deg, rgba(21,32,48,0.94), rgba(14,20,29,0.96));
+      border: 1px solid rgba(94,160,255,0.16);
+      box-shadow: 0 0 0 1px rgba(94,160,255,0.06) inset, 0 18px 45px rgba(0,0,0,0.24);
+    }
+
+    body.light-theme .customer-mini { background: linear-gradient(180deg, rgba(234,243,255,0.98), rgba(224,236,252,0.98)); }
+    .customer-mini-name { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 4px; }
+    .customer-mini-next { font-size: 12px; color: inherit; }
+
+    .quick-picks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+    .quick-pick { border-radius: 14px; padding: 12px; font-size: 12px; font-weight: 700; color: inherit; cursor: pointer; text-align: center; }
+    .quick-pick.selected { background: rgba(94,160,255,0.12); border-color: rgba(94,160,255,0.22); box-shadow: 0 0 0 1px rgba(94,160,255,0.08) inset; }
+
+    .form-stack { display: grid; gap: 12px; }
+    .field { display: grid; gap: 6px; }
+    .field label { font-size: 12px; color: var(--muted); }
+    .field input, .field textarea, .field select { width: 100%; border-radius: 14px; padding: 12px 14px; font: inherit; outline: none; color: inherit; }
+    .field textarea { min-height: 96px; resize: vertical; }
+    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+    .form-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    select option { background: #14202b; color: var(--text); }
+    body.light-theme select option { background: #ffffff; color: #162033; }
+
+    @keyframes splashRise { to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes splashFade { 0%, 72% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; } }
+
+    @media (max-width: 380px) {
+      .tile { min-height: 114px; padding: 12px; }
+      .tile.cozy { min-height: 100px; }
+      .tile-label { font-size: 14px; }
+      .tile-number { font-size: 30px; }
+      .title, .sub-title { font-size: 20px; }
+      .splash-logo { width: 92px; height: 92px; border-radius: 26px; }
+      .splash-mark { font-size: 36px; }
+      .splash-title { font-size: 30px; }
+      .splash-sub { font-size: 13px; }
+      .detail-actions, .form-actions, .quick-picks { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="Kontakti Mobiili v1">
+    <section class="splash" aria-label="Splash">
+      <div class="splash-inner">
+        <div class="splash-logo" aria-hidden="true"><div class="splash-mark">K</div></div>
+        <div>
+          <div class="splash-eyebrow">Opero</div>
+          <div class="splash-title">Kontakti</div>
+          <div class="splash-sub">Mobiili</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" aria-label="Etusivu">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"><div class="logo-mark">K</div></div>
+          <div class="title-wrap">
+            <div class="eyebrow">Opero · Kontakti</div>
+            <div class="title">Mobiili</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" aria-label="Haku">⌕</button>
+          <button class="icon-btn" aria-label="Kieli">🌐</button>
+        </div>
+      </header>
+
+      <div class="section-label">Päätoiminnot</div>
+      <section class="grid" aria-label="Päälaatikot">
+        <article class="tile primary blue" data-open="calls">
+          <div class="tile-head"><div class="tile-icon">📞</div><div class="tile-badge">Tänään</div></div>
+          <div class="tile-label">Soitot tänään</div>
+          <div class="tile-number">12</div>
+        </article>
+        <article class="tile primary neutral" data-open="customers">
+          <div class="tile-head"><div class="tile-icon">👥</div><div class="tile-badge">Yhteensä</div></div>
+          <div class="tile-label">Asiakkaat</div>
+          <div class="tile-number">186</div>
+        </article>
+        <article class="tile primary purple" data-open="priority">
+          <div class="tile-head"><div class="tile-icon">🟣</div><div class="tile-badge">Kiireellinen</div></div>
+          <div class="tile-label">Priority</div>
+          <div class="tile-number">5</div>
+        </article>
+        <article class="tile primary neutral settings" data-open="settings">
+          <div class="tile-head"><div class="tile-icon">⚙️</div><div class="tile-badge">Appi</div></div>
+          <div class="tile-label">Asetukset</div>
+          <div class="tile-footnote">Teema · Synkkaus · Tietoja</div>
+        </article>
+      </section>
+
+      <section class="summary-card" aria-label="Päivän koonti">
+        <div class="summary-head">
+          <div><div class="summary-title">Päivän koonti</div></div>
+          <div class="now-pill">Maanantai</div>
+        </div>
+        <div class="grid">
+          <article class="tile cozy green" data-summary="meetings"><div class="tile-head"><div class="tile-icon">🤝</div></div><div class="tile-label">Tapaamiset</div><div class="tile-number">3</div></article>
+          <article class="tile cozy red" data-summary="overdue"><div class="tile-head"><div class="tile-icon">⏰</div></div><div class="tile-label">Erääntyneet</div><div class="tile-number">8</div></article>
+          <article class="tile cozy amber" data-summary="notes"><div class="tile-head"><div class="tile-icon">📝</div></div><div class="tile-label">Uudet merkinnät</div><div class="tile-number">7</div></article>
+          <article class="tile cozy blue" data-summary="done"><div class="tile-head"><div class="tile-icon">✅</div></div><div class="tile-label">Soitettu tänään</div><div class="tile-number">9</div></article>
+        </div>
+      </section>
+
+      <nav class="bottom-bar" aria-label="Alanavigaatio">
+        <div class="nav-item active" data-open="home" aria-label="Etusivu"><span class="nav-icon">🏠</span></div>
+        <div class="nav-item" data-open="customers" aria-label="Asiakkaat"><span class="nav-icon">👥</span></div>
+        <div class="nav-item" data-open="calls" aria-label="Soitot"><span class="nav-icon">📞</span></div>
+        <div class="nav-item" data-open="settings" aria-label="Asetukset"><span class="nav-icon">⚙️</span></div>
+      </nav>
+    </section>
+  </main>
+
+  <script>
+    const customers = [
+      { id: 1, name: 'Ravintola Satama', company: 'Satama Oy', city: 'Iisalmi', businessId: '1234567-8', address: 'Satamakatu 4, Iisalmi', email: 'satama@satama.fi', phone: '040 123 4567', last: '2 pv sitten', next: 'Kesätuotteet', note: 'Kiinnostunut uusista hanoista', priority: true, overdue: false, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '2 pv sitten · Puhelu', text: 'Käytiin läpi terassikauden valikoimaa. Palaa asiaan ensi viikolla.' }, { title: 'Edellinen', meta: '11 pv sitten · Sähköposti', text: 'Lähetetty hinnasto ja sesonkiehdotus.' }] },
+      { id: 2, name: 'Pub Ranta', company: 'Ranta Group', city: 'Kuopio', businessId: '2345678-9', address: 'Rantakatu 11, Kuopio', email: 'osto@ranta.fi', phone: '040 555 1021', last: '7 pv sitten', next: 'Soita tarjous', note: 'Pyysi paluusoittoa tiistaina', priority: false, overdue: true, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '7 pv sitten · Puhelu', text: 'Kiinnostui kampanjasta, mutta aikataulu tiukka.' }, { title: 'Edellinen', meta: '19 pv sitten · Käynti', text: 'Esiteltiin valikoimaa paikan päällä.' }] },
+      { id: 3, name: 'Cafe Asema', company: 'Asema Cafe Oy', city: 'Lapinlahti', businessId: '3456789-0', address: 'Asematie 2, Lapinlahti', email: 'info@asema.fi', phone: '040 555 1022', last: 'Tänään', next: 'Vahvista toimitus', note: 'Nopea tarkistus ennen tilausta', priority: false, overdue: false, done: true, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: 'Tänään · Puhelu', text: 'Toimitus vahvistettu huomiselle.' }, { title: 'Edellinen', meta: '5 pv sitten · Puhelu', text: 'Pyysi tarkennuksen toimitusaikaan.' }] },
+      { id: 4, name: 'Bistro Ilta', company: 'Ilta Bistro', city: 'Siilinjärvi', businessId: '4567890-1', address: 'Ilta-aukio 3, Siilinjärvi', email: 'myynti@ilta.fi', phone: '040 555 1023', last: '12 pv sitten', next: 'Maistelupäivä', note: 'Tapaaminen sovittu klo 14', priority: true, overdue: false, done: false, meeting: true, notes: [{ title: 'Viimeisin merkintä', meta: '12 pv sitten · Tapaaminen', text: 'Sovittiin maistelupäivä ensi viikolle.' }, { title: 'Edellinen', meta: '23 pv sitten · Sähköposti', text: 'Lähetetty alustava tapahtumaehdotus.' }] },
+      { id: 5, name: 'Kahvila Puisto', company: 'Puisto Kahvilat', city: 'Iisalmi', businessId: '5678901-2', address: 'Puistokatu 1, Iisalmi', email: 'puisto@kahvila.fi', phone: '040 555 1024', last: '18 pv sitten', next: 'Uutuudet', note: 'Katsotaan terassikausi', priority: false, overdue: false, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '18 pv sitten · Puhelu', text: 'Keskusteltu kesäjuomista ja ulkomyynnistä.' }, { title: 'Edellinen', meta: '32 pv sitten · Käynti', text: 'Hyvä vastaanotto, pyysi paluuta huhtikuussa.' }] },
+      { id: 6, name: 'Ravintola Tähti', company: 'Tähti Ravintolat', city: 'Joensuu', businessId: '6789012-3', address: 'Tähtikatu 9, Joensuu', email: 'osto@tahti.fi', phone: '040 555 1025', last: '34 pv sitten', next: 'Sopimusasiat', note: 'Päätös ensi viikolla', priority: false, overdue: true, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '34 pv sitten · Puhelu', text: 'Sopimusasia auki. Palaa päätöksen jälkeen.' }, { title: 'Edellinen', meta: '49 pv sitten · Sähköposti', text: 'Lähetetty päivitetty sopimuspohja.' }] },
+      { id: 7, name: 'Old Town Bar', company: 'Old Town Oy', city: 'Kuopio', businessId: '7890123-4', address: 'Vanhakatu 7, Kuopio', email: 'oldtown@bar.fi', phone: '040 555 1026', last: '4 pv sitten', next: 'Lisämyynti', note: 'Hyvä vire, kysy sesonkioluita', priority: false, overdue: false, done: true, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '4 pv sitten · Puhelu', text: 'Sovittiin lisämyyntipuhelu kuun loppuun.' }, { title: 'Edellinen', meta: '15 pv sitten · Käynti', text: 'Hyvä maistatuspäivä.' }] },
+      { id: 8, name: 'Ranta Lounge', company: 'Lounge Group', city: 'Varkaus', businessId: '8901234-5', address: 'Rantalaituri 6, Varkaus', email: 'ranta@lounge.fi', phone: '040 555 1027', last: '9 pv sitten', next: 'Soita omistajalle', note: 'Haluaa kuulla hinnoista', priority: true, overdue: false, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '9 pv sitten · Puhelu', text: 'Pyysi keskustelua omistajan kanssa hinnoista.' }, { title: 'Edellinen', meta: '21 pv sitten · Sähköposti', text: 'Lähetetty hintaesimerkki.' }] }
+    ];
+
+    const phone = document.querySelector('.phone');
+    const homeScreen = document.querySelector('.screen');
+    let currentCustomer = customers[0];
+
+    const callsScreen = createScreen(`
+      <div class="sub-topbar">
+        <button class="back-btn" data-back="home">←</button>
+        <div class="sub-title-wrap"><div class="sub-title">Soitot tänään</div><div class="sub-sub">20 asiakasta · päivän soitot ja status</div></div>
+        <button class="sub-icon-btn">⌕</button>
+      </div>
+      <section class="summary-card" style="margin-top:0;">
+        <div class="summary-head"><div><div class="summary-title">Päivän lista</div><div class="summary-sub">Priority, erääntyneet, tapaamiset ja tehdyt mukana</div></div><div class="now-pill">20 kpl</div></div>
+        <div class="call-list" id="callsList"></div>
+      </section>
+    `);
+
+    const customersScreen = createScreen(`
+      <div class="sub-topbar">
+        <button class="back-btn" data-back="home">←</button>
+        <div class="sub-title-wrap"><div class="sub-title">Asiakkaat</div><div class="sub-sub">Haku nostaa osuman ylimmäksi</div></div>
+        <button class="sub-icon-btn">☰</button>
+      </div>
+      <section class="summary-card" style="margin-top:0;">
+        <div class="search-wrap"><div class="search-icon">⌕</div><input class="search-input" type="text" value="Ravintola" placeholder="Hae yritystä tai asiakasta" /></div>
+        <div class="results-head"><div><div class="results-title">Hakutulos</div><div class="results-sub">Haettu asiakas nostetaan omaan laatikkoonsa</div></div><div class="now-pill">1 + 3</div></div>
+        <div class="search-focus" id="searchFocus"></div>
+        <div class="results-head" style="margin-top:14px;"><div><div class="results-title">Muut asiakkaat</div><div class="results-sub">Kolme seuraavaa näkyy haun alla</div></div><div class="now-pill">3 näkyvissä</div></div>
+        <div class="customer-list" id="customerList"></div>
+      </section>
+    `);
+
+    const customerDetailScreen = createScreen(`
+      <div class="sub-topbar">
+        <button class="back-btn" data-back="customers">←</button>
+        <div class="sub-title-wrap"><div class="sub-title">Asiakaskortti</div><div class="sub-sub">Kevyt, read-only v1</div></div>
+        <button class="sub-icon-btn">🌐</button>
+      </div>
+      <section class="detail-hero">
+        <div class="detail-name" id="detailName"></div>
+        <div class="detail-company" id="detailCompany"></div>
+        <div class="detail-pills" id="detailPills"></div>
+      </section>
+      <section class="detail-card" style="margin-top:0;">
+        <div class="detail-head"><div><div class="detail-title">Perustiedot</div><div class="detail-sub">Hiljainen tieto ennen soittoa tai tapaamista</div></div><div class="now-pill">v1</div></div>
+        <div class="detail-grid">
+          <div class="detail-row"><div class="detail-key">Y-tunnus</div><div class="detail-value" id="detailBusinessId"></div></div>
+          <div class="detail-row"><div class="detail-key">Puhelin</div><div class="detail-value"><a id="detailPhone" class="detail-link" href="#">—</a></div></div>
+          <div class="detail-row"><div class="detail-key">Sähköposti</div><div class="detail-value"><a id="detailEmail" class="detail-link" href="#">—</a></div></div>
+          <div class="detail-row"><div class="detail-key">Osoite</div><div class="detail-value"><a id="detailAddress" class="detail-link" href="#" target="_blank" rel="noopener noreferrer">—</a></div></div>
+          <div class="detail-row"><div class="detail-key">Viimeisin kontakti</div><div class="detail-value" id="detailLast"></div></div>
+          <div class="detail-row"><div class="detail-key">Seuraava toimenpide</div><div class="detail-value" id="detailNext"></div></div>
+        </div>
+        <div class="detail-actions">
+          <button class="detail-action primary" id="detailCallBtn">📞 Soita</button>
+          <button class="detail-action" id="openNoteEntry">📝 Kirjaa merkintä</button>
+        </div>
+      </section>
+      <section class="detail-card">
+        <div class="detail-head"><div><div class="detail-title">Viimeisimmät merkinnät</div><div class="detail-sub">Näkyy vain oleellinen, ei koko historiaa</div></div><div class="now-pill">2 uusinta</div></div>
+        <div class="note-list" id="detailNotes"></div>
+      </section>
+    `);
+
+    const noteEntryScreen = createScreen(`
+      <div class="sub-topbar">
+        <button class="back-btn" data-back="customer">←</button>
+        <div class="sub-title-wrap"><div class="sub-title">Merkinnän kirjaus</div><div class="sub-sub">Ultranopea v1-kirjaus</div></div>
+        <button class="sub-icon-btn">📝</button>
+      </div>
+      <section class="customer-mini">
+        <div class="customer-mini-name" id="entryCustomerName"></div>
+        <div class="customer-mini-sub" id="entryCustomerMeta"></div>
+        <div class="customer-mini-next" id="entryCustomerNext"></div>
+      </section>
+      <section class="form-card" style="margin-top:0;">
+        <div class="form-head"><div><div class="form-title">Pikavalinnat</div><div class="form-sub">Valitse yksi nopeuttamaan kirjausta</div></div><div class="now-pill">v1</div></div>
+        <div class="quick-picks">
+          <button class="quick-pick" data-value="Ei vastannut">Ei vastannut</button>
+          <button class="quick-pick" data-value="Soitettu">Soitettu</button>
+          <button class="quick-pick" data-value="Tavattu">Tavattu</button>
+          <button class="quick-pick" data-value="Palataan myöhemmin">Palataan myöhemmin</button>
+        </div>
+      </section>
+      <section class="form-card">
+        <div class="form-head"><div><div class="form-title">Kirjaus</div><div class="form-sub">Toimenpide, muistiinpano ja seuraava askel</div></div><div class="now-pill">3 kenttää</div></div>
+        <div class="form-stack">
+          <div class="field"><label for="entryAction">Toimenpide</label><input id="entryAction" type="text" placeholder="Esim. Soitettu" /></div>
+          <div class="field"><label for="entryNote">Muistiinpano</label><textarea id="entryNote" placeholder="Kirjaa lyhyesti mitä sovittiin tai mitä asiakas sanoi"></textarea></div>
+          <div class="field"><label for="entryNext">Seuraava toimenpide</label>
+            <select id="entryNext">
+              <option value="Soita">Soita</option>
+              <option value="Sähköposti">Sähköposti</option>
+              <option value="Tapaaminen">Tapaaminen</option>
+              <option value="Tarjous">Tarjous</option>
+              <option value="Seuranta">Seuranta</option>
+              <option value="Palataan myöhemmin">Palataan myöhemmin</option>
+              <option value="Ei jatkotoimenpidettä">Ei jatkotoimenpidettä</option>
+              <option value="Muu">Muu</option>
+            </select>
+          </div>
+          <div class="field hidden" id="entryNextCustomWrap"><label for="entryNextCustom">Muu seuraava toimenpide</label><input id="entryNextCustom" type="text" placeholder="Kirjoita oma seuraava toimenpide" /></div>
+          <div class="field"><label for="entryDate">Seuraavan kontaktin päivä</label><input id="entryDate" type="date" /></div>
+        </div>
+        <div class="form-actions">
+          <button class="form-btn" data-back="customer">Peruuta</button>
+          <button class="form-btn primary" id="saveEntryBtn">Tallenna</button>
+        </div>
+      </section>
+    `);
+
+    const priorityScreen = createScreen(`
+      <div class="sub-topbar">
+        <button class="back-btn" data-back="home">←</button>
+        <div class="sub-title-wrap"><div class="sub-title">Priority</div><div class="sub-sub">Kiireelliset asiakkaat yhdessä näkymässä</div></div>
+        <button class="sub-icon-btn">🟣</button>
+      </div>
+      <section class="summary-card" style="margin-top:0;">
+        <div class="summary-head"><div><div class="summary-title">Priority-asiakkaat</div><div class="summary-sub">Nopein reitti päivän tärkeimpiin kontakteihin</div></div><div class="now-pill" id="priorityCount">0 kpl</div></div>
+        <div class="call-list" id="priorityList"></div>
+      </section>
+    `);
+
+    const settingsScreen = createScreen(`
+      <div class="sub-topbar">
+        <button class="back-btn" data-back="home">←</button>
+        <div class="sub-title-wrap"><div class="sub-title">Asetukset</div><div class="sub-sub">Kevyt v1 · vain oleellisimmat valinnat</div></div>
+        <button class="sub-icon-btn">⚙️</button>
+      </div>
+      <section class="form-card" style="margin-top:0;">
+        <div class="form-head"><div><div class="form-title">Teema</div></div><div class="now-pill">v1</div></div>
+        <div class="quick-picks">
+          <button class="quick-pick selected" data-setting-theme="dark">Tumma tila</button>
+          <button class="quick-pick" data-setting-theme="light">Vaalea tila</button>
+        </div>
+      </section>
+      <section class="form-card">
+        <div class="form-head"><div><div class="form-title">Synkkaus</div><div class="form-sub">Valmius desktop-yhteyteen myöhemmin</div></div><div class="now-pill">Pilvi</div></div>
+        <div class="customer-mini" style="margin-bottom:0;">
+          <div class="customer-mini-name" style="font-size:16px;">Synkkaus</div>
+          <div class="customer-mini-sub">Desktop + mobiili samaan pilvidataan myöhemmässä vaiheessa</div>
+          <div class="customer-mini-next">Tila: Ei käytössä tässä demossa</div>
+        </div>
+      </section>
+      <section class="form-card">
+        <div class="form-head"><div><div class="form-title">Tietoja</div></div><div class="now-pill">v1</div></div>
+        <div class="detail-grid">
+          <div class="detail-row"><div class="detail-key">Tuote</div><div class="detail-value">Kontakti Mobiili</div></div>
+          <div class="detail-row"><div class="detail-key">Versio</div><div class="detail-value">v1 demo</div></div>
+          <div class="detail-row"><div class="detail-key">Brändi</div><div class="detail-value">Opero</div></div>
+        </div>
+      </section>
+    `);
+
+    const summaryScreen = createScreen(`
+      <div class="sub-topbar">
+        <button class="back-btn" data-back="home">←</button>
+        <div class="sub-title-wrap"><div class="sub-title" id="summaryTitle">Koonti</div><div class="sub-sub" id="summarySub">Päivän suodatettu lista</div></div>
+        <button class="sub-icon-btn" id="summaryIcon">•</button>
+      </div>
+      <section class="summary-card" style="margin-top:0;">
+        <div class="summary-head"><div><div class="summary-title" id="summaryListTitle">Asiakkaat</div><div class="summary-sub" id="summaryListSub">Tähän ryhmään kuuluvat asiakkaat</div></div><div class="now-pill" id="summaryCount">0 kpl</div></div>
+        <div class="call-list" id="summaryList"></div>
+      </section>
+    `);
+
+    phone.append(callsScreen, customersScreen, customerDetailScreen, noteEntryScreen, priorityScreen, settingsScreen, summaryScreen);
+
+    const screens = { home: homeScreen, calls: callsScreen, customers: customersScreen, customer: customerDetailScreen, entry: noteEntryScreen, priority: priorityScreen, settings: settingsScreen, summary: summaryScreen };
+
+    function createScreen(html) {
+      const section = document.createElement('section');
+      section.className = 'subscreen hidden';
+      section.innerHTML = html;
+      return section;
+    }
+
+    function openScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+      screens[name].classList.remove('hidden');
+    }
+
+    function pillsHtml(customer, includeMatch = false) {
+      const pills = [];
+      if (includeMatch) pills.push('<span class="pill match">⌕ Haettu osuma</span>');
+      if (customer.priority) pills.push('<span class="pill priority">🟣 Priority</span>');
+      if (customer.overdue) pills.push('<span class="pill overdue">⏰ Erääntynyt</span>');
+      if (customer.done) pills.push('<span class="pill done">✅ Soitettu</span>');
+      if (customer.meeting) pills.push('<span class="pill meeting">🤝 Tapaaminen</span>');
+      return pills.join('');
+    }
+
+    function createCustomerCard(customer, options = {}) {
+      const card = document.createElement('article');
+      card.className = `customer-card${options.highlight ? ' match' : ''}`;
+      card.innerHTML = `
+        <div class="customer-head">
+          <div><div class="customer-name">${customer.name}</div><div class="customer-company">${customer.company} · ${customer.city}</div></div>
+          <div class="status-pack">${pillsHtml(customer, options.includeMatch)}</div>
+        </div>
+        <div class="customer-meta"><span>${customer.phone}</span><span>Viimeisin: ${customer.last}</span></div>
+        <div class="customer-note">${customer.note}</div>
+        <div class="customer-actions">
+          <button class="action-btn primary" data-open-customer="${customer.id}">Avaa</button>
+          <button class="action-btn">📞 Soita</button>
+        </div>`;
+      return card;
+    }
+
+    function createCallCard(customer) {
+      const card = document.createElement('article');
+      card.className = 'call-card';
+      card.innerHTML = `
+        <div class="call-head">
+          <div><div class="call-name">${customer.name}</div><div class="call-company">${customer.company} · ${customer.city}</div></div>
+          <div class="status-pack">${pillsHtml(customer)}</div>
+        </div>
+        <div class="call-meta"><span>${customer.phone}</span><span>Viimeisin: ${customer.last}</span></div>
+        <div class="call-note">${customer.note}</div>
+        <div class="call-meta"><span>Seuraava</span><strong style="font-size: 12px;">${customer.next}</strong></div>
+        <div class="call-actions">
+          <button class="action-btn primary">📞 Soita</button>
+          <button class="action-btn" data-open-customer="${customer.id}">Avaa</button>
+          <button class="action-btn" data-open-entry="${customer.id}">📝 Merkintä</button>
+        </div>`;
+      return card;
+    }
+
+    function renderCustomerDetail(customer) {
+      currentCustomer = customer;
+      document.getElementById('detailName').textContent = customer.name;
+      document.getElementById('detailCompany').textContent = `${customer.company} · ${customer.city}`;
+      document.getElementById('detailPills').innerHTML = pillsHtml(customer);
+      document.getElementById('detailBusinessId').textContent = customer.businessId || '—';
+
+      const phoneEl = document.getElementById('detailPhone');
+      phoneEl.textContent = customer.phone;
+      phoneEl.href = 'tel:' + customer.phone.replace(/\s+/g, '');
+
+      const emailEl = document.getElementById('detailEmail');
+      emailEl.textContent = customer.email;
+      emailEl.href = 'mailto:' + customer.email;
+
+      const addressEl = document.getElementById('detailAddress');
+      addressEl.textContent = customer.address;
+      addressEl.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(customer.address);
+
+      document.getElementById('detailLast').textContent = customer.last;
+      document.getElementById('detailNext').textContent = customer.next;
+
+      const notesEl = document.getElementById('detailNotes');
+      notesEl.innerHTML = '';
+      customer.notes.slice(0, 2).forEach(note => {
+        const el = document.createElement('article');
+        el.className = 'note-card';
+        el.innerHTML = `<div class="note-card-title">${note.title}</div><div class="note-card-meta">${note.meta}</div><div class="note-card-text">${note.text}</div>`;
+        notesEl.appendChild(el);
+      });
+    }
+
+    function prefillEntry(customer, presetAction = '') {
+      currentCustomer = customer;
+      document.getElementById('entryCustomerName').textContent = customer.name;
+      document.getElementById('entryCustomerMeta').textContent = `${customer.company} · ${customer.city} · ${customer.phone}`;
+      document.getElementById('entryCustomerNext').textContent = `Nykyinen seuraava: ${customer.next}`;
+      document.getElementById('entryAction').value = presetAction;
+      document.getElementById('entryNote').value = '';
+      const nextSelect = document.getElementById('entryNext');
+      const nextCustomWrap = document.getElementById('entryNextCustomWrap');
+      const nextCustom = document.getElementById('entryNextCustom');
+      const allowedNext = ['Soita','Sähköposti','Tapaaminen','Tarjous','Seuranta','Palataan myöhemmin','Ei jatkotoimenpidettä','Muu'];
+      if (allowedNext.includes(customer.next)) {
+        nextSelect.value = customer.next;
+        nextCustomWrap.classList.add('hidden');
+        nextCustom.value = '';
+      } else {
+        nextSelect.value = 'Muu';
+        nextCustomWrap.classList.remove('hidden');
+        nextCustom.value = customer.next || '';
+      }
+      document.getElementById('entryDate').value = '';
+      noteEntryScreen.querySelectorAll('.quick-pick[data-value]').forEach(btn => btn.classList.toggle('selected', btn.dataset.value === presetAction));
+    }
+
+    function openCustomer(id) {
+      const customer = customers.find(c => c.id === Number(id));
+      if (!customer) return;
+      renderCustomerDetail(customer);
+      openScreen('customer');
+    }
+
+    function openEntry(id, presetAction = '') {
+      const customer = customers.find(c => c.id === Number(id)) || currentCustomer;
+      if (!customer) return;
+      prefillEntry(customer, presetAction);
+      openScreen('entry');
+    }
+
+    const summaryConfigs = {
+      meetings: {
+        title: 'Tapaamiset',
+        sub: 'Tänään tavattuja asiakkaita',
+        icon: '🤝',
+        listTitle: 'Tapaamiset tänään',
+        listSub: 'Asiakkaat, joilla on tapaaminen tai tapaamisstatus',
+        filter: customer => customer.meeting
+      },
+      overdue: {
+        title: 'Erääntyneet',
+        sub: 'Myöhässä olevat seuraavat toimenpiteet',
+        icon: '⏰',
+        listTitle: 'Erääntyneet asiakkaat',
+        listSub: 'Asiakkaat, jotka vaativat nopeaa reagointia',
+        filter: customer => customer.overdue
+      },
+      notes: {
+        title: 'Uudet merkinnät',
+        sub: 'Viimeisimmät kirjaukset',
+        icon: '📝',
+        listTitle: 'Asiakkaat uusilla merkinnöillä',
+        listSub: 'Asiakkaat, joihin on kirjattu uutta sisältöä',
+        filter: customer => customer.notes && customer.notes.length > 0
+      },
+      done: {
+        title: 'Soitettu tänään',
+        sub: 'Päivän tehdyt soitot',
+        icon: '✅',
+        listTitle: 'Soitetut asiakkaat',
+        listSub: 'Asiakkaat, joille on jo soitettu',
+        filter: customer => customer.done
+      }
+    };
+
+    function openSummary(key) {
+      const config = summaryConfigs[key];
+      if (!config) return;
+      document.getElementById('summaryTitle').textContent = config.title;
+      document.getElementById('summarySub').textContent = config.sub;
+      document.getElementById('summaryIcon').textContent = config.icon;
+      document.getElementById('summaryListTitle').textContent = config.listTitle;
+      document.getElementById('summaryListSub').textContent = config.listSub;
+      const items = customers.filter(config.filter);
+      document.getElementById('summaryCount').textContent = `${items.length} kpl`;
+      const list = document.getElementById('summaryList');
+      list.innerHTML = '';
+      items.forEach(customer => list.appendChild(createCallCard(customer)));
+      openScreen('summary');
+    }
+
+    function renderStaticLists() {
+      document.getElementById('callsList').replaceChildren(...customers.map(createCallCard));
+
+      const priorityCustomers = customers.filter(c => c.priority);
+      document.getElementById('priorityCount').textContent = `${priorityCustomers.length} kpl`;
+      document.getElementById('priorityList').replaceChildren(...priorityCustomers.map(createCallCard));
+
+      const matched = customers.filter(c => `${c.name} ${c.company}`.toLowerCase().includes('ravintola'));
+      const primaryMatch = matched[0] || customers[0];
+      const remainingCustomers = customers.filter(c => c.id !== primaryMatch.id).slice(0, 3);
+      const searchFocus = document.getElementById('searchFocus');
+      const customerList = document.getElementById('customerList');
+      searchFocus.innerHTML = '';
+      customerList.innerHTML = '';
+      searchFocus.appendChild(createCustomerCard(primaryMatch, { highlight: true, includeMatch: true }));
+      remainingCustomers.forEach(c => customerList.appendChild(createCustomerCard(c)));
+      renderCustomerDetail(primaryMatch);
+      prefillEntry(primaryMatch);
+    }
+
+    document.querySelectorAll('[data-open]').forEach(el => {
+      el.addEventListener('click', () => openScreen(el.dataset.open));
+    });
+
+    document.querySelectorAll('[data-summary]').forEach(el => {
+      el.addEventListener('click', () => openSummary(el.dataset.summary));
+    });
+
+    phone.addEventListener('click', (e) => {
+      const openCustomerBtn = e.target.closest('[data-open-customer]');
+      if (openCustomerBtn) {
+        openCustomer(openCustomerBtn.getAttribute('data-open-customer'));
+        return;
+      }
+
+      const openEntryBtn = e.target.closest('[data-open-entry]');
+      if (openEntryBtn) {
+        openEntry(openEntryBtn.getAttribute('data-open-entry'));
+        return;
+      }
+
+      const backBtn = e.target.closest('[data-back]');
+      if (backBtn) {
+        openScreen(backBtn.dataset.back);
+        return;
+      }
+
+      if (e.target.id === 'openNoteEntry') {
+        openEntry(currentCustomer.id);
+        return;
+      }
+
+      if (e.target.id === 'detailCallBtn') {
+        const phoneEl = document.getElementById('detailPhone');
+        if (phoneEl && phoneEl.href) window.location.href = phoneEl.href;
+        return;
+      }
+
+      const quickPick = e.target.closest('.quick-pick[data-value]');
+      if (quickPick) {
+        noteEntryScreen.querySelectorAll('.quick-pick[data-value]').forEach(btn => btn.classList.remove('selected'));
+        quickPick.classList.add('selected');
+        document.getElementById('entryAction').value = quickPick.dataset.value;
+        return;
+      }
+
+      const themeBtn = e.target.closest('[data-setting-theme]');
+      if (themeBtn) {
+        const theme = themeBtn.dataset.settingTheme;
+        document.body.classList.toggle('light-theme', theme === 'light');
+        settingsScreen.querySelectorAll('[data-setting-theme]').forEach(btn => btn.classList.toggle('selected', btn.dataset.settingTheme === theme));
+      }
+    });
+
+    document.addEventListener('change', (e) => {
+      if (e.target.id === 'entryNext') {
+        document.getElementById('entryNextCustomWrap').classList.toggle('hidden', e.target.value !== 'Muu');
+      }
+    });
+
+    document.getElementById('saveEntryBtn').addEventListener('click', () => {
+      const action = document.getElementById('entryAction').value.trim() || 'Merkintä';
+      const note = document.getElementById('entryNote').value.trim() || 'Ei lisättyä muistiinpanoa.';
+      const nextSelectValue = document.getElementById('entryNext').value;
+      const nextCustomValue = document.getElementById('entryNextCustom').value.trim();
+      const next = (nextSelectValue === 'Muu' ? nextCustomValue : nextSelectValue) || currentCustomer.next;
+      const date = document.getElementById('entryDate').value;
+
+      currentCustomer.next = next;
+      currentCustomer.last = 'Tänään';
+      currentCustomer.done = action.toLowerCase().includes('soit') || action.toLowerCase().includes('tavat');
+      currentCustomer.notes.unshift({
+        title: 'Uusi merkintä',
+        meta: `Tänään · ${action}${date ? ` · ${date}` : ''}`,
+        text: note
+      });
+
+      renderStaticLists();
+      openScreen('customer');
+    });
+
+    renderStaticLists();
+
+    console.assert(Object.keys(screens).length === 8, 'all screens should exist');
+    console.assert(document.getElementById('detailPhone'), 'detail phone link should exist');
+    console.assert(document.getElementById('detailAddress'), 'detail address link should exist');
+  </script>
+</body>
+</html>
