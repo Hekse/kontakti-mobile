@@ -459,7 +459,7 @@
     .detail-value { font-size: 13px; text-align: right; max-width: 60%; }
     .detail-link { color: inherit; text-decoration: none; border-bottom: 1px dashed rgba(255,255,255,0.18); }
     body.light-theme .detail-link { border-bottom-color: rgba(17,24,39,0.18); }
-    .detail-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+    .detail-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
     .note-card-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
 
     .customer-mini {
@@ -529,8 +529,8 @@
           </div>
         </div>
         <div class="top-actions">
-          <button class="icon-btn" aria-label="Haku">⌕</button>
-          <button class="icon-btn" aria-label="Kieli">🌐</button>
+          <button class="icon-btn" aria-label="Google-haku" id="globalSearchBtn">⌕</button>
+          <button class="icon-btn" aria-label="Kieli" id="languageBtn">🌐</button>
         </div>
       </header>
 
@@ -600,7 +600,7 @@
       <div class="sub-topbar">
         <button class="back-btn" data-back="home">←</button>
         <div class="sub-title-wrap"><div class="sub-title">Soitot tänään</div><div class="sub-sub">20 asiakasta · päivän soitot ja status</div></div>
-        <button class="sub-icon-btn">⌕</button>
+        <button class="sub-icon-btn" id="callsSearchBtn">⌕</button>
       </div>
       <section class="summary-card" style="margin-top:0;">
         <div class="summary-head"><div><div class="summary-title">Päivän lista</div><div class="summary-sub">Priority, erääntyneet, tapaamiset ja tehdyt mukana</div></div><div class="now-pill">20 kpl</div></div>
@@ -612,7 +612,7 @@
       <div class="sub-topbar">
         <button class="back-btn" data-back="home">←</button>
         <div class="sub-title-wrap"><div class="sub-title">Asiakkaat</div><div class="sub-sub">Haku nostaa osuman ylimmäksi</div></div>
-        <button class="sub-icon-btn">☰</button>
+        <button class="sub-icon-btn" id="customersSearchBtn">⌕</button>
       </div>
       <section class="summary-card" style="margin-top:0;">
         <div class="search-wrap"><div class="search-icon">⌕</div><input class="search-input" type="text" value="Ravintola" placeholder="Hae yritystä tai asiakasta" /></div>
@@ -627,7 +627,7 @@
       <div class="sub-topbar">
         <button class="back-btn" data-back="customers">←</button>
         <div class="sub-title-wrap"><div class="sub-title">Asiakaskortti</div><div class="sub-sub">Kevyt, read-only v1</div></div>
-        <button class="sub-icon-btn">🌐</button>
+        <button class="sub-icon-btn" id="detailYtjBtn">YTJ</button>
       </div>
       <section class="detail-hero">
         <div class="detail-name" id="detailName"></div>
@@ -646,6 +646,7 @@
         </div>
         <div class="detail-actions">
           <button class="detail-action primary" id="detailCallBtn">📞 Soita</button>
+          <button class="detail-action" id="detailYtjActionBtn">🏢 YTJ</button>
           <button class="detail-action" id="openNoteEntry">📝 Kirjaa merkintä</button>
         </div>
       </section>
@@ -968,6 +969,17 @@
       el.addEventListener('click', () => openSummary(el.dataset.summary));
     });
 
+    function openGoogleSearch(query) {
+      const url = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+      window.open(url, '_blank', 'noopener');
+    }
+
+    function openYtj(customer) {
+      const query = customer.businessId ? customer.businessId : `${customer.name} ${customer.city}`;
+      const url = 'https://www.ytj.fi/haku?search=' + encodeURIComponent(query);
+      window.open(url, '_blank', 'noopener');
+    }
+
     phone.addEventListener('click', (e) => {
       const openCustomerBtn = e.target.closest('[data-open-customer]');
       if (openCustomerBtn) {
@@ -984,6 +996,27 @@
       const backBtn = e.target.closest('[data-back]');
       if (backBtn) {
         openScreen(backBtn.dataset.back);
+        return;
+      }
+
+      if (e.target.id === 'globalSearchBtn') {
+        openGoogleSearch('yrityshaku Suomi');
+        return;
+      }
+
+      if (e.target.id === 'callsSearchBtn') {
+        openGoogleSearch('yrityshaku soitot tänään');
+        return;
+      }
+
+      if (e.target.id === 'customersSearchBtn') {
+        const searchValue = customersScreen.querySelector('.search-input')?.value?.trim();
+        openGoogleSearch(searchValue || 'yrityshaku Suomi');
+        return;
+      }
+
+      if (e.target.id === 'detailYtjBtn' || e.target.id === 'detailYtjActionBtn') {
+        openYtj(currentCustomer);
         return;
       }
 
@@ -1046,6 +1079,8 @@
     console.assert(Object.keys(screens).length === 8, 'all screens should exist');
     console.assert(document.getElementById('detailPhone'), 'detail phone link should exist');
     console.assert(document.getElementById('detailAddress'), 'detail address link should exist');
+    console.assert(document.getElementById('globalSearchBtn'), 'global search button should exist');
+    console.assert(document.getElementById('detailYtjBtn'), 'YTJ button should exist');
   </script>
 </body>
 </html>
