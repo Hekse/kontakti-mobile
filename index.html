@@ -107,9 +107,9 @@
       text-align: center;
       padding: 28px;
       background:
-        radial-gradient(circle at 50% 42%, rgba(34,113,255,0.18), transparent 24%),
-        radial-gradient(circle at 50% 58%, rgba(34,113,255,0.10), transparent 34%),
-        linear-gradient(180deg, rgba(5,8,14,0.998), rgba(5,8,14,0.998));
+        radial-gradient(circle at 30% 25%, rgba(94,160,255,0.18), transparent 24%),
+        radial-gradient(circle at 70% 20%, rgba(166,108,255,0.12), transparent 22%),
+        linear-gradient(180deg, rgba(6,8,12,0.995), rgba(8,10,14,0.995));
       animation: splashFade 3.2s ease forwards;
       pointer-events: none;
     }
@@ -118,44 +118,39 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 14px;
-      width: 100%;
-      max-width: 320px;
+      gap: 18px;
       transform: translateY(6px) scale(0.98);
       opacity: 0;
       animation: splashRise 1.2s ease 0.15s forwards;
     }
 
     .splash-logo {
-      width: 108px;
-      height: 108px;
+      width: 106px;
+      height: 106px;
       border-radius: 30px;
       display: grid;
       place-items: center;
       background:
-        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.24), transparent 36%),
-        linear-gradient(135deg, rgba(94,160,255,0.42), rgba(166,108,255,0.22));
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 34px rgba(34,113,255,0.20), 0 0 62px rgba(34,113,255,0.14);
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.22), transparent 36%),
+        linear-gradient(135deg, rgba(94,160,255,0.34), rgba(166,108,255,0.28));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 34px rgba(94,160,255,0.16), 0 0 58px rgba(166,108,255,0.12);
       position: relative;
-      margin-bottom: 8px;
     }
 
     .splash-logo::after {
       content: "";
       position: absolute;
-      inset: -28px;
-      border-radius: 40px;
+      inset: -22px;
+      border-radius: 36px;
       border: 1px solid rgba(255,255,255,0.04);
-      opacity: 0.55;
+      opacity: 0.6;
     }
 
     .splash-mark { font-size: 42px; font-weight: 800; letter-spacing: 0.06em; }
     .splash-eyebrow { color: var(--muted); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; }
     .splash-title { font-size: 34px; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
     .splash-sub { font-size: 14px; color: var(--muted); }
-    .splash-divider { width: 180px; height: 2px; border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(59,130,246,0.95), transparent); box-shadow: 0 0 18px rgba(59,130,246,0.35); margin: 6px 0 2px; }
-    .splash-loading { font-size: 14px; color: rgba(236,242,255,0.86); letter-spacing: 0.04em; }
 
     .topbar,
     .sub-topbar {
@@ -270,10 +265,9 @@
     .tile.amber .tile-icon { background: var(--amber-soft); }
     .tile-badge { font-size: 12px; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); border-radius: 999px; padding: 6px 8px; line-height: 1; }
     .tile-label { font-size: 15px; font-weight: 600; line-height: 1.18; letter-spacing: -0.02em; max-width: 90%; }
-    .settings .tile-label { max-width: 72%; margin-bottom: 8px; }
     .tile-number { position: absolute; right: 14px; bottom: 12px; font-size: 32px; font-weight: 700; letter-spacing: -0.04em; color: rgba(236,242,255,0.98); }
     body.light-theme .tile-number { color: #162033; }
-    .tile-footnote { position: absolute; left: 14px; right: 14px; bottom: 14px; font-size: 12px; line-height: 1.28; color: var(--muted); }
+    .tile-footnote { position: absolute; left: 14px; right: 14px; bottom: 14px; font-size: 12px; line-height: 1.3; color: var(--muted); }
     .settings .tile-number { display: none; }
 
     .summary-card,
@@ -517,11 +511,11 @@
     <section class="splash" aria-label="Splash">
       <div class="splash-inner">
         <div class="splash-logo" aria-hidden="true"><div class="splash-mark">K</div></div>
-        <div class="splash-eyebrow">Opero</div>
-        <div class="splash-title">Kontakti</div>
-        <div class="splash-sub">Mobiili</div>
-        <div class="splash-divider" aria-hidden="true"></div>
-        <div class="splash-loading">Loading...</div>
+        <div>
+          <div class="splash-eyebrow">Opero</div>
+          <div class="splash-title">Kontakti</div>
+          <div class="splash-sub">Mobiili</div>
+        </div>
       </div>
     </section>
 
@@ -602,13 +596,6 @@
     const homeScreen = document.querySelector('.screen');
     let currentCustomer = customers[0];
 
-    function createScreen(html) {
-      const section = document.createElement('section');
-      section.className = 'subscreen hidden';
-      section.innerHTML = html;
-      return section;
-    }
-
     const callsScreen = createScreen(`
       <div class="sub-topbar">
         <button class="back-btn" data-back="home">←</button>
@@ -672,7 +659,7 @@
     const noteEntryScreen = createScreen(`
       <div class="sub-topbar">
         <button class="back-btn" data-back="customer">←</button>
-        <div class="sub-title-wrap"><div class="sub-title">Merkinnän kirjaus</div><div class="sub-sub">Ultranopea v1-kirjaus</div></div>
+        <div class="sub-title-wrap"><div class="sub-title">Merkinnän kirjaus</div></div>
         <button class="sub-icon-btn">📝</button>
       </div>
       <section class="customer-mini">
@@ -681,7 +668,7 @@
         <div class="customer-mini-next" id="entryCustomerNext"></div>
       </section>
       <section class="form-card" style="margin-top:0;">
-        <div class="form-head"><div><div class="form-title">Pikavalinnat</div><div class="form-sub">Valitse yksi nopeuttamaan kirjausta</div></div><div class="now-pill">v1</div></div>
+        <div class="form-head"><div><div class="form-title">Pikavalinnat</div></div><div class="now-pill">v1</div></div>
         <div class="quick-picks">
           <button class="quick-pick" data-value="Ei vastannut">Ei vastannut</button>
           <button class="quick-pick" data-value="Soitettu">Soitettu</button>
@@ -690,7 +677,7 @@
         </div>
       </section>
       <section class="form-card">
-        <div class="form-head"><div><div class="form-title">Kirjaus</div><div class="form-sub">Toimenpide, muistiinpano ja seuraava askel</div></div><div class="now-pill">3 kenttää</div></div>
+        <div class="form-head"><div><div class="form-title">Kirjaus</div></div><div class="now-pill">3 kenttää</div></div>
         <div class="form-stack">
           <div class="field"><label for="entryAction">Toimenpide</label><input id="entryAction" type="text" placeholder="Esim. Soitettu" /></div>
           <div class="field"><label for="entryNote">Muistiinpano</label><textarea id="entryNote" placeholder="Kirjaa lyhyesti mitä sovittiin tai mitä asiakas sanoi"></textarea></div>
@@ -775,6 +762,13 @@
 
     const screens = { home: homeScreen, calls: callsScreen, customers: customersScreen, customer: customerDetailScreen, entry: noteEntryScreen, priority: priorityScreen, settings: settingsScreen, summary: summaryScreen };
 
+    function createScreen(html) {
+      const section = document.createElement('section');
+      section.className = 'subscreen hidden';
+      section.innerHTML = html;
+      return section;
+    }
+
     function openScreen(name) {
       Object.values(screens).forEach(screen => screen.classList.add('hidden'));
       screens[name].classList.remove('hidden');
@@ -802,7 +796,7 @@
         <div class="customer-note">${customer.note}</div>
         <div class="customer-actions">
           <button class="action-btn primary" data-open-customer="${customer.id}">Avaa</button>
-          <button class="action-btn" data-call="${customer.id}">📞 Soita</button>
+          <button class="action-btn">📞 Soita</button>
         </div>`;
       return card;
     }
@@ -819,17 +813,11 @@
         <div class="call-note">${customer.note}</div>
         <div class="call-meta"><span>Seuraava</span><strong style="font-size: 12px;">${customer.next}</strong></div>
         <div class="call-actions">
-          <button class="action-btn primary" data-call="${customer.id}">📞 Soita</button>
+          <button class="action-btn primary">📞 Soita</button>
           <button class="action-btn" data-open-customer="${customer.id}">Avaa</button>
           <button class="action-btn" data-open-entry="${customer.id}">📝 Merkintä</button>
         </div>`;
       return card;
-    }
-
-    function callCustomer(customer) {
-      if (!customer || !customer.phone) return;
-      const tel = 'tel:' + customer.phone.replace(/\s+/g, '');
-      window.location.href = tel;
     }
 
     function renderCustomerDetail(customer) {
@@ -986,8 +974,9 @@
       window.open(url, '_blank', 'noopener');
     }
 
-    function openYtj() {
-      window.open('https://www.ytj.fi/', '_blank', 'noopener');
+    function openYtj(customer) {
+      const url = 'https://tietopalvelu.ytj.fi/';
+      window.open(url, '_blank', 'noopener');
     }
 
     phone.addEventListener('click', (e) => {
@@ -1026,14 +1015,7 @@
       }
 
       if (e.target.id === 'detailYtjBtn' || e.target.id === 'detailYtjActionBtn') {
-        openYtj();
-        return;
-      }
-
-      const callBtn = e.target.closest('[data-call]');
-      if (callBtn) {
-        const customer = customers.find(c => c.id === Number(callBtn.getAttribute('data-call'))) || currentCustomer;
-        callCustomer(customer);
+        openYtj(currentCustomer);
         return;
       }
 
@@ -1043,7 +1025,8 @@
       }
 
       if (e.target.id === 'detailCallBtn') {
-        callCustomer(currentCustomer);
+        const phoneEl = document.getElementById('detailPhone');
+        if (phoneEl && phoneEl.href) window.location.href = phoneEl.href;
         return;
       }
 
