@@ -6,8 +6,8 @@
   <title>Kontakti Mobiili</title>
   <style>
     :root {
-      --bg: #0a0d12;
-      --bg-2: #0f141c;
+      --bg: #020b1c;
+      --bg-2: #03122c;
       --panel: rgba(20, 27, 39, 0.92);
       --panel-2: rgba(17, 23, 33, 0.96);
       --border: rgba(255, 255, 255, 0.08);
@@ -26,14 +26,13 @@
 
     * { box-sizing: border-box; }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       min-height: 100%;
+      background: #020b1c;
+      overscroll-behavior: none;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(94,160,255,0.18), transparent 30%),
-        radial-gradient(circle at top right, rgba(166,108,255,0.12), transparent 28%),
-        linear-gradient(180deg, #0a0d12 0%, #0d1118 100%);
       color: var(--text);
     }
 
@@ -41,6 +40,11 @@
       display: flex;
       justify-content: center;
       padding: 18px 14px 28px;
+      background:
+        radial-gradient(circle at top left, rgba(94,160,255,0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(166,108,255,0.12), transparent 28%),
+        linear-gradient(180deg, #03122c 0%, #020b1c 100%);
+      -webkit-overflow-scrolling: touch;
     }
 
     body.light-theme {
@@ -54,7 +58,7 @@
     .phone {
       width: 100%;
       max-width: 430px;
-      min-height: calc(100vh - 36px);
+      min-height: 100dvh;
       background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
       border: 1px solid var(--border);
       border-radius: 34px;
@@ -141,7 +145,9 @@
       font-size: 44px;
       font-weight: 700;
       color: #eaf3ff;
-      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.28), rgba(255,255,255,0.04) 42%), linear-gradient(180deg, #2990ff 0%, #1f66ff 100%);
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.28), rgba(255,255,255,0.04) 42%),
+        linear-gradient(180deg, #2990ff 0%, #1f66ff 100%);
       box-shadow: 0 0 22px rgba(41, 144, 255, 0.35);
     }
 
@@ -239,6 +245,11 @@
       cursor: pointer;
     }
 
+    #globalSearchBtn {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
     .section-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.14em; margin: 20px 2px 10px; }
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
@@ -304,10 +315,9 @@
     .tile.amber .tile-icon { background: var(--amber-soft); }
     .tile-badge { font-size: 12px; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); border-radius: 999px; padding: 6px 8px; line-height: 1; }
     .tile-label { font-size: 15px; font-weight: 600; line-height: 1.18; letter-spacing: -0.02em; max-width: 90%; }
-    .settings .tile-label { max-width: 72%; margin-bottom: 8px; }
+    .settings .tile-label { max-width: 80%; margin-bottom: 0; }
     .tile-number { position: absolute; right: 14px; bottom: 12px; font-size: 32px; font-weight: 700; letter-spacing: -0.04em; color: rgba(236,242,255,0.98); }
     body.light-theme .tile-number { color: #162033; }
-    .tile-footnote { position: absolute; left: 14px; right: 14px; bottom: 14px; font-size: 12px; line-height: 1.28; color: var(--muted); }
     .settings .tile-number { display: none; }
 
     .summary-card,
@@ -348,7 +358,6 @@
     .detail-key,
     .note-card-meta,
     .customer-mini-sub,
-    .tile-footnote,
     .eyebrow,
     .sub-sub {
       color: var(--muted);
@@ -572,7 +581,7 @@
           </div>
         </div>
         <div class="top-actions">
-          <button class="icon-btn" aria-label="Google-haku" id="globalSearchBtn">⌕</button>
+          <button class="icon-btn" aria-label="Google-haku" id="globalSearchBtn">G</button>
           <button class="icon-btn" aria-label="Kieli" id="languageBtn">🌐</button>
         </div>
       </header>
@@ -597,7 +606,6 @@
         <article class="tile primary neutral settings" data-open="settings">
           <div class="tile-head"><div class="tile-icon">⚙️</div><div class="tile-badge">Appi</div></div>
           <div class="tile-label">Asetukset</div>
-          <div class="tile-footnote">Teema<br>Synkkaus<br>Tietoja</div>
         </article>
       </section>
 
@@ -650,7 +658,7 @@
       <div class="sub-topbar">
         <button class="back-btn" data-back="home">←</button>
         <div class="sub-title-wrap"><div class="sub-title">Soitot tänään</div></div>
-        <button class="sub-icon-btn" id="callsSearchBtn">⌕</button>
+        <button class="sub-icon-btn" id="callsSearchBtn">G</button>
       </div>
       <section class="summary-card" style="margin-top:0;">
         <div class="summary-head"><div><div class="summary-title">Päivän lista</div></div><div class="now-pill">20 kpl</div></div>
@@ -662,7 +670,7 @@
       <div class="sub-topbar">
         <button class="back-btn" data-back="home">←</button>
         <div class="sub-title-wrap"><div class="sub-title">Asiakkaat</div></div>
-        <button class="sub-icon-btn" id="customersSearchBtn">⌕</button>
+        <button class="sub-icon-btn" id="customersSearchBtn">G</button>
       </div>
       <section class="summary-card" style="margin-top:0;">
         <div class="search-wrap"><div class="search-icon">⌕</div><input class="search-input" type="text" value="Ravintola" placeholder="Hae yritystä tai asiakasta" /></div>
