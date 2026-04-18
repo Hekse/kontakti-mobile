@@ -1,1111 +1,960 @@
 <!DOCTYPE html>
+
 <html lang="fi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Kontakti Mobiili</title>
-  <style>
-    :root {
-      --bg: #020b1c;
-      --bg-2: #03122c;
-      --panel: rgba(20, 27, 39, 0.92);
-      --panel-2: rgba(17, 23, 33, 0.96);
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #ecf2ff;
-      --muted: #98a4bb;
-      --blue-soft: rgba(94, 160, 255, 0.16);
-      --purple-soft: rgba(166, 108, 255, 0.18);
-      --red-soft: rgba(255, 107, 127, 0.16);
-      --green-soft: rgba(82, 212, 154, 0.16);
-      --amber-soft: rgba(246, 190, 79, 0.16);
-      --shadow: 0 20px 50px rgba(0,0,0,0.35);
-      --radius-xl: 24px;
-      --radius-lg: 20px;
-      --radius-md: 16px;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Kontakti Mobiili · Opero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root {
+--bg: #060d1a;
+--bg-body: #040a15;
+--card: rgba(14,22,36,0.92);
+--card2: rgba(10,16,28,0.96);
+--border: rgba(255,255,255,0.07);
+--border2: rgba(255,255,255,0.13);
+--text: #e8f0ff;
+--text2: #8b99b5;
+--text3: #4e5f7a;
+--blue: #4e9eff;
+--blue-d: rgba(78,158,255,0.14);
+--blue-g: rgba(78,158,255,0.24);
+--purple-d: rgba(160,104,255,0.14);
+--red-d: rgba(255,95,122,0.13);
+--green-d: rgba(61,214,140,0.13);
+--amber-d: rgba(245,185,66,0.13);
+--r: 20px;
+--r-sm: 14px;
+--font: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+}
+body.light {
+--bg: #f2f6fd;
+--card: rgba(255,255,255,0.96);
+--card2: rgba(244,248,255,0.98);
+--border: rgba(17,24,39,0.09);
+--border2: rgba(17,24,39,0.18);
+--text: #162033;
+--text2: #4e5f7a;
+--text3: #8b99b5;
+--blue-d: rgba(78,158,255,0.10);
+--blue-g: rgba(78,158,255,0.20);
+--purple-d: rgba(140,80,255,0.10);
+--red-d: rgba(220,50,80,0.10);
+--green-d: rgba(30,160,100,0.10);
+--amber-d: rgba(200,140,20,0.10);
+}
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html,body { min-height:100%; font-family:var(--font); color:var(--text); overscroll-behavior:none; }
+body {
+display:flex; justify-content:center; align-items:flex-start;
+padding:20px 12px 32px;
+background:
+radial-gradient(ellipse 60% 40% at 20% 0%,rgba(78,158,255,0.11),transparent 58%),
+radial-gradient(ellipse 50% 35% at 80% 5%,rgba(160,104,255,0.08),transparent 54%),
+linear-gradient(180deg,#040c1e,#020810);
+min-height:100dvh; transition:background 0.3s;
+}
+body.light { background:linear-gradient(180deg,#d8e4f4,#c8d6ec) !important; }
 
-    * { box-sizing: border-box; }
+```
+.phone {
+width:100%; max-width:390px; min-height:100dvh;
+background:var(--bg); border:1px solid rgba(255,255,255,0.06);
+border-radius:36px;
+box-shadow:0 24px 56px rgba(0,0,0,0.42),0 0 0 1px rgba(255,255,255,0.03) inset;
+overflow:hidden; position:relative; transition:background 0.3s,border-color 0.3s;
+}
+body.light .phone { border-color:rgba(17,24,39,0.08); box-shadow:0 20px 48px rgba(31,41,55,0.14); }
 
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-      background: #020b1c;
-      overscroll-behavior: none;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-    }
+.screen { padding:20px 16px 28px; display:none; }
+.screen.active { display:block; }
+.subscreen {
+position:absolute; inset:0; z-index:10;
+padding:20px 16px 28px; overflow-y:auto; display:none;
+background:
+radial-gradient(ellipse 55% 35% at 15% 0%,rgba(78,158,255,0.09),transparent 55%),
+radial-gradient(ellipse 45% 30% at 85% 5%,rgba(160,104,255,0.06),transparent 50%),
+var(--bg);
+animation:slideUp 0.22s cubic-bezier(0.22,1,0.36,1);
+transition:background 0.3s;
+}
+body.light .subscreen { background:linear-gradient(180deg,#eef4fd,#e4ecf8) !important; }
+.subscreen.active { display:block; }
+@keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
 
-    body {
-      display: flex;
-      justify-content: center;
-      padding: 18px 14px 28px;
-      background:
-        radial-gradient(circle at top left, rgba(94,160,255,0.18), transparent 30%),
-        radial-gradient(circle at top right, rgba(166,108,255,0.12), transparent 28%),
-        linear-gradient(180deg, #03122c 0%, #020b1c 100%);
-      -webkit-overflow-scrolling: touch;
-    }
+/* SPLASH */
+.splash {
+position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center;
+background:linear-gradient(180deg,#03112a,#010810);
+animation:splashOut 0.4s ease 2.2s forwards; pointer-events:none;
+}
+@keyframes splashOut { to{opacity:0;visibility:hidden} }
+.splash-inner {
+display:flex; flex-direction:column; align-items:center; gap:14px;
+animation:splashIn 0.65s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+}
+@keyframes splashIn { from{opacity:0;transform:scale(0.92) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.splash-logo { width:78px;height:78px;border-radius:22px;background:linear-gradient(135deg,#1a6fff,#0a3fd4);display:grid;place-items:center;font-size:36px;font-weight:800;color:#fff;box-shadow:0 0 40px rgba(26,111,255,0.5),0 0 0 1px rgba(255,255,255,0.14) inset; }
+.splash-brand { font-size:12px;font-weight:600;letter-spacing:0.22em;color:#6a7a9a;text-transform:uppercase; }
+.splash-name { font-size:32px;font-weight:800;letter-spacing:-0.04em;color:#fff; }
+.splash-bar { width:130px;height:2px;background:linear-gradient(90deg,transparent,#4e9eff,transparent);border-radius:99px;box-shadow:0 0 12px rgba(78,158,255,0.6); }
+.splash-sub { font-size:11px;color:#3a4a62;letter-spacing:0.12em; }
 
-    body.light-theme {
-      background:
-        radial-gradient(circle at top left, rgba(94,160,255,0.10), transparent 32%),
-        radial-gradient(circle at top right, rgba(166,108,255,0.08), transparent 30%),
-        linear-gradient(180deg, #eef3fb 0%, #e7edf7 100%);
-      color: #162033;
-    }
+/* TOPBAR */
+.topbar { display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:10px; }
+.brand { display:flex;align-items:center;gap:11px;min-width:0;flex:1; }
+.logo { width:44px;height:44px;border-radius:14px;flex-shrink:0;background:linear-gradient(135deg,var(--blue-d),var(--purple-d));border:1px solid var(--border2);display:grid;place-items:center;font-size:17px;font-weight:800;color:var(--text); }
+.title-wrap { min-width:0; }
+.eyebrow { font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);margin-bottom:1px; }
+.title { font-size:21px;font-weight:800;letter-spacing:-0.035em;line-height:1;color:var(--text); }
+.top-actions { display:flex;gap:8px;flex-shrink:0; }
+.icon-btn { width:40px;height:40px;border-radius:13px;border:1px solid var(--border);background:var(--blue-d);color:var(--text);display:grid;place-items:center;font-size:15px;font-weight:700;cursor:pointer;transition:background 0.15s,border-color 0.15s; }
+.icon-btn:hover { background:var(--blue-g);border-color:var(--border2); }
+.icon-btn:active { transform:scale(0.93); }
 
-    .phone {
-      width: 100%;
-      max-width: 430px;
-      min-height: 100dvh;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid var(--border);
-      border-radius: 34px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      position: relative;
-      backdrop-filter: blur(18px);
-    }
+.section-label { font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.16em;text-transform:uppercase;margin:18px 2px 10px; }
+.grid2 { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
 
-    body.light-theme .phone {
-      background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(246,249,253,0.94));
-      border-color: rgba(17,24,39,0.08);
-      box-shadow: 0 20px 50px rgba(31,41,55,0.16);
-    }
+/* TILES */
+.tile { position:relative;border-radius:var(--r);border:1px solid var(--border);padding:14px;overflow:hidden;cursor:pointer;min-height:124px;display:flex;flex-direction:column;justify-content:space-between;transition:transform 0.13s ease,border-color 0.13s ease,box-shadow 0.13s ease; }
+.tile::before { content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,0.05) 0%,transparent 50%); }
+.tile:hover { border-color:var(--border2);transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,0.25); }
+.tile:active { transform:scale(0.97); }
+.t-blue { background:linear-gradient(160deg,rgba(78,158,255,0.28),rgba(78,158,255,0.10) 55%,rgba(14,22,36,0.92)); }
+.t-purple { background:linear-gradient(160deg,rgba(160,104,255,0.30),rgba(160,104,255,0.11) 55%,rgba(14,22,36,0.92)); }
+.t-neutral { background:linear-gradient(160deg,rgba(255,255,255,0.13),rgba(255,255,255,0.06) 55%,rgba(14,22,36,0.92)); }
+.t-green { background:linear-gradient(160deg,rgba(61,214,140,0.28),rgba(61,214,140,0.10) 55%,rgba(14,22,36,0.92));min-height:108px; }
+.t-red { background:linear-gradient(160deg,rgba(255,95,122,0.28),rgba(255,95,122,0.10) 55%,rgba(14,22,36,0.92));min-height:108px; }
+.t-amber { background:linear-gradient(160deg,rgba(245,185,66,0.28),rgba(245,185,66,0.10) 55%,rgba(14,22,36,0.92));min-height:108px; }
+.tile-head { display:flex;align-items:flex-start;justify-content:space-between; }
+.tile-icon { width:38px;height:38px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.04);display:grid;place-items:center;font-size:17px; }
+.t-blue .tile-icon { background:rgba(78,158,255,0.28); border-color:rgba(78,158,255,0.35); }
+.t-purple .tile-icon { background:rgba(160,104,255,0.28); border-color:rgba(160,104,255,0.35); }
+.t-neutral .tile-icon{ background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.16); }
+.t-green .tile-icon { background:rgba(61,214,140,0.28); border-color:rgba(61,214,140,0.35); }
+.t-red .tile-icon { background:rgba(255,95,122,0.28); border-color:rgba(255,95,122,0.35); }
+.t-amber .tile-icon { background:rgba(245,185,66,0.28); border-color:rgba(245,185,66,0.35); }
+.tile-badge { font-size:11px;color:var(--text2);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:99px;padding:5px 9px;line-height:1; }
+.tile-bottom { display:flex;align-items:flex-end;justify-content:space-between; }
+.tile-label { font-size:14px;font-weight:600;letter-spacing:-0.02em;line-height:1.25;color:var(--text); }
+.tile-number { font-size:34px;font-weight:800;letter-spacing:-0.05em;line-height:1;color:var(--text); }
 
-    .screen,
-    .subscreen {
-      padding: 18px 16px 22px;
-    }
+/* KOONTI */
+.koonti { margin-top:14px;border-radius:var(--r);border:1px solid var(--border);background:rgba(255,255,255,0.02);padding:14px; }
+body.light .koonti { background:rgba(255,255,255,0.55); }
+.koonti-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:12px; }
+.koonti-title { font-size:15px;font-weight:700;letter-spacing:-0.025em;color:var(--text); }
+.day-pill { font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:6px 11px;border-radius:99px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text2); }
 
-    .subscreen {
-      position: absolute;
-      inset: 0;
-      z-index: 8;
-      background:
-        radial-gradient(circle at top left, rgba(94,160,255,0.16), transparent 30%),
-        radial-gradient(circle at top right, rgba(166,108,255,0.12), transparent 28%),
-        linear-gradient(180deg, #0a0d12 0%, #0d1118 100%);
-      overflow-y: auto;
-    }
+/* BOTTOM NAV */
+.bottom-nav { margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:22px; }
+body.light .bottom-nav { background:rgba(255,255,255,0.6); }
+.nav-item { height:54px;border-radius:16px;display:grid;place-items:center;font-size:21px;color:var(--text3);cursor:pointer;border:1px solid transparent;transition:all 0.14s; }
+.nav-item:active { transform:scale(0.93); }
+.nav-item.active { background:var(--blue-d);border-color:var(--blue-g);color:var(--text); }
 
-    body.light-theme .screen,
-    body.light-theme .subscreen {
-      background:
-        radial-gradient(circle at top left, rgba(94,160,255,0.08), transparent 30%),
-        radial-gradient(circle at top right, rgba(166,108,255,0.06), transparent 28%),
-        linear-gradient(180deg, #f6f9fd 0%, #edf3fb 100%);
-      color: #162033;
-    }
+/* SUB TOPBAR */
+.sub-topbar { display:flex;align-items:center;gap:10px;margin-bottom:16px; }
+.back-btn { width:40px;height:40px;border-radius:13px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);display:grid;place-items:center;font-size:18px;cursor:pointer;flex-shrink:0;transition:background 0.14s; }
+.back-btn:hover { background:rgba(255,255,255,0.09); }
+.back-btn:active { transform:scale(0.93); }
+.sub-title { font-size:19px;font-weight:800;letter-spacing:-0.03em;flex:1;color:var(--text); }
+.sub-badge { font-size:11px;font-weight:600;color:var(--text2);padding:6px 10px;border-radius:99px;background:rgba(255,255,255,0.05);border:1px solid var(--border);white-space:nowrap; }
 
-    .hidden { display: none !important; }
+/* CARD */
+.card { border-radius:var(--r);border:1px solid var(--border);background:var(--card);padding:14px;margin-bottom:12px;box-shadow:0 12px 32px rgba(0,0,0,0.18);transition:background 0.3s,border-color 0.3s; }
+.card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px; }
+.card-title { font-size:15px;font-weight:700;letter-spacing:-0.02em;color:var(--text); }
+.card-badge { font-size:11px;color:var(--text2);padding:5px 9px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:99px; }
 
-    .splash {
-      position: absolute;
-      inset: 0;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
-      background:
-        radial-gradient(circle at center, rgba(30, 100, 255, 0.10), transparent 28%),
-        linear-gradient(180deg, #03122c 0%, #020b1c 100%);
-      animation: splashFade 3.2s ease forwards;
-      pointer-events: none;
-    }
+/* SEARCH */
+.search-bar { display:flex;align-items:center;gap:10px;background:var(--blue-d);border:1px solid var(--border);border-radius:16px;padding:11px 14px;margin-bottom:14px;transition:border-color 0.14s; }
+.search-bar:focus-within { border-color:var(--blue-g); }
+.search-icon { font-size:16px;color:var(--text3); }
+.search-input { flex:1;background:transparent;border:0;outline:none;color:var(--text);font:inherit;font-size:14px; }
+.search-input::placeholder { color:var(--text3); }
 
-    .splash-shell {
-      position: relative;
-      width: 100%;
-      max-width: 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
-      opacity: 0;
-      transform: translateY(6px) scale(0.985);
-      animation: splashRise 1.2s ease 0.15s forwards;
-    }
+.list { display:grid;gap:10px; }
 
-    .splash-brand {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      z-index: 2;
-    }
+/* CCARD */
+.ccard { border-radius:18px;border:1px solid var(--border);background:var(--card);padding:14px;transition:border-color 0.14s,background 0.3s; }
+.ccard:hover { border-color:var(--border2); }
+.ccard.featured { border-color:var(--blue-g);box-shadow:0 0 0 1px rgba(78,158,255,0.07) inset; }
+body.light .ccard.featured { background:linear-gradient(160deg,rgba(225,238,255,0.98),rgba(210,228,252,0.98)); }
+.ccard-head { display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px; }
+.ccard-name { font-size:15px;font-weight:700;letter-spacing:-0.025em;margin-bottom:2px;color:var(--text); }
+.ccard-meta { font-size:12px;color:var(--text2); }
+.ccard-pills { display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end; }
+.ccard-info { display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:8px; }
+.ccard-note { font-size:13px;line-height:1.38;color:var(--text);margin-bottom:10px; }
+.ccard-next { font-size:12px;color:var(--text2);margin-bottom:10px; }
+.ccard-next strong { color:var(--text);font-weight:600; }
+.ccard-actions { display:flex;gap:8px;flex-wrap:wrap; }
 
-    .splash-opero-logo {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-size: 44px;
-      font-weight: 700;
-      color: #eaf3ff;
-      background:
-        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.28), rgba(255,255,255,0.04) 42%),
-        linear-gradient(180deg, #2990ff 0%, #1f66ff 100%);
-      box-shadow: 0 0 22px rgba(41, 144, 255, 0.35);
-    }
+/* BADGES */
+.badge { font-size:11px;padding:5px 8px;border-radius:99px;line-height:1;white-space:nowrap;border:1px solid transparent; }
+.b-blue { background:var(--blue-d); color:#a8d0ff;border-color:rgba(78,158,255,0.2); }
+.b-purple { background:var(--purple-d);color:#d4b8ff;border-color:rgba(160,104,255,0.2); }
+.b-red { background:var(--red-d); color:#ffb3be;border-color:rgba(255,95,122,0.2); }
+.b-green { background:var(--green-d); color:#a3f0cd;border-color:rgba(61,214,140,0.2); }
+.b-amber { background:var(--amber-d); color:#fde3a7;border-color:rgba(245,185,66,0.2); }
+body.light .b-blue { color:#1a5fc8; }
+body.light .b-purple { color:#7030c0; }
+body.light .b-red { color:#b01030; }
+body.light .b-green { color:#0a7a50; }
+body.light .b-amber { color:#8a5a00; }
 
-    .splash-opero-word {
-      font-size: 42px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      color: #ffffff;
-    }
+/* BUTTONS */
+.btn { border-radius:var(--r-sm);padding:9px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--text);background:rgba(255,255,255,0.04);border:1px solid var(--border);transition:background 0.14s,border-color 0.14s,transform 0.1s; }
+.btn:hover { background:rgba(255,255,255,0.09);border-color:var(--border2); }
+.btn:active { transform:scale(0.95); }
+.btn-primary { background:var(--blue-d);border-color:var(--blue-g); }
+.btn-primary:hover { background:var(--blue-g); }
+.btn-danger { background:rgba(255,95,122,0.12);border-color:rgba(255,95,122,0.25); }
+body.light .btn { background:rgba(255,255,255,0.7);border-color:var(--border2); }
+body.light .btn:hover { background:rgba(255,255,255,0.9); }
 
-    .splash-line {
-      width: 180px;
-      height: 3px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, transparent, #39a0ff, transparent);
-      box-shadow: 0 0 14px rgba(57,160,255,0.45);
-      z-index: 2;
-    }
+/* DETAIL HERO */
+.detail-hero { border-radius:var(--r);border:1px solid var(--blue-g);background:linear-gradient(160deg,rgba(18,30,50,0.96),var(--card2));padding:16px;margin-bottom:12px;transition:background 0.3s; }
+body.light .detail-hero { background:linear-gradient(160deg,rgba(220,235,255,0.98),rgba(205,225,252,0.98)); }
+.detail-name { font-size:22px;font-weight:800;letter-spacing:-0.04em;margin-bottom:4px;color:var(--text); }
+.detail-company { font-size:13px;color:var(--text2);margin-bottom:10px; }
+.detail-pills { display:flex;gap:6px;flex-wrap:wrap; }
+.info-grid { display:grid; }
+.info-row { display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;gap:12px;border-bottom:1px solid var(--border); }
+.info-row:last-child { border-bottom:0; }
+.info-key { font-size:12px;color:var(--text2);min-width:112px;padding-top:1px; }
+.info-val { font-size:13px;text-align:right;max-width:58%;word-break:break-word;color:var(--text); }
+.info-link { color:var(--blue);text-decoration:none;border-bottom:1px dashed rgba(78,158,255,0.3); }
+body.light .info-link { color:#1a5fc8; }
+.info-link:hover { opacity:0.8; }
+.detail-actions { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px; }
 
-    .splash-product {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 0.22em;
-      color: #ffffff;
-      z-index: 2;
-    }
+/* NOTE CARDS */
+.note-card { border-radius:14px;border:1px solid var(--border);padding:12px;background:rgba(255,255,255,0.02);transition:background 0.3s; }
+body.light .note-card { background:rgba(255,255,255,0.7); }
+.note-card + .note-card { margin-top:8px; }
+.note-title { font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text); }
+.note-meta { font-size:11px;color:var(--text3);margin-bottom:6px; }
+.note-text { font-size:13px;line-height:1.4;color:var(--text2); }
 
-    .splash-ring {
-      position: absolute;
-      top: 88px;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      border: 1px solid rgba(120, 170, 255, 0.10);
-      box-shadow:
-        0 0 40px rgba(40, 120, 255, 0.08) inset,
-        0 0 50px rgba(40, 120, 255, 0.06);
-    }
+/* MINI CUSTOMER */
+.mini-cust { border-radius:var(--r);border:1px solid var(--blue-g);background:linear-gradient(160deg,rgba(18,30,50,0.96),var(--card2));padding:14px;margin-bottom:12px;transition:background 0.3s; }
+body.light .mini-cust { background:linear-gradient(160deg,rgba(220,235,255,0.98),rgba(205,225,252,0.98)); }
+.mini-name { font-size:17px;font-weight:800;letter-spacing:-0.03em;margin-bottom:3px;color:var(--text); }
+.mini-meta { font-size:12px;color:var(--text2);margin-bottom:3px; }
+.mini-next { font-size:12px;color:var(--text2); }
+.mini-next span { color:var(--text);font-weight:600; }
 
-    .splash-line-bottom {
-      margin-top: 120px;
-    }
+/* FORM */
+.quick-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px; }
+.qbtn { border-radius:var(--r-sm);padding:11px 10px;font:inherit;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;background:rgba(255,255,255,0.03);border:1px solid var(--border);text-align:center;transition:all 0.14s; }
+.qbtn:hover { background:rgba(255,255,255,0.08);color:var(--text); }
+.qbtn:active { transform:scale(0.96); }
+.qbtn.sel { background:var(--blue-d);border-color:var(--blue-g);color:var(--text); }
+body.light .qbtn { background:rgba(255,255,255,0.6); }
 
-    .splash-loading {
-      font-size: 15px;
-      color: rgba(236,242,255,0.90);
-      z-index: 2;
-    }
+.form-group { display:grid;gap:12px; }
+.fwrap { display:grid;gap:5px; }
+.flabel { font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase; }
+.finput,.ftextarea,.fselect { width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;font:inherit;font-size:14px;color:var(--text);outline:none;transition:border-color 0.14s,background 0.14s; }
+body.light .finput, body.light .ftextarea, body.light .fselect { background:rgba(255,255,255,0.8);color:var(--text); }
+.finput:focus,.ftextarea:focus,.fselect:focus { border-color:var(--blue-g);background:var(--blue-d); }
+.finput::placeholder,.ftextarea::placeholder { color:var(--text3); }
+.ftextarea { min-height:88px;resize:vertical; }
+.fselect option { background:#0e1624;color:#e8f0ff; }
+body.light .fselect option { background:#fff;color:#162033; }
+.form-actions { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px; }
 
-    .topbar,
-    .sub-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-      gap: 12px;
-    }
+/* SETTINGS */
+.setting-row { display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:10px; }
+.setting-row:last-child { border-bottom:0; }
+.setting-label { font-size:14px;font-weight:600;color:var(--text); }
+.setting-sub { font-size:12px;color:var(--text2);margin-top:2px; }
 
-    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+/* IMPORT ZONE */
+.import-zone { border:2px dashed var(--border2);border-radius:var(--r-sm);padding:24px 16px;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s; }
+.import-zone:hover { border-color:var(--blue-g);background:var(--blue-d); }
+.import-zone .iz-icon { font-size:28px; }
+.import-zone p { font-size:13px;color:var(--text2);margin-top:6px; }
 
-    .logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.18), transparent 35%),
-        linear-gradient(135deg, rgba(94,160,255,0.24), rgba(166,108,255,0.22));
-      border: 1px solid rgba(255,255,255,0.09);
-      box-shadow: 0 0 24px rgba(94,160,255,0.18);
-      flex: 0 0 auto;
-    }
+/* TOAST */
+.toast { position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(14,22,36,0.97);border:1px solid var(--blue-g);color:var(--text);padding:11px 20px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s;z-index:99;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+.toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+body.light .toast { background:rgba(240,246,255,0.97); }
 
-    .logo-mark { font-size: 18px; font-weight: 800; letter-spacing: 0.04em; }
-    .title-wrap, .sub-title-wrap { min-width: 0; flex: 1; }
-    .eyebrow { color: var(--muted); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 2px; }
-    .title, .sub-title { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sub-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+/* ── CALL SESSION ─────────────────────────────────── */
+.call-progress-wrap { margin-bottom:14px; }
+.call-progress-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:8px; }
+.call-progress-label{ font-size:13px;font-weight:700;color:var(--text); }
+.call-reset-btn { font-size:11px;font-weight:600;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:99px;padding:5px 11px;cursor:pointer;transition:color 0.14s,border-color 0.14s; }
+.call-reset-btn:hover { color:var(--text2);border-color:var(--border2); }
+.call-progress-bar-bg { height:6px;border-radius:99px;background:rgba(255,255,255,0.06);overflow:hidden; }
+.call-progress-bar-fill { height:100%;border-radius:99px;background:linear-gradient(90deg,#2a7fff,#4eff9e);transition:width 0.4s cubic-bezier(0.22,1,0.36,1); }
 
-    .top-actions { display: flex; gap: 10px; }
+/* call card compact */
+.ccall {
+border-radius:18px; border:1px solid var(--border);
+background:var(--card); padding:13px 13px 11px;
+transition:border-color 0.14s,opacity 0.25s,transform 0.25s,background 0.3s;
+}
+.ccall:hover { border-color:var(--border2); }
+.ccall.priority-card { border-color:rgba(160,104,255,0.25);background:linear-gradient(160deg,rgba(160,104,255,0.08),var(--card2)); }
+.ccall.overdue-card { border-color:rgba(255,95,122,0.22);background:linear-gradient(160deg,rgba(255,95,122,0.07),var(--card2)); }
+.ccall.done-card { opacity:0.45; }
+.ccall.skipped-card { opacity:0.55;border-style:dashed; }
 
-    .icon-btn,
-    .back-btn,
-    .sub-icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: inherit;
-      display: grid;
-      place-items: center;
-      font-size: 17px;
-      cursor: pointer;
-    }
+/* sliding out */
+.ccall.slide-out {
+animation: slideOut 0.28s cubic-bezier(0.4,0,1,1) forwards;
+}
+@keyframes slideOut {
+to { opacity:0; transform:translateX(60px) scale(0.96); max-height:0; padding:0; margin:0; border-width:0; }
+}
 
-    #globalSearchBtn {
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
+.ccall-top { display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px; }
+.ccall-left { min-width:0;flex:1; }
+.ccall-name { font-size:15px;font-weight:700;letter-spacing:-0.025em;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.ccall-meta { font-size:12px;color:var(--text2); }
+.ccall-note { font-size:13px;color:var(--text2);line-height:1.35;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
+.ccall-next { font-size:12px;color:var(--text2);margin-bottom:10px; }
+.ccall-next strong { color:var(--text);font-weight:600; }
+.ccall-pills { display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0;max-width:45%; }
 
-    .section-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.14em; margin: 20px 2px 10px; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+/* 3-button action row */
+.ccall-actions { display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px; }
+.cta-call { background:var(--blue-d);border-color:var(--blue-g);color:var(--text); }
+.cta-call:hover { background:var(--blue-g); }
+.cta-noanswer { background:var(--red-d);border-color:rgba(255,95,122,0.25);color:var(--text); }
+.cta-noanswer:hover { background:rgba(255,95,122,0.22); }
+.cta-skip { background:rgba(255,255,255,0.03);border-color:var(--border); }
+.cta-skip:hover { background:rgba(255,255,255,0.08); }
 
-    .tile {
-      position: relative;
-      min-height: 124px;
-      border-radius: var(--radius-lg);
-      background: linear-gradient(180deg, var(--panel), var(--panel-2));
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 14px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
-      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
-    }
+/* status stamp overlay */
+.ccall-stamp {
+display:inline-flex;align-items:center;gap:5px;
+font-size:11px;font-weight:700;letter-spacing:0.06em;
+padding:4px 9px;border-radius:99px;margin-bottom:8px;
+}
+.stamp-done { background:var(--green-d);color:#a3f0cd;border:1px solid rgba(61,214,140,0.2); }
+.stamp-noanswer { background:var(--red-d); color:#ffb3be;border:1px solid rgba(255,95,122,0.2); }
+.stamp-skipped { background:rgba(255,255,255,0.04);color:var(--text3);border:1px solid var(--border); }
 
-    .tile::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 45%);
-      opacity: 0.7;
-    }
+.hidden { display:none !important; }
 
-    .tile[data-open], .tile[data-summary] { cursor: pointer; }
-    .tile:hover { border-color: rgba(255,255,255,0.16); box-shadow: 0 14px 34px rgba(0,0,0,0.28); }
-    .tile[data-open]:hover, .tile[data-summary]:hover { transform: translateY(-1px); }
-    .tile:active { transform: scale(0.985); }
+@media (max-width:360px) {
+.tile-number { font-size:28px; }
+.detail-actions,.form-actions,.quick-grid { grid-template-columns:1fr; }
+}
+```
 
-    .tile.primary.blue { background: linear-gradient(180deg, rgba(21,32,48,0.96), rgba(14,20,29,0.96)); }
-    .tile.primary.purple { background: linear-gradient(180deg, rgba(29,22,42,0.96), rgba(18,14,27,0.96)); }
-    .tile.primary.neutral, .tile.cozy.neutral { background: linear-gradient(180deg, rgba(20,27,39,0.96), rgba(13,18,27,0.96)); }
-    .tile.cozy { min-height: 110px; }
-    .tile.cozy:not([data-open]):not([data-summary]) { cursor: default; }
-
-    body.light-theme .tile,
-    body.light-theme .summary-card,
-    body.light-theme .detail-card,
-    body.light-theme .form-card,
-    body.light-theme .call-card,
-    body.light-theme .customer-card,
-    body.light-theme .note-card,
-    body.light-theme .search-wrap,
-    body.light-theme .customer-mini,
-    body.light-theme .detail-hero {
-      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(244,247,252,0.98));
-      border-color: rgba(17,24,39,0.08);
-      color: #162033;
-      box-shadow: 0 10px 24px rgba(31,41,55,0.08);
-    }
-
-    body.light-theme .tile.primary.blue { background: linear-gradient(180deg, rgba(231,240,255,0.98), rgba(220,233,252,0.98)); }
-    body.light-theme .tile.primary.purple { background: linear-gradient(180deg, rgba(242,234,255,0.98), rgba(233,225,251,0.98)); }
-    body.light-theme .tile.primary.neutral,
-    body.light-theme .tile.cozy.neutral { background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(243,247,252,0.98)); }
-
-    .tile-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 18px; }
-    .tile-icon { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.05); font-size: 18px; }
-    .tile.blue .tile-icon { background: var(--blue-soft); }
-    .tile.purple .tile-icon { background: var(--purple-soft); }
-    .tile.red .tile-icon { background: var(--red-soft); }
-    .tile.green .tile-icon { background: var(--green-soft); }
-    .tile.amber .tile-icon { background: var(--amber-soft); }
-    .tile-badge { font-size: 12px; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); border-radius: 999px; padding: 6px 8px; line-height: 1; }
-    .tile-label { font-size: 15px; font-weight: 600; line-height: 1.18; letter-spacing: -0.02em; max-width: 90%; }
-    .settings .tile-label { max-width: 80%; margin-bottom: 0; }
-    .tile-number { position: absolute; right: 14px; bottom: 12px; font-size: 32px; font-weight: 700; letter-spacing: -0.04em; color: rgba(236,242,255,0.98); }
-    body.light-theme .tile-number { color: #162033; }
-    .settings .tile-number { display: none; }
-
-    .summary-card,
-    .detail-card,
-    .form-card {
-      margin-top: 16px;
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(255,255,255,0.08);
-      background: linear-gradient(180deg, rgba(14,20,30,0.86), rgba(11,16,24,0.9));
-      padding: 16px;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.24);
-    }
-
-    .summary-head,
-    .results-head,
-    .detail-head,
-    .form-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .summary-title,
-    .results-title,
-    .detail-title,
-    .form-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
-
-    .summary-sub,
-    .results-sub,
-    .detail-sub,
-    .form-sub,
-    .call-company,
-    .customer-company,
-    .call-meta,
-    .customer-meta,
-    .detail-key,
-    .note-card-meta,
-    .customer-mini-sub,
-    .eyebrow,
-    .sub-sub {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .now-pill,
-    .tile-badge,
-    .pill,
-    .icon-btn,
-    .back-btn,
-    .sub-icon-btn,
-    .action-btn,
-    .detail-action,
-    .form-btn,
-    .quick-pick,
-    .field input,
-    .field textarea,
-    .field select,
-    .nav-item.active {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    body.light-theme .now-pill,
-    body.light-theme .tile-badge,
-    body.light-theme .pill,
-    body.light-theme .icon-btn,
-    body.light-theme .back-btn,
-    body.light-theme .sub-icon-btn,
-    body.light-theme .action-btn,
-    body.light-theme .detail-action,
-    body.light-theme .form-btn,
-    body.light-theme .quick-pick,
-    body.light-theme .field input,
-    body.light-theme .field textarea,
-    body.light-theme .field select,
-    body.light-theme .nav-item.active {
-      background: rgba(255,255,255,0.88);
-      border-color: rgba(17,24,39,0.10);
-      color: #162033;
-    }
-
-    .now-pill { border-radius: 999px; padding: 8px 10px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
-
-    .bottom-bar {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding: 10px;
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-    }
-
-    .nav-item { border-radius: 16px; padding: 12px 6px; text-align: center; color: var(--muted); font-size: 0; line-height: 1; background: transparent; border: 1px solid transparent; min-height: 54px; display: grid; place-items: center; cursor: pointer; }
-    .nav-item:active { transform: scale(0.96); }
-    .nav-item .nav-icon { display: block; font-size: 21px; }
-    .nav-item.active { color: var(--text); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
-    body.light-theme .nav-item { color: #5b687d; }
-
-    .search-wrap { display: flex; align-items: center; gap: 10px; border-radius: 18px; padding: 12px 14px; margin-bottom: 14px; }
-    .search-icon { font-size: 17px; color: var(--muted); }
-    .search-input { flex: 1; background: transparent; border: 0; outline: none; color: inherit; font-size: 14px; font-family: inherit; }
-    .search-input::placeholder { color: var(--muted); }
-    .search-focus { margin-bottom: 6px; }
-
-    .call-list,
-    .customer-list,
-    .note-list { display: grid; gap: 10px; }
-
-    .call-card,
-    .customer-card,
-    .note-card { border-radius: 18px; padding: 14px; }
-
-    .customer-card.match {
-      border-color: rgba(94,160,255,0.22);
-      box-shadow: 0 0 0 1px rgba(94,160,255,0.08) inset, 0 12px 28px rgba(0,0,0,0.18);
-      background: linear-gradient(180deg, rgba(21,32,48,0.94), rgba(14,20,29,0.96));
-    }
-
-    body.light-theme .customer-card.match { background: linear-gradient(180deg, rgba(234,243,255,0.98), rgba(224,236,252,0.98)); }
-
-    .call-head,
-    .call-meta,
-    .call-actions,
-    .customer-head,
-    .customer-meta,
-    .customer-actions,
-    .detail-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .call-head, .customer-head { margin-bottom: 8px; }
-    .call-name, .customer-name { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
-    .status-pack { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
-    .pill { padding: 6px 8px; border-radius: 999px; font-size: 11px; line-height: 1; white-space: nowrap; }
-    .pill.priority { background: var(--purple-soft); color: #dcc8ff; }
-    .pill.overdue { background: var(--red-soft); color: #ffc3cb; }
-    .pill.done { background: var(--green-soft); color: #baf1d8; }
-    .pill.meeting { background: var(--amber-soft); color: #ffe1a5; }
-    .pill.match { background: var(--blue-soft); color: #d6e6ff; }
-    .call-meta, .customer-meta { margin-bottom: 10px; }
-    .call-note, .customer-note, .note-card-text { font-size: 13px; line-height: 1.35; margin-bottom: 12px; }
-    .call-actions, .customer-actions { justify-content: flex-start; }
-
-    .action-btn,
-    .detail-action,
-    .form-btn {
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      color: inherit;
-    }
-
-    .action-btn.primary,
-    .detail-action.primary,
-    .form-btn.primary {
-      background: rgba(94,160,255,0.12);
-      border-color: rgba(94,160,255,0.22);
-      box-shadow: 0 0 0 1px rgba(94,160,255,0.08) inset;
-    }
-
-    .detail-hero {
-      border-radius: 22px;
-      padding: 16px;
-      margin-bottom: 14px;
-      background: linear-gradient(180deg, rgba(21,32,48,0.94), rgba(14,20,29,0.96));
-      border: 1px solid rgba(94,160,255,0.16);
-      box-shadow: 0 0 0 1px rgba(94,160,255,0.06) inset, 0 18px 45px rgba(0,0,0,0.24);
-    }
-
-    body.light-theme .detail-hero { background: linear-gradient(180deg, rgba(234,243,255,0.98), rgba(224,236,252,0.98)); }
-    .detail-name { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 6px; }
-    .detail-company { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
-    .detail-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-    .detail-grid { display: grid; gap: 10px; }
-    .detail-row { align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    body.light-theme .detail-row { border-bottom-color: rgba(17,24,39,0.06); }
-    .detail-row:last-child { border-bottom: 0; }
-    .detail-key { min-width: 110px; }
-    .detail-value { font-size: 13px; text-align: right; max-width: 60%; }
-    .detail-link { color: inherit; text-decoration: none; border-bottom: 1px dashed rgba(255,255,255,0.18); }
-    body.light-theme .detail-link { border-bottom-color: rgba(17,24,39,0.18); }
-    .detail-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-    .note-card-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-
-    .customer-mini {
-      border-radius: 18px;
-      padding: 14px;
-      margin-bottom: 14px;
-      background: linear-gradient(180deg, rgba(21,32,48,0.94), rgba(14,20,29,0.96));
-      border: 1px solid rgba(94,160,255,0.16);
-      box-shadow: 0 0 0 1px rgba(94,160,255,0.06) inset, 0 18px 45px rgba(0,0,0,0.24);
-    }
-
-    body.light-theme .customer-mini { background: linear-gradient(180deg, rgba(234,243,255,0.98), rgba(224,236,252,0.98)); }
-    .customer-mini-name { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 4px; }
-    .customer-mini-next { font-size: 12px; color: inherit; }
-
-    .quick-picks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
-    .quick-pick { border-radius: 14px; padding: 12px; font-size: 12px; font-weight: 700; color: inherit; cursor: pointer; text-align: center; }
-    .quick-pick.selected { background: rgba(94,160,255,0.12); border-color: rgba(94,160,255,0.22); box-shadow: 0 0 0 1px rgba(94,160,255,0.08) inset; }
-
-    .form-stack { display: grid; gap: 12px; }
-    .field { display: grid; gap: 6px; }
-    .field label { font-size: 12px; color: var(--muted); }
-    .field input, .field textarea, .field select { width: 100%; border-radius: 14px; padding: 12px 14px; font: inherit; outline: none; color: inherit; }
-    .field textarea { min-height: 96px; resize: vertical; }
-    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
-    .form-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
-    select option { background: #14202b; color: var(--text); }
-    body.light-theme select option { background: #ffffff; color: #162033; }
-
-    @keyframes splashRise { to { opacity: 1; transform: translateY(0) scale(1); } }
-    @keyframes splashFade { 0%, 72% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; } }
-
-    @media (max-width: 380px) {
-      .tile { min-height: 114px; padding: 12px; }
-      .tile.cozy { min-height: 100px; }
-      .tile-label { font-size: 14px; }
-      .tile-number { font-size: 30px; }
-      .title, .sub-title { font-size: 20px; }
-      .detail-actions, .form-actions, .quick-picks { grid-template-columns: 1fr; }
-      .splash-opero-word { font-size: 36px; }
-      .splash-product { font-size: 24px; }
-      .splash-ring { width: 260px; height: 260px; }
-      .splash-line-bottom { margin-top: 104px; }
-    }
-  </style>
+</style>
 </head>
 <body>
-  <main class="phone" aria-label="Kontakti Mobiili v1">
-    <section class="splash" aria-label="Splash">
-      <div class="splash-shell">
-        <div class="splash-brand">
-          <div class="splash-opero-logo">⊘</div>
-          <div class="splash-opero-word">OPERO</div>
-        </div>
-        <div class="splash-line"></div>
-        <div class="splash-product">KONTAKTI</div>
-        <div class="splash-ring"></div>
-        <div class="splash-line splash-line-bottom"></div>
-        <div class="splash-loading">Loading...</div>
-      </div>
-    </section>
+<main class="phone">
 
-    <section class="screen" aria-label="Etusivu">
-      <header class="topbar">
-        <div class="brand">
-          <div class="logo" aria-hidden="true"><div class="logo-mark">K</div></div>
-          <div class="title-wrap">
-            <div class="eyebrow">Opero · Kontakti</div>
-            <div class="title">Mobiili</div>
-          </div>
-        </div>
-        <div class="top-actions">
-          <button class="icon-btn" aria-label="Google-haku" id="globalSearchBtn">G</button>
-          <button class="icon-btn" aria-label="Kieli" id="languageBtn">🌐</button>
-        </div>
-      </header>
+<!-- SPLASH -->
 
-      <div class="section-label">Päätoiminnot</div>
-      <section class="grid" aria-label="Päälaatikot">
-        <article class="tile primary blue" data-open="calls">
-          <div class="tile-head"><div class="tile-icon">📞</div><div class="tile-badge">Tänään</div></div>
-          <div class="tile-label">Soitot tänään</div>
-          <div class="tile-number">12</div>
-        </article>
-        <article class="tile primary neutral" data-open="customers">
-          <div class="tile-head"><div class="tile-icon">👥</div><div class="tile-badge">Yhteensä</div></div>
-          <div class="tile-label">Asiakkaat</div>
-          <div class="tile-number">186</div>
-        </article>
-        <article class="tile primary purple" data-open="priority">
-          <div class="tile-head"><div class="tile-icon">🟣</div><div class="tile-badge">Kiireellinen</div></div>
-          <div class="tile-label">Priority</div>
-          <div class="tile-number">5</div>
-        </article>
-        <article class="tile primary neutral settings" data-open="settings">
-          <div class="tile-head"><div class="tile-icon">⚙️</div><div class="tile-badge">Appi</div></div>
-          <div class="tile-label">Asetukset</div>
-        </article>
-      </section>
+<div class="splash">
+<div class="splash-inner">
+<div class="splash-logo">K</div>
+<div class="splash-brand">Opero · Mobiili</div>
+<div class="splash-name">KONTAKTI</div>
+<div class="splash-bar"></div>
+<div class="splash-sub">Ladataan...</div>
+</div>
+</div>
 
-      <section class="summary-card" aria-label="Päivän koonti">
-        <div class="summary-head">
-          <div><div class="summary-title">Päivän koonti</div></div>
-          <div class="now-pill">Maanantai</div>
-        </div>
-        <div class="grid">
-          <article class="tile cozy green" data-summary="meetings"><div class="tile-head"><div class="tile-icon">🤝</div></div><div class="tile-label">Tapaamiset</div><div class="tile-number">3</div></article>
-          <article class="tile cozy red" data-summary="overdue"><div class="tile-head"><div class="tile-icon">⏰</div></div><div class="tile-label">Erääntyneet</div><div class="tile-number">8</div></article>
-          <article class="tile cozy amber" data-summary="notes"><div class="tile-head"><div class="tile-icon">📝</div></div><div class="tile-label">Uudet merkinnät</div><div class="tile-number">7</div></article>
-          <article class="tile cozy blue" data-summary="done"><div class="tile-head"><div class="tile-icon">✅</div></div><div class="tile-label">Soitettu tänään</div><div class="tile-number">9</div></article>
-        </div>
-      </section>
+<!-- HOME -->
 
-      <nav class="bottom-bar" aria-label="Alanavigaatio">
-        <div class="nav-item active" data-open="home" aria-label="Etusivu"><span class="nav-icon">🏠</span></div>
-        <div class="nav-item" data-open="customers" aria-label="Asiakkaat"><span class="nav-icon">👥</span></div>
-        <div class="nav-item" data-open="calls" aria-label="Soitot"><span class="nav-icon">📞</span></div>
-        <div class="nav-item" data-open="settings" aria-label="Asetukset"><span class="nav-icon">⚙️</span></div>
-      </nav>
-    </section>
-  </main>
+<div class="screen active" id="screen-home">
+<header class="topbar">
+<div class="brand">
+<div class="logo">K</div>
+<div class="title-wrap">
+<div class="eyebrow">Opero · Kontakti</div>
+<div class="title">Mobiili</div>
+</div>
+</div>
+<div class="top-actions">
+<button class="icon-btn" onclick="openGSearch('yrityshaku Suomi')" title="Hae">🔍</button>
+<button class="icon-btn" onclick="openSub('settings')" title="Asetukset">⚙️</button>
+</div>
+</header>
+<div class="section-label">Päätoiminnot</div>
+<div class="grid2">
+<div class="tile t-blue" onclick="openSub('calls')">
+<div class="tile-head"><div class="tile-icon">📞</div><div class="tile-badge">Tänään</div></div>
+<div class="tile-bottom"><div class="tile-label">Soitot tänään</div><div class="tile-number" id="stat-calls">—</div></div>
+</div>
+<div class="tile t-neutral" onclick="openSub('customers')">
+<div class="tile-head"><div class="tile-icon">👥</div><div class="tile-badge">Yhteensä</div></div>
+<div class="tile-bottom"><div class="tile-label">Asiakkaat</div><div class="tile-number" id="stat-total">—</div></div>
+</div>
+<div class="tile t-purple" onclick="openSub('priority')">
+<div class="tile-head"><div class="tile-icon">🟣</div><div class="tile-badge">Kiireellinen</div></div>
+<div class="tile-bottom"><div class="tile-label">Priority</div><div class="tile-number" id="stat-priority">—</div></div>
+</div>
+<div class="tile t-neutral" onclick="openSub('data')">
+<div class="tile-head"><div class="tile-icon">💾</div><div class="tile-badge">Data</div></div>
+<div class="tile-bottom"><div class="tile-label">Tuo / Vie</div><div class="tile-number" style="font-size:0"></div></div>
+</div>
+</div>
+<div class="koonti">
+<div class="koonti-head">
+<div class="koonti-title">Päivän koonti</div>
+<div class="day-pill" id="dayPill">—</div>
+</div>
+<div class="grid2">
+<div class="tile t-green" onclick="openSummary('meetings')">
+<div class="tile-head"><div class="tile-icon">🤝</div></div>
+<div class="tile-bottom"><div class="tile-label">Tapaamiset</div><div class="tile-number" id="stat-meetings">—</div></div>
+</div>
+<div class="tile t-red" onclick="openSummary('overdue')">
+<div class="tile-head"><div class="tile-icon">⏰</div></div>
+<div class="tile-bottom"><div class="tile-label">Erääntyneet</div><div class="tile-number" id="stat-overdue">—</div></div>
+</div>
+<div class="tile t-amber" onclick="openSummary('notes')">
+<div class="tile-head"><div class="tile-icon">📝</div></div>
+<div class="tile-bottom"><div class="tile-label">Merkinnät</div><div class="tile-number" id="stat-notes">—</div></div>
+</div>
+<div class="tile t-blue" onclick="openSummary('done')">
+<div class="tile-head"><div class="tile-icon">✅</div></div>
+<div class="tile-bottom"><div class="tile-label">Soitettu</div><div class="tile-number" id="stat-done">—</div></div>
+</div>
+</div>
+</div>
+<nav class="bottom-nav">
+<div class="nav-item active" id="nav-home" onclick="navTo('home')">🏠</div>
+<div class="nav-item" id="nav-customers" onclick="navTo('customers')">👥</div>
+<div class="nav-item" id="nav-calls" onclick="navTo('calls')">📞</div>
+<div class="nav-item" id="nav-settings" onclick="navTo('settings')">⚙️</div>
+</nav>
+</div>
 
-  <script>
-    const customers = [
-      { id: 1, name: 'Ravintola Satama', company: 'Satama Oy', city: 'Iisalmi', businessId: '1234567-8', address: 'Satamakatu 4, Iisalmi', email: 'satama@satama.fi', phone: '040 123 4567', last: '2 pv sitten', next: 'Kesätuotteet', note: 'Kiinnostunut uusista hanoista', priority: true, overdue: false, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '2 pv sitten · Puhelu', text: 'Käytiin läpi terassikauden valikoimaa. Palaa asiaan ensi viikolla.' }, { title: 'Edellinen', meta: '11 pv sitten · Sähköposti', text: 'Lähetetty hinnasto ja sesonkiehdotus.' }] },
-      { id: 2, name: 'Pub Ranta', company: 'Ranta Group', city: 'Kuopio', businessId: '2345678-9', address: 'Rantakatu 11, Kuopio', email: 'osto@ranta.fi', phone: '040 555 1021', last: '7 pv sitten', next: 'Soita tarjous', note: 'Pyysi paluusoittoa tiistaina', priority: false, overdue: true, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '7 pv sitten · Puhelu', text: 'Kiinnostui kampanjasta, mutta aikataulu tiukka.' }, { title: 'Edellinen', meta: '19 pv sitten · Käynti', text: 'Esiteltiin valikoimaa paikan päällä.' }] },
-      { id: 3, name: 'Cafe Asema', company: 'Asema Cafe Oy', city: 'Lapinlahti', businessId: '3456789-0', address: 'Asematie 2, Lapinlahti', email: 'info@asema.fi', phone: '040 555 1022', last: 'Tänään', next: 'Vahvista toimitus', note: 'Nopea tarkistus ennen tilausta', priority: false, overdue: false, done: true, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: 'Tänään · Puhelu', text: 'Toimitus vahvistettu huomiselle.' }, { title: 'Edellinen', meta: '5 pv sitten · Puhelu', text: 'Pyysi tarkennuksen toimitusaikaan.' }] },
-      { id: 4, name: 'Bistro Ilta', company: 'Ilta Bistro', city: 'Siilinjärvi', businessId: '4567890-1', address: 'Ilta-aukio 3, Siilinjärvi', email: 'myynti@ilta.fi', phone: '040 555 1023', last: '12 pv sitten', next: 'Maistelupäivä', note: 'Tapaaminen sovittu klo 14', priority: true, overdue: false, done: false, meeting: true, notes: [{ title: 'Viimeisin merkintä', meta: '12 pv sitten · Tapaaminen', text: 'Sovittiin maistelupäivä ensi viikolle.' }, { title: 'Edellinen', meta: '23 pv sitten · Sähköposti', text: 'Lähetetty alustava tapahtumaehdotus.' }] },
-      { id: 5, name: 'Kahvila Puisto', company: 'Puisto Kahvilat', city: 'Iisalmi', businessId: '5678901-2', address: 'Puistokatu 1, Iisalmi', email: 'puisto@kahvila.fi', phone: '040 555 1024', last: '18 pv sitten', next: 'Uutuudet', note: 'Katsotaan terassikausi', priority: false, overdue: false, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '18 pv sitten · Puhelu', text: 'Keskusteltu kesäjuomista ja ulkomyynnistä.' }, { title: 'Edellinen', meta: '32 pv sitten · Käynti', text: 'Hyvä vastaanotto, pyysi paluuta huhtikuussa.' }] },
-      { id: 6, name: 'Ravintola Tähti', company: 'Tähti Ravintolat', city: 'Joensuu', businessId: '6789012-3', address: 'Tähtikatu 9, Joensuu', email: 'osto@tahti.fi', phone: '040 555 1025', last: '34 pv sitten', next: 'Sopimusasiat', note: 'Päätös ensi viikolla', priority: false, overdue: true, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '34 pv sitten · Puhelu', text: 'Sopimusasia auki. Palaa päätöksen jälkeen.' }, { title: 'Edellinen', meta: '49 pv sitten · Sähköposti', text: 'Lähetetty päivitetty sopimuspohja.' }] },
-      { id: 7, name: 'Old Town Bar', company: 'Old Town Oy', city: 'Kuopio', businessId: '7890123-4', address: 'Vanhakatu 7, Kuopio', email: 'oldtown@bar.fi', phone: '040 555 1026', last: '4 pv sitten', next: 'Lisämyynti', note: 'Hyvä vire, kysy sesonkioluita', priority: false, overdue: false, done: true, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '4 pv sitten · Puhelu', text: 'Sovittiin lisämyyntipuhelu kuun loppuun.' }, { title: 'Edellinen', meta: '15 pv sitten · Käynti', text: 'Hyvä maistatuspäivä.' }] },
-      { id: 8, name: 'Ranta Lounge', company: 'Lounge Group', city: 'Varkaus', businessId: '8901234-5', address: 'Rantalaituri 6, Varkaus', email: 'ranta@lounge.fi', phone: '040 555 1027', last: '9 pv sitten', next: 'Soita omistajalle', note: 'Haluaa kuulla hinnoista', priority: true, overdue: false, done: false, meeting: false, notes: [{ title: 'Viimeisin merkintä', meta: '9 pv sitten · Puhelu', text: 'Pyysi keskustelua omistajan kanssa hinnoista.' }, { title: 'Edellinen', meta: '21 pv sitten · Sähköposti', text: 'Lähetetty hintaesimerkki.' }] }
-    ];
+<!-- CALLS -->
 
-    const phone = document.querySelector('.phone');
-    const homeScreen = document.querySelector('.screen');
-    let currentCustomer = customers[0];
+<div class="subscreen" id="screen-calls">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title">Soitot tänään</div>
+<div class="sub-badge" id="callsCount">—</div>
+</div>
 
-    function createScreen(html) {
-      const section = document.createElement('section');
-      section.className = 'subscreen hidden';
-      section.innerHTML = html;
-      return section;
-    }
+```
+<!-- PROGRESS BAR -->
+<div class="call-progress-wrap">
+<div class="call-progress-top">
+<span class="call-progress-label" id="callProgressLabel">0 / 0 käsitelty</span>
+<button class="call-reset-btn" onclick="resetCallSession()">Nollaa</button>
+</div>
+<div class="call-progress-bar-bg">
+<div class="call-progress-bar-fill" id="callProgressFill" style="width:0%"></div>
+</div>
+</div>
 
-    const callsScreen = createScreen(`
-      <div class="sub-topbar">
-        <button class="back-btn" data-back="home">←</button>
-        <div class="sub-title-wrap"><div class="sub-title">Soitot tänään</div></div>
-        <button class="sub-icon-btn" id="callsSearchBtn">G</button>
-      </div>
-      <section class="summary-card" style="margin-top:0;">
-        <div class="summary-head"><div><div class="summary-title">Päivän lista</div></div><div class="now-pill">20 kpl</div></div>
-        <div class="call-list" id="callsList"></div>
-      </section>
-    `);
+<!-- SEARCH -->
+<div class="search-bar" style="margin-bottom:12px;">
+<div class="search-icon">🔍</div>
+<input class="search-input" id="callSearch" type="text" placeholder="Suodata listaa…" oninput="filterCalls()" />
+</div>
 
-    const customersScreen = createScreen(`
-      <div class="sub-topbar">
-        <button class="back-btn" data-back="home">←</button>
-        <div class="sub-title-wrap"><div class="sub-title">Asiakkaat</div></div>
-        <button class="sub-icon-btn" id="customersSearchBtn">G</button>
-      </div>
-      <section class="summary-card" style="margin-top:0;">
-        <div class="search-wrap"><div class="search-icon">⌕</div><input class="search-input" type="text" value="Ravintola" placeholder="Hae yritystä tai asiakasta" /></div>
-        <div class="results-head"><div><div class="results-title">Hakutulos</div></div><div class="now-pill">1 + 3</div></div>
-        <div class="search-focus" id="searchFocus"></div>
-        <div class="results-head" style="margin-top:14px;"><div><div class="results-title">Muut asiakkaat</div></div><div class="now-pill">3 näkyvissä</div></div>
-        <div class="customer-list" id="customerList"></div>
-      </section>
-    `);
+<div class="list" id="callsList"></div>
 
-    const customerDetailScreen = createScreen(`
-      <div class="sub-topbar">
-        <button class="back-btn" data-back="customers">←</button>
-        <div class="sub-title-wrap"><div class="sub-title">Asiakaskortti</div></div>
-        <button class="sub-icon-btn" id="detailYtjBtn">YTJ</button>
-      </div>
-      <section class="detail-hero">
-        <div class="detail-name" id="detailName"></div>
-        <div class="detail-company" id="detailCompany"></div>
-        <div class="detail-pills" id="detailPills"></div>
-      </section>
-      <section class="detail-card" style="margin-top:0;">
-        <div class="detail-head"><div><div class="detail-title">Perustiedot</div></div><div class="now-pill">v1</div></div>
-        <div class="detail-grid">
-          <div class="detail-row"><div class="detail-key">Y-tunnus</div><div class="detail-value" id="detailBusinessId"></div></div>
-          <div class="detail-row"><div class="detail-key">Puhelin</div><div class="detail-value"><a id="detailPhone" class="detail-link" href="#">—</a></div></div>
-          <div class="detail-row"><div class="detail-key">Sähköposti</div><div class="detail-value"><a id="detailEmail" class="detail-link" href="#">—</a></div></div>
-          <div class="detail-row"><div class="detail-key">Osoite</div><div class="detail-value"><a id="detailAddress" class="detail-link" href="#" target="_blank" rel="noopener noreferrer">—</a></div></div>
-          <div class="detail-row"><div class="detail-key">Viimeisin kontakti</div><div class="detail-value" id="detailLast"></div></div>
-          <div class="detail-row"><div class="detail-key">Seuraava toimenpide</div><div class="detail-value" id="detailNext"></div></div>
-        </div>
-        <div class="detail-actions">
-          <button class="detail-action primary" id="detailCallBtn">📞 Soita</button>
-          <button class="detail-action" id="detailYtjActionBtn">🏢 YTJ</button>
-          <button class="detail-action" id="openNoteEntry">📝 Kirjaa merkintä</button>
-        </div>
-      </section>
-      <section class="detail-card">
-        <div class="detail-head"><div><div class="detail-title">Viimeisimmät merkinnät</div></div><div class="now-pill">2 uusinta</div></div>
-        <div class="note-list" id="detailNotes"></div>
-      </section>
-    `);
+<!-- DONE STATE -->
+<div id="callsDoneMsg" class="hidden" style="text-align:center;padding:40px 16px;">
+<div style="font-size:40px;margin-bottom:12px;">🎉</div>
+<div style="font-size:18px;font-weight:800;letter-spacing:-0.03em;color:var(--text);margin-bottom:6px;">Kaikki käsitelty!</div>
+<div style="font-size:13px;color:var(--text2);margin-bottom:20px;">Loistava päivä. Ohitetut voi soittaa vielä uudelleen.</div>
+<button class="btn btn-primary" onclick="resetCallSession()" style="margin:0 auto;">Aloita alusta</button>
+</div>
+```
 
-    const noteEntryScreen = createScreen(`
-      <div class="sub-topbar">
-        <button class="back-btn" data-back="customer">←</button>
-        <div class="sub-title-wrap"><div class="sub-title">Merkinnän kirjaus</div></div>
-        <button class="sub-icon-btn">📝</button>
-      </div>
-      <section class="customer-mini">
-        <div class="customer-mini-name" id="entryCustomerName"></div>
-        <div class="customer-mini-sub" id="entryCustomerMeta"></div>
-        <div class="customer-mini-next" id="entryCustomerNext"></div>
-      </section>
-      <section class="form-card" style="margin-top:0;">
-        <div class="form-head"><div><div class="form-title">Pikavalinnat</div></div><div class="now-pill">v1</div></div>
-        <div class="quick-picks">
-          <button class="quick-pick" data-value="Ei vastannut">Ei vastannut</button>
-          <button class="quick-pick" data-value="Soitettu">Soitettu</button>
-          <button class="quick-pick" data-value="Tavattu">Tavattu</button>
-          <button class="quick-pick" data-value="Palataan myöhemmin">Palataan myöhemmin</button>
-        </div>
-      </section>
-      <section class="form-card">
-        <div class="form-head"><div><div class="form-title">Kirjaus</div></div><div class="now-pill">3 kenttää</div></div>
-        <div class="form-stack">
-          <div class="field"><label for="entryAction">Toimenpide</label><input id="entryAction" type="text" placeholder="Esim. Soitettu" /></div>
-          <div class="field"><label for="entryNote">Muistiinpano</label><textarea id="entryNote" placeholder="Kirjaa lyhyesti mitä sovittiin tai mitä asiakas sanoi"></textarea></div>
-          <div class="field"><label for="entryNext">Seuraava toimenpide</label>
-            <select id="entryNext">
-              <option value="Soita">Soita</option>
-              <option value="Sähköposti">Sähköposti</option>
-              <option value="Tapaaminen">Tapaaminen</option>
-              <option value="Tarjous">Tarjous</option>
-              <option value="Seuranta">Seuranta</option>
-              <option value="Palataan myöhemmin">Palataan myöhemmin</option>
-              <option value="Ei jatkotoimenpidettä">Ei jatkotoimenpidettä</option>
-              <option value="Muu">Muu</option>
-            </select>
-          </div>
-          <div class="field hidden" id="entryNextCustomWrap"><label for="entryNextCustom">Muu seuraava toimenpide</label><input id="entryNextCustom" type="text" placeholder="Kirjoita oma seuraava toimenpide" /></div>
-          <div class="field"><label for="entryDate">Seuraavan kontaktin päivä</label><input id="entryDate" type="date" /></div>
-        </div>
-        <div class="form-actions">
-          <button class="form-btn" data-back="customer">Peruuta</button>
-          <button class="form-btn primary" id="saveEntryBtn">Tallenna</button>
-        </div>
-      </section>
-    `);
+</div>
 
-    const priorityScreen = createScreen(`
-      <div class="sub-topbar">
-        <button class="back-btn" data-back="home">←</button>
-        <div class="sub-title-wrap"><div class="sub-title">Priority</div></div>
-        <button class="sub-icon-btn">🟣</button>
-      </div>
-      <section class="summary-card" style="margin-top:0;">
-        <div class="summary-head"><div><div class="summary-title">Priority-asiakkaat</div></div><div class="now-pill" id="priorityCount">0 kpl</div></div>
-        <div class="call-list" id="priorityList"></div>
-      </section>
-    `);
+<!-- CUSTOMERS -->
 
-    const settingsScreen = createScreen(`
-      <div class="sub-topbar">
-        <button class="back-btn" data-back="home">←</button>
-        <div class="sub-title-wrap"><div class="sub-title">Asetukset</div></div>
-        <button class="sub-icon-btn">⚙️</button>
-      </div>
-      <section class="form-card" style="margin-top:0;">
-        <div class="form-head"><div><div class="form-title">Teema</div></div><div class="now-pill">v1</div></div>
-        <div class="quick-picks">
-          <button class="quick-pick selected" data-setting-theme="dark">Tumma tila</button>
-          <button class="quick-pick" data-setting-theme="light">Vaalea tila</button>
-        </div>
-      </section>
-      <section class="form-card">
-        <div class="form-head"><div><div class="form-title">Synkkaus</div><div class="form-sub">Valmius desktop-yhteyteen myöhemmin</div></div><div class="now-pill">Pilvi</div></div>
-        <div class="customer-mini" style="margin-bottom:0;">
-          <div class="customer-mini-name" style="font-size:16px;">Synkkaus</div>
-          <div class="customer-mini-sub">Desktop + mobiili samaan pilvidataan myöhemmässä vaiheessa</div>
-          <div class="customer-mini-next">Tila: Ei käytössä tässä demossa</div>
-        </div>
-      </section>
-      <section class="form-card">
-        <div class="form-head"><div><div class="form-title">Tietoja</div></div><div class="now-pill">v1</div></div>
-        <div class="detail-grid">
-          <div class="detail-row"><div class="detail-key">Tuote</div><div class="detail-value">Kontakti Mobiili</div></div>
-          <div class="detail-row"><div class="detail-key">Versio</div><div class="detail-value">v1 demo</div></div>
-          <div class="detail-row"><div class="detail-key">Brändi</div><div class="detail-value">Opero</div></div>
-        </div>
-      </section>
-    `);
+<div class="subscreen" id="screen-customers">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title">Asiakkaat</div>
+<div class="sub-badge" id="customersCount">—</div>
+</div>
+<div class="search-bar">
+<div class="search-icon">🔍</div>
+<input class="search-input" id="customerSearch" type="text" placeholder="Hae nimellä tai Y-tunnuksella (min. 4 merkkiä)…" oninput="filterCustomers()" />
+</div>
+<button class="btn btn-primary" style="width:100%;margin-bottom:14px;padding:13px;font-size:13px;" onclick="openSub('add-customer')">➕ Lisää uusi asiakas</button>
+<div class="list" id="customerList"></div>
+</div>
 
-    const summaryScreen = createScreen(`
-      <div class="sub-topbar">
-        <button class="back-btn" data-back="home">←</button>
-        <div class="sub-title-wrap"><div class="sub-title" id="summaryTitle">Koonti</div></div>
-        <button class="sub-icon-btn" id="summaryIcon">•</button>
-      </div>
-      <section class="summary-card" style="margin-top:0;">
-        <div class="summary-head"><div><div class="summary-title" id="summaryListTitle">Asiakkaat</div></div><div class="now-pill" id="summaryCount">0 kpl</div></div>
-        <div class="call-list" id="summaryList"></div>
-      </section>
-    `);
+<!-- ADD CUSTOMER via YTJ -->
 
-    phone.append(callsScreen, customersScreen, customerDetailScreen, noteEntryScreen, priorityScreen, settingsScreen, summaryScreen);
+<div class="subscreen" id="screen-add-customer">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title">Lisää asiakas</div>
+<div class="sub-badge">➕</div>
+</div>
 
-    const screens = { home: homeScreen, calls: callsScreen, customers: customersScreen, customer: customerDetailScreen, entry: noteEntryScreen, priority: priorityScreen, settings: settingsScreen, summary: summaryScreen };
+```
+<!-- YTJ LINK -->
+<div class="card">
+<div class="card-head"><div class="card-title">Hae YTJ:stä</div><div class="card-badge">Avautuu selaimeen</div></div>
+<p style="font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:14px;">Avaa YTJ-tietopalvelu, hae yritys nimellä tai Y-tunnuksella ja kopioi tiedot alla olevaan lomakkeeseen.</p>
+<button class="btn btn-primary" style="width:100%;padding:13px;font-size:13px;" onclick="window.open('https://tietopalvelu.ytj.fi/','_blank','noopener')">🏢 Avaa YTJ-tietopalvelu</button>
+<p style="font-size:11px;color:var(--text3);margin-top:10px;text-align:center;">Automaattinen täyttö tulossa kun pilvipalvelu valmis</p>
+</div>
 
-    function openScreen(name) {
-      Object.values(screens).forEach(screen => screen.classList.add('hidden'));
-      screens[name].classList.remove('hidden');
-    }
+<!-- MANUAL FORM -->
+<div class="card">
+<div class="card-head">
+<div class="card-title">Tai lisää käsin</div>
+<div class="card-badge" id="ytj-prefill-badge" style="display:none;">YTJ täytetty ✓</div>
+</div>
+<div class="form-group">
+<div class="fwrap"><div class="flabel">Yrityksen nimi *</div><input class="finput" id="new-name" type="text" placeholder="Esim. Ravintola Aurinko" /></div>
+<div class="fwrap"><div class="flabel">Y-tunnus</div> <input class="finput" id="new-bid" type="text" placeholder="1234567-8" /></div>
+<div class="fwrap"><div class="flabel">Yritys / ketju</div> <input class="finput" id="new-company" type="text" placeholder="Aurinko Oy" /></div>
+<div class="fwrap"><div class="flabel">Kaupunki</div> <input class="finput" id="new-city" type="text" placeholder="Tampere" /></div>
+<div class="fwrap"><div class="flabel">Puhelin</div> <input class="finput" id="new-phone" type="tel" placeholder="040 000 0000" /></div>
+<div class="fwrap"><div class="flabel">Sähköposti</div> <input class="finput" id="new-email" type="email" placeholder="myynti@firma.fi" /></div>
+<div class="fwrap"><div class="flabel">Osoite</div> <input class="finput" id="new-address" type="text" placeholder="Kauppakatu 1, Tampere" /></div>
+<div class="fwrap"><div class="flabel">Muistiinpano</div> <input class="finput" id="new-note" type="text" placeholder="Lyhyt huomio" /></div>
+</div>
+<div class="form-actions">
+<button class="btn" onclick="clearNewForm()">Tyhjennä</button>
+<button class="btn btn-primary" onclick="addCustomer()">➕ Lisää</button>
+</div>
+</div>
+```
 
-    function pillsHtml(customer, includeMatch = false) {
-      const pills = [];
-      if (includeMatch) pills.push('<span class="pill match">⌕ Haettu osuma</span>');
-      if (customer.priority) pills.push('<span class="pill priority">🟣 Priority</span>');
-      if (customer.overdue) pills.push('<span class="pill overdue">⏰ Erääntynyt</span>');
-      if (customer.done) pills.push('<span class="pill done">✅ Soitettu</span>');
-      if (customer.meeting) pills.push('<span class="pill meeting">🤝 Tapaaminen</span>');
-      return pills.join('');
-    }
+</div>
 
-    function createCustomerCard(customer, options = {}) {
-      const card = document.createElement('article');
-      card.className = `customer-card${options.highlight ? ' match' : ''}`;
-      card.innerHTML = `
-        <div class="customer-head">
-          <div><div class="customer-name">${customer.name}</div><div class="customer-company">${customer.company} · ${customer.city}</div></div>
-          <div class="status-pack">${pillsHtml(customer, options.includeMatch)}</div>
-        </div>
-        <div class="customer-meta"><span>${customer.phone}</span><span>Viimeisin: ${customer.last}</span></div>
-        <div class="customer-note">${customer.note}</div>
-        <div class="customer-actions">
-          <button class="action-btn primary" data-open-customer="${customer.id}">Avaa</button>
-          <button class="action-btn" data-call="${customer.id}">📞 Soita</button>
-        </div>`;
-      return card;
-    }
+<!-- CUSTOMER DETAIL -->
 
-    function createCallCard(customer) {
-      const card = document.createElement('article');
-      card.className = 'call-card';
-      card.innerHTML = `
-        <div class="call-head">
-          <div><div class="call-name">${customer.name}</div><div class="call-company">${customer.company} · ${customer.city}</div></div>
-          <div class="status-pack">${pillsHtml(customer)}</div>
-        </div>
-        <div class="call-meta"><span>${customer.phone}</span><span>Viimeisin: ${customer.last}</span></div>
-        <div class="call-note">${customer.note}</div>
-        <div class="call-meta"><span>Seuraava</span><strong style="font-size: 12px;">${customer.next}</strong></div>
-        <div class="call-actions">
-          <button class="action-btn primary" data-call="${customer.id}">📞 Soita</button>
-          <button class="action-btn" data-open-customer="${customer.id}">Avaa</button>
-          <button class="action-btn" data-open-entry="${customer.id}">📝 Merkintä</button>
-        </div>`;
-      return card;
-    }
+<div class="subscreen" id="screen-customer">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title">Asiakaskortti</div>
+<button class="icon-btn" onclick="openYtj()" style="font-size:11px;font-weight:800;">YTJ</button>
+</div>
+<div class="detail-hero">
+<div class="detail-name" id="d-name">—</div>
+<div class="detail-company" id="d-company">—</div>
+<div class="detail-pills" id="d-pills"></div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Perustiedot</div><div class="card-badge">v1</div></div>
+<div class="info-grid">
+<div class="info-row"><div class="info-key">Y-tunnus</div><div class="info-val" id="d-bid">—</div></div>
+<div class="info-row"><div class="info-key">Puhelin</div><div class="info-val"><a class="info-link" id="d-phone" href="#">—</a></div></div>
+<div class="info-row"><div class="info-key">Sähköposti</div><div class="info-val"><a class="info-link" id="d-email" href="#">—</a></div></div>
+<div class="info-row"><div class="info-key">Osoite</div><div class="info-val"><a class="info-link" id="d-address" href="#" target="_blank">—</a></div></div>
+<div class="info-row"><div class="info-key">Viimeisin kontakti</div><div class="info-val" id="d-last">—</div></div>
+<div class="info-row"><div class="info-key">Seuraava toimenpide</div><div class="info-val" id="d-next">—</div></div>
+</div>
+<div class="detail-actions">
+<button class="btn btn-primary" onclick="doCall(currentId)">📞 Soita</button>
+<button class="btn" onclick="openYtj()">🏢 YTJ</button>
+<button class="btn" onclick="openEntry(currentId)">📝 Merkintä</button>
+</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Merkinnät</div><div class="card-badge" id="d-notes-count">—</div></div>
+<div id="d-notes"></div>
+</div>
+</div>
 
-    function callCustomer(customer) {
-      if (!customer || !customer.phone) return;
-      const tel = 'tel:' + customer.phone.replace(/\s+/g, '');
-      window.location.href = tel;
-    }
+<!-- NOTE ENTRY -->
 
-    function renderCustomerDetail(customer) {
-      currentCustomer = customer;
-      document.getElementById('detailName').textContent = customer.name;
-      document.getElementById('detailCompany').textContent = `${customer.company} · ${customer.city}`;
-      document.getElementById('detailPills').innerHTML = pillsHtml(customer);
-      document.getElementById('detailBusinessId').textContent = customer.businessId || '—';
+<div class="subscreen" id="screen-entry">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title">Kirjaa merkintä</div>
+<div class="sub-badge">📝</div>
+</div>
+<div class="mini-cust">
+<div class="mini-name" id="e-name">—</div>
+<div class="mini-meta" id="e-meta">—</div>
+<div class="mini-next">Nykyinen: <span id="e-next">—</span></div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Pikavalinnat</div></div>
+<div class="quick-grid">
+<button class="qbtn" data-val="Ei vastannut" onclick="pickQuick(this)">Ei vastannut</button>
+<button class="qbtn" data-val="Soitettu" onclick="pickQuick(this)">Soitettu</button>
+<button class="qbtn" data-val="Tavattu" onclick="pickQuick(this)">Tavattu</button>
+<button class="qbtn" data-val="Palataan myöhemmin" onclick="pickQuick(this)">Palataan myöhemmin</button>
+</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Kirjauksen tiedot</div></div>
+<div class="form-group">
+<div class="fwrap"><div class="flabel">Toimenpide</div><input class="finput" id="e-action" type="text" placeholder="Esim. Soitettu" /></div>
+<div class="fwrap"><div class="flabel">Muistiinpano</div><textarea class="ftextarea" id="e-note" placeholder="Lyhyesti mitä sovittiin tai mitä asiakas sanoi…"></textarea></div>
+<div class="fwrap">
+<div class="flabel">Seuraava toimenpide</div>
+<select class="fselect" id="e-nextsel" onchange="toggleCustomNext()">
+<option>Soita</option><option>Sähköposti</option><option>Tapaaminen</option>
+<option>Tarjous</option><option>Seuranta</option>
+<option>Palataan myöhemmin</option><option>Ei jatkotoimenpidettä</option><option>Muu</option>
+</select>
+</div>
+<div class="fwrap hidden" id="e-customwrap"><div class="flabel">Muu – kirjoita itse</div><input class="finput" id="e-custom" type="text" placeholder="Oma toimenpide" /></div>
+<div class="fwrap"><div class="flabel">Seuraavan kontaktin päivä</div><input class="finput" id="e-date" type="date" /></div>
+</div>
+<div class="form-actions">
+<button class="btn" onclick="goBack()">Peruuta</button>
+<button class="btn btn-primary" onclick="saveEntry()">Tallenna</button>
+</div>
+</div>
+</div>
 
-      const phoneEl = document.getElementById('detailPhone');
-      phoneEl.textContent = customer.phone;
-      phoneEl.href = 'tel:' + customer.phone.replace(/\s+/g, '');
+<!-- PRIORITY -->
 
-      const emailEl = document.getElementById('detailEmail');
-      emailEl.textContent = customer.email;
-      emailEl.href = 'mailto:' + customer.email;
+<div class="subscreen" id="screen-priority">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title">Priority</div>
+<div class="sub-badge" id="priorityCount">—</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Priority-asiakkaat</div></div>
+<div class="list" id="priorityList"></div>
+</div>
+</div>
 
-      const addressEl = document.getElementById('detailAddress');
-      addressEl.textContent = customer.address;
-      addressEl.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(customer.address);
+<!-- SUMMARY -->
 
-      document.getElementById('detailLast').textContent = customer.last;
-      document.getElementById('detailNext').textContent = customer.next;
+<div class="subscreen" id="screen-summary">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title" id="sum-title">—</div>
+<div class="sub-badge" id="sum-count">—</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title" id="sum-list-title">—</div></div>
+<div class="list" id="sum-list"></div>
+</div>
+</div>
 
-      const notesEl = document.getElementById('detailNotes');
-      notesEl.innerHTML = '';
-      customer.notes.slice(0, 2).forEach(note => {
-        const el = document.createElement('article');
-        el.className = 'note-card';
-        el.innerHTML = `<div class="note-card-title">${note.title}</div><div class="note-card-meta">${note.meta}</div><div class="note-card-text">${note.text}</div>`;
-        notesEl.appendChild(el);
-      });
-    }
+<!-- DATA -->
 
-    function prefillEntry(customer, presetAction = '') {
-      currentCustomer = customer;
-      document.getElementById('entryCustomerName').textContent = customer.name;
-      document.getElementById('entryCustomerMeta').textContent = `${customer.company} · ${customer.city} · ${customer.phone}`;
-      document.getElementById('entryCustomerNext').textContent = `Nykyinen seuraava: ${customer.next}`;
-      document.getElementById('entryAction').value = presetAction;
-      document.getElementById('entryNote').value = '';
-      const nextSelect = document.getElementById('entryNext');
-      const nextCustomWrap = document.getElementById('entryNextCustomWrap');
-      const nextCustom = document.getElementById('entryNextCustom');
-      const allowedNext = ['Soita','Sähköposti','Tapaaminen','Tarjous','Seuranta','Palataan myöhemmin','Ei jatkotoimenpidettä','Muu'];
-      if (allowedNext.includes(customer.next)) {
-        nextSelect.value = customer.next;
-        nextCustomWrap.classList.add('hidden');
-        nextCustom.value = '';
-      } else {
-        nextSelect.value = 'Muu';
-        nextCustomWrap.classList.remove('hidden');
-        nextCustom.value = customer.next || '';
-      }
-      document.getElementById('entryDate').value = '';
-      noteEntryScreen.querySelectorAll('.quick-pick[data-value]').forEach(btn => btn.classList.toggle('selected', btn.dataset.value === presetAction));
-    }
+<div class="subscreen" id="screen-data">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title">Tuo / Vie data</div>
+<div class="sub-badge">💾</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Vie asiakkaat</div><div class="card-badge" id="export-count">— kpl</div></div>
+<p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.5;">Lataa kaikki asiakasdata tiedostona varmuuskopioksi tai siirtoa varten.</p>
+<div style="display:grid;gap:8px;">
+<button class="btn btn-primary" onclick="exportJSON()">⬇️ Lataa JSON</button>
+<button class="btn" onclick="exportCSV()">📄 Lataa CSV (Excel)</button>
+</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Tuo asiakkaat</div></div>
+<p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.5;">Tuo aiemmin viety JSON tai CSV. Olemassa olevat päivitetään ID:n perusteella, uudet lisätään.</p>
+<div class="import-zone" onclick="document.getElementById('fileInput').click()">
+<div class="iz-icon">📂</div>
+<div style="font-size:14px;font-weight:700;color:var(--text);margin-top:8px;">Valitse tiedosto</div>
+<p>JSON tai CSV · Klikkaa avataksesi</p>
+</div>
+<input type="file" id="fileInput" accept=".json,.csv" class="hidden" onchange="handleImport(event)" />
+<div style="margin-top:10px;">
+<button class="btn" style="width:100%" onclick="downloadCSVTemplate()">📋 Lataa CSV-pohja</button>
+</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Varmuuskopio</div><div class="card-badge">Selain</div></div>
+<div id="backup-info" style="font-size:12px;color:var(--text3);margin-bottom:14px;line-height:1.5;"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+<button class="btn btn-primary" onclick="saveBackup()">💾 Tallenna</button>
+<button class="btn" onclick="loadBackup()">🔄 Palauta</button>
+</div>
+<button class="btn btn-danger" style="width:100%" onclick="clearBackup()">🗑️ Poista varmuuskopio</button>
+</div>
+</div>
 
-    function openCustomer(id) {
-      const customer = customers.find(c => c.id === Number(id));
-      if (!customer) return;
-      renderCustomerDetail(customer);
-      openScreen('customer');
-    }
+<!-- SETTINGS -->
 
-    function openEntry(id, presetAction = '') {
-      const customer = customers.find(c => c.id === Number(id)) || currentCustomer;
-      if (!customer) return;
-      prefillEntry(customer, presetAction);
-      openScreen('entry');
-    }
+<div class="subscreen" id="screen-settings">
+<div class="sub-topbar">
+<button class="back-btn" onclick="goBack()">←</button>
+<div class="sub-title">Asetukset</div>
+<div class="sub-badge">⚙️</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Teema</div></div>
+<div class="quick-grid">
+<button class="qbtn sel" id="theme-dark" onclick="setTheme('dark')">🌙 Tumma</button>
+<button class="qbtn" id="theme-light" onclick="setTheme('light')">☀️ Vaalea</button>
+</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Lajittelu</div></div>
+<div class="setting-row">
+<div><div class="setting-label">Erääntyneet ensin</div><div class="setting-sub">Soittolista: erääntyneet ylös</div></div>
+<button class="qbtn" id="sort-overdue-btn" onclick="toggleSort('overdue')" style="padding:8px 16px;font-size:12px;">OFF</button>
+</div>
+<div class="setting-row">
+<div><div class="setting-label">Priority ensin</div><div class="setting-sub">Priority-asiakkaat listan kärkeen</div></div>
+<button class="qbtn" id="sort-priority-btn" onclick="toggleSort('priority')" style="padding:8px 16px;font-size:12px;">OFF</button>
+</div>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Data</div></div>
+<button class="btn btn-primary" style="width:100%" onclick="openSub('data')">💾 Tuo / Vie / Varmuuskopio</button>
+</div>
+<div class="card">
+<div class="card-head"><div class="card-title">Tietoja</div></div>
+<div class="info-grid">
+<div class="info-row"><div class="info-key">Tuote</div><div class="info-val">Kontakti Mobiili</div></div>
+<div class="info-row"><div class="info-key">Versio</div><div class="info-val">v1.1 demo</div></div>
+<div class="info-row"><div class="info-key">Brändi</div><div class="info-val">Opero</div></div>
+<div class="info-row"><div class="info-key">Asiakkaita</div><div class="info-val" id="info-total">—</div></div>
+</div>
+</div>
+</div>
 
-    const summaryConfigs = {
-      meetings: { title: 'Tapaamiset', icon: '🤝', listTitle: 'Tapaamiset tänään', filter: customer => customer.meeting },
-      overdue: { title: 'Erääntyneet', icon: '⏰', listTitle: 'Erääntyneet asiakkaat', filter: customer => customer.overdue },
-      notes: { title: 'Uudet merkinnät', icon: '📝', listTitle: 'Asiakkaat uusilla merkinnöillä', filter: customer => customer.notes && customer.notes.length > 0 },
-      done: { title: 'Soitettu tänään', icon: '✅', listTitle: 'Soitetut asiakkaat', filter: customer => customer.done }
-    };
+<div class="toast" id="toast"></div>
+</main>
 
-    function openSummary(key) {
-      const config = summaryConfigs[key];
-      if (!config) return;
-      document.getElementById('summaryTitle').textContent = config.title;
-      document.getElementById('summaryIcon').textContent = config.icon;
-      document.getElementById('summaryListTitle').textContent = config.listTitle;
-      const items = customers.filter(config.filter);
-      document.getElementById('summaryCount').textContent = `${items.length} kpl`;
-      const list = document.getElementById('summaryList');
-      list.innerHTML = '';
-      items.forEach(customer => list.appendChild(createCallCard(customer)));
-      openScreen('summary');
-    }
+<script>
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+const DEFAULT_DATA = [
+{id:1,name:'Ravintola Satama',company:'Satama Oy',city:'Iisalmi',bid:'1234567-8',address:'Satamakatu 4, Iisalmi',email:'satama@satama.fi',phone:'040 123 4567',last:'2 pv sitten',next:'Kesätuotteet',note:'Kiinnostunut uusista hanoista',priority:true,overdue:false,done:false,meeting:false,notes:[{title:'Viimeisin',meta:'2 pv sitten · Puhelu',text:'Käytiin läpi terassikauden valikoimaa. Palaa asiaan ensi viikolla.'},{title:'Edellinen',meta:'11 pv sitten · Sähköposti',text:'Lähetetty hinnasto ja sesonkiehdotus.'}]},
+{id:2,name:'Pub Ranta',company:'Ranta Group',city:'Kuopio',bid:'2345678-9',address:'Rantakatu 11, Kuopio',email:'osto@ranta.fi',phone:'040 555 1021',last:'7 pv sitten',next:'Soita tarjous',note:'Pyysi paluusoittoa tiistaina',priority:false,overdue:true,done:false,meeting:false,notes:[{title:'Viimeisin',meta:'7 pv sitten · Puhelu',text:'Kiinnostui kampanjasta, mutta aikataulu tiukka.'},{title:'Edellinen',meta:'19 pv sitten · Käynti',text:'Esiteltiin valikoimaa paikan päällä.'}]},
+{id:3,name:'Cafe Asema',company:'Asema Cafe Oy',city:'Lapinlahti',bid:'3456789-0',address:'Asematie 2, Lapinlahti',email:'info@asema.fi',phone:'040 555 1022',last:'Tänään',next:'Vahvista toimitus',note:'Nopea tarkistus ennen tilausta',priority:false,overdue:false,done:true,meeting:false,notes:[{title:'Viimeisin',meta:'Tänään · Puhelu',text:'Toimitus vahvistettu huomiselle.'},{title:'Edellinen',meta:'5 pv sitten · Puhelu',text:'Pyysi tarkennuksen toimitusaikaan.'}]},
+{id:4,name:'Bistro Ilta',company:'Ilta Bistro',city:'Siilinjärvi',bid:'4567890-1',address:'Ilta-aukio 3, Siilinjärvi',email:'myynti@ilta.fi',phone:'040 555 1023',last:'12 pv sitten',next:'Maistelupäivä',note:'Tapaaminen sovittu klo 14',priority:true,overdue:false,done:false,meeting:true,notes:[{title:'Viimeisin',meta:'12 pv sitten · Tapaaminen',text:'Sovittiin maistelupäivä ensi viikolle.'},{title:'Edellinen',meta:'23 pv sitten · Sähköposti',text:'Lähetetty alustava tapahtumaehdotus.'}]},
+{id:5,name:'Kahvila Puisto',company:'Puisto Kahvilat',city:'Iisalmi',bid:'5678901-2',address:'Puistokatu 1, Iisalmi',email:'puisto@kahvila.fi',phone:'040 555 1024',last:'18 pv sitten',next:'Uutuudet',note:'Katsotaan terassikausi',priority:false,overdue:false,done:false,meeting:false,notes:[{title:'Viimeisin',meta:'18 pv sitten · Puhelu',text:'Keskusteltu kesäjuomista ja ulkomyynnistä.'},{title:'Edellinen',meta:'32 pv sitten · Käynti',text:'Hyvä vastaanotto, pyysi paluuta huhtikuussa.'}]},
+{id:6,name:'Ravintola Tähti',company:'Tähti Ravintolat',city:'Joensuu',bid:'6789012-3',address:'Tähtikatu 9, Joensuu',email:'osto@tahti.fi',phone:'040 555 1025',last:'34 pv sitten',next:'Sopimusasiat',note:'Päätös ensi viikolla',priority:false,overdue:true,done:false,meeting:false,notes:[{title:'Viimeisin',meta:'34 pv sitten · Puhelu',text:'Sopimusasia auki. Palaa päätöksen jälkeen.'},{title:'Edellinen',meta:'49 pv sitten · Sähköposti',text:'Lähetetty päivitetty sopimuspohja.'}]},
+{id:7,name:'Old Town Bar',company:'Old Town Oy',city:'Kuopio',bid:'7890123-4',address:'Vanhakatu 7, Kuopio',email:'oldtown@bar.fi',phone:'040 555 1026',last:'4 pv sitten',next:'Lisämyynti',note:'Hyvä vire, kysy sesonkioluita',priority:false,overdue:false,done:true,meeting:false,notes:[{title:'Viimeisin',meta:'4 pv sitten · Puhelu',text:'Sovittiin lisämyyntipuhelu kuun loppuun.'},{title:'Edellinen',meta:'15 pv sitten · Käynti',text:'Hyvä maistatuspäivä.'}]},
+{id:8,name:'Ranta Lounge',company:'Lounge Group',city:'Varkaus',bid:'8901234-5',address:'Rantalaituri 6, Varkaus',email:'ranta@lounge.fi',phone:'040 555 1027',last:'9 pv sitten',next:'Soita omistajalle',note:'Haluaa kuulla hinnoista',priority:true,overdue:false,done:false,meeting:false,notes:[{title:'Viimeisin',meta:'9 pv sitten · Puhelu',text:'Pyysi keskustelua omistajan kanssa hinnoista.'},{title:'Edellinen',meta:'21 pv sitten · Sähköposti',text:'Lähetetty hintaesimerkki.'}]}
+];
 
-    function renderStaticLists() {
-      document.getElementById('callsList').replaceChildren(...customers.map(createCallCard));
+let customers = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let nextId = customers.length + 1;
+let currentId = customers[0].id;
+let screenStack = ['home'];
+let sortOverdue = false;
+let sortPriority = false;
+let callSession = [];
+let callSearchQuery = '';
+let todayNoteIds = new Set(); // track note IDs added today
 
-      const priorityCustomers = customers.filter(c => c.priority);
-      document.getElementById('priorityCount').textContent = `${priorityCustomers.length} kpl`;
-      document.getElementById('priorityList').replaceChildren(...priorityCustomers.map(createCallCard));
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function getC(id) { return customers.find(c => c.id === Number(id)); }
 
-      const matched = customers.filter(c => `${c.name} ${c.company}`.toLowerCase().includes('ravintola'));
-      const primaryMatch = matched[0] || customers[0];
-      const remainingCustomers = customers.filter(c => c.id !== primaryMatch.id).slice(0, 3);
-      const searchFocus = document.getElementById('searchFocus');
-      const customerList = document.getElementById('customerList');
-      searchFocus.innerHTML = '';
-      customerList.innerHTML = '';
-      searchFocus.appendChild(createCustomerCard(primaryMatch, { highlight: true, includeMatch: true }));
-      remainingCustomers.forEach(c => customerList.appendChild(createCustomerCard(c)));
-      renderCustomerDetail(primaryMatch);
-      prefillEntry(primaryMatch);
-    }
+function esc(s) {
+if (s == null) return '—';
+return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-    document.querySelectorAll('[data-open]').forEach(el => {
-      el.addEventListener('click', () => openScreen(el.dataset.open));
-    });
+function pillsHtml(c) {
+const p = [];
+if (c.priority) p.push('<span class="badge b-purple">🟣 Priority</span>');
+if (c.overdue) p.push('<span class="badge b-red">⏰ Erääntynyt</span>');
+if (c.done) p.push('<span class="badge b-green">✅ Soitettu</span>');
+if (c.meeting) p.push('<span class="badge b-amber">🤝 Tapaaminen</span>');
+return p.join('');
+}
 
-    document.querySelectorAll('[data-summary]').forEach(el => {
-      el.addEventListener('click', () => openSummary(el.dataset.summary));
-    });
+function showToast(msg, ms=2200) {
+const el = document.getElementById('toast');
+el.textContent = msg; el.classList.add('show');
+setTimeout(() => el.classList.remove('show'), ms);
+}
 
-    function openGoogleSearch(query) {
-      const url = 'https://www.google.com/search?q=' + encodeURIComponent(query);
-      window.open(url, '_blank', 'noopener');
-    }
+// ─── stats are always computed live from data ──────
+function updateStats() {
+const n = customers.length;
+document.getElementById('stat-total').textContent = n;
+const pending = callSession.filter(s=>s.status==='pending').length;
+document.getElementById('stat-calls').textContent = callSession.length ? pending : n;
+const priorityPending = callSession.length
+? callSession.filter(s=>s.status==='pending'&&getC(s.id)&&getC(s.id).priority).length
+: customers.filter(c=>c.priority).length;
+document.getElementById('stat-priority').textContent = priorityPending;
+document.getElementById('stat-meetings').textContent = customers.filter(c=>c.meeting).length;
+document.getElementById('stat-overdue').textContent = customers.filter(c=>c.overdue).length;
+document.getElementById('stat-notes').textContent = todayNoteIds.size;
+document.getElementById('stat-done').textContent = customers.filter(c=>c.done).length;
+const it = document.getElementById('info-total'); if (it) it.textContent = n + ' kpl';
+const ec = document.getElementById('export-count'); if (ec) ec.textContent = n + ' kpl';
+}
 
-    function openYtj() {
-      window.open('https://tietopalvelu.ytj.fi/', '_blank', 'noopener');
-    }
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+function setActiveScreen(name) {
+document.querySelectorAll('.screen,.subscreen').forEach(s=>s.classList.remove('active'));
+document.getElementById('screen-'+name).classList.add('active');
+}
 
-    phone.addEventListener('click', (e) => {
-      const openCustomerBtn = e.target.closest('[data-open-customer]');
-      if (openCustomerBtn) {
-        openCustomer(openCustomerBtn.getAttribute('data-open-customer'));
-        return;
-      }
+function openSub(name) {
+screenStack.push(name);
+if (name==='calls') renderCalls();
+if (name==='add-customer') { clearNewForm(); const b=document.getElementById('ytj-prefill-badge'); if(b) b.style.display='none'; }
+if (name==='customers') renderCustomers();
+if (name==='priority') renderPriority();
+if (name==='data') refreshDataScreen();
+setActiveScreen(name);
+updateNav(name);
+}
 
-      const openEntryBtn = e.target.closest('[data-open-entry]');
-      if (openEntryBtn) {
-        openEntry(openEntryBtn.getAttribute('data-open-entry'));
-        return;
-      }
+function goBack() {
+screenStack.pop();
+const prev = screenStack[screenStack.length-1] || 'home';
+if (prev==='customer') renderCustomerDetail(getC(currentId));
+setActiveScreen(prev);
+updateNav(prev);
+}
 
-      const backBtn = e.target.closest('[data-back]');
-      if (backBtn) {
-        openScreen(backBtn.dataset.back);
-        return;
-      }
+function navTo(name) {
+if (name==='home') { screenStack=['home']; setActiveScreen('home'); updateNav('home'); updateStats(); return; }
+screenStack = ['home',name];
+openSub(name);
+}
 
-      if (e.target.id === 'globalSearchBtn') {
-        openGoogleSearch('yrityshaku Suomi');
-        return;
-      }
+function updateNav(active) {
+const map = {home:'nav-home',customers:'nav-customers',calls:'nav-calls',settings:'nav-settings'};
+document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+const el = document.getElementById(map[active]);
+if (el) el.classList.add('active');
+}
 
-      if (e.target.id === 'callsSearchBtn') {
-        openGoogleSearch('yrityshaku soitot tänään');
-        return;
-      }
+// ═══════════════════════════════════════════════
+// SORTED LIST
+// ═══════════════════════════════════════════════
+function sortedCustomers() {
+let list = [...customers];
+if (sortPriority) list.sort((a,b)=>(b.priority?1:0)-(a.priority?1:0));
+if (sortOverdue) list.sort((a,b)=>(b.overdue?1:0)-(a.overdue?1:0));
+return list;
+}
 
-      if (e.target.id === 'customersSearchBtn') {
-        const searchValue = customersScreen.querySelector('.search-input')?.value?.trim();
-        openGoogleSearch(searchValue || 'yrityshaku Suomi');
-        return;
-      }
+// ═══════════════════════════════════════════════
+// CARD BUILDERS
+// ═══════════════════════════════════════════════
+function makeCallCard(c) {
+const d = document.createElement('div');
+d.className = 'ccard';
+d.innerHTML = `
+<div class="ccard-head">
+<div><div class="ccard-name">${esc(c.name)}</div><div class="ccard-meta">${esc(c.company)} · ${esc(c.city)}</div></div>
+<div class="ccard-pills">${pillsHtml(c)}</div>
+</div>
+<div class="ccard-info"><span>${esc(c.phone)}</span><span>Viimeisin: ${esc(c.last)}</span></div>
+<div class="ccard-note">${esc(c.note)}</div>
+<div class="ccard-next">Seuraava: <strong>${esc(c.next)}</strong></div>
+<div class="ccard-actions">
+<button class="btn btn-primary" onclick="doCall(${c.id})">📞 Soita</button>
+<button class="btn" onclick="openCustomer(${c.id})">Avaa</button>
+<button class="btn" onclick="openEntry(${c.id})">📝 Merkintä</button>
+</div>`;
+return d;
+}
 
-      if (e.target.id === 'detailYtjBtn' || e.target.id === 'detailYtjActionBtn') {
-        openYtj();
-        return;
-      }
+function makeCustomerCard(c, featured=false) {
+const d = document.createElement('div');
+d.className = 'ccard'+(featured?' featured':'');
+d.innerHTML = `
+<div class="ccard-head">
+<div><div class="ccard-name">${esc(c.name)}</div><div class="ccard-meta">${esc(c.company)} · ${esc(c.city)}</div></div>
+<div class="ccard-pills">${pillsHtml(c)}${featured?'<span class="badge b-blue">⌕ Osuma</span>':''}</div>
+</div>
+<div class="ccard-info"><span>${esc(c.phone)}</span><span>Viimeisin: ${esc(c.last)}</span></div>
+<div class="ccard-note">${esc(c.note)}</div>
+<div class="ccard-actions">
+<button class="btn btn-primary" onclick="openCustomer(${c.id})">Avaa</button>
+<button class="btn" onclick="doCall(${c.id})">📞 Soita</button>
+<button class="btn" onclick="openEntry(${c.id})">📝 Merkintä</button>
+</div>`;
+return d;
+}
 
-      const callBtn = e.target.closest('[data-call]');
-      if (callBtn) {
-        const customer = customers.find(c => c.id === Number(callBtn.getAttribute('data-call'))) || currentCustomer;
-        callCustomer(customer);
-        return;
-      }
+// ═══════════════════════════════════════════════
+// RENDERS
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// CALL SESSION
+// ═══════════════════════════════════════════════
+// Each entry: { id, status: 'pending'|'called'|'noanswer'|'skipped' }
+function buildCallSession() {
+// sort respects user settings from Asetukset, with priority/overdue as tiebreaker
+const sorted = [...customers].sort((a,b) => {
+let diff = 0;
+if (sortPriority) diff += (b.priority?4:0)-(a.priority?4:0);
+if (sortOverdue) diff += (b.overdue?2:0)-(a.overdue?2:0);
+// always put priority+overdue ahead if both flags off
+if (!sortPriority && !sortOverdue) {
+diff = ((b.priority?2:0)+(b.overdue?1:0)) - ((a.priority?2:0)+(a.overdue?1:0));
+}
+return diff;
+});
+// preserve existing statuses if session already running
+callSession = sorted.map(c => {
+const existing = callSession.find(s=>s.id===c.id);
+return { id:c.id, status: existing ? existing.status : 'pending' };
+});
+}
 
-      if (e.target.id === 'openNoteEntry') {
-        openEntry(currentCustomer.id);
-        return;
-      }
+function renderCalls() {
+buildCallSession();
+renderCallList();
+}
 
-      if (e.target.id === 'detailCallBtn') {
-        callCustomer(currentCustomer);
-        return;
-      }
+function filterCalls() {
+callSearchQuery = document.getElementById('callSearch').value.toLowerCase().trim();
+renderCallList();
+}
 
-      const quickPick = e.target.closest('.quick-pick[data-value]');
-      if (quickPick) {
-        noteEntryScreen.querySelectorAll('.quick-pick[data-value]').forEach(btn => btn.classList.remove('selected'));
-        quickPick.classList.add('selected');
-        document.getElementById('entryAction').value = quickPick.dataset.value;
-        return;
-      }
+function renderCallList() {
+const list = document.getElementById('callsList');
+const doneMsg = document.getElementById('callsDoneMsg');
+list.innerHTML = '';
 
-      const themeBtn = e.target.closest('[data-setting-theme]');
-      if (themeBtn) {
-        const theme = themeBtn.dataset.settingTheme;
-        document.body.classList.toggle('light-theme', theme === 'light');
-        settingsScreen.querySelectorAll('[data-setting-theme]').forEach(btn => btn.classList.toggle('selected', btn.dataset.settingTheme === theme));
-      }
-    });
+const total = callSession.length;
+const handled = callSession.filter(s=>s.status!=='pending').length;
+const pending = callSession.filter(s=>s.status==='pending');
+const nonPending= callSession.filter(s=>s.status!=='pending');
 
-    document.addEventListener('change', (e) => {
-      if (e.target.id === 'entryNext') {
-        document.getElementById('entryNextCustomWrap').classList.toggle('hidden', e.target.value !== 'Muu');
-      }
-    });
+// progress
+const pct = total ? Math.round(handled/total*100) : 0;
+document.getElementById('callProgressLabel').textContent = `${handled} / ${total} käsitelty`;
+document.getElementById('callProgressFill').style.width = pct+'%';
+document.getElementById('callsCount').textContent = total+' kpl';
 
-    document.getElementById('saveEntryBtn').addEventListener('click', () => {
-      const action = document.getElementById('entryAction').value.trim() || 'Merkintä';
-      const note = document.getElementById('entryNote').value.trim() || 'Ei lisättyä muistiinpanoa.';
-      const nextSelectValue = document.getElementById('entryNext').value;
-      const nextCustomValue = document.getElementById('entryNextCustom').value.trim();
-      const next = (nextSelectValue === 'Muu' ? nextCustomValue : nextSelectValue) || currentCustomer.next;
-      const date = document.getElementById('entryDate').value;
+// all done?
+if (total > 0 && pending.length === 0 && !callSearchQuery) {
+list.classList.add('hidden');
+doneMsg.classList.remove('hidden');
+return;
+}
+list.classList.remove('hidden');
+doneMsg.classList.add('hidden');
 
-      currentCustomer.next = next;
-      currentCustomer.last = 'Tänään';
-      currentCustomer.done = action.toLowerCase().includes('soit') || action.toLowerCase().includes('tavat');
-      currentCustomer.notes.unshift({
-        title: 'Uusi merkintä',
-        meta: `Tänään · ${action}${date ? ` · ${date}` : ''}`,
-        text: note
-      });
+// render pending first, then handled (dimmed)
+const order = [...pending, ...nonPending];
+order.forEach(s => {
+const c = getC(s.id);
+if (!c) return;
+if (callSearchQuery && !(c.name+c.company+c.city+c.phone).toLowerCase().includes(callSearchQuery)) return;
+list.appendChild(makeCallSessionCard(c, s.status));
+});
+}
 
-      renderStaticLists();
-      openScreen('customer');
-    });
+function makeCa
+...
 
-    renderStaticLists();
-  </script>
-</body>
-</html>
+[Leikattu viesti]  Näytä koko viesti
