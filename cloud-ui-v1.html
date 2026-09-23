@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kontakti Mobile</title>
+<style>
+:root{
+  --bg0:#071226;--bg1:#091a35;--panel:rgba(255,255,255,.05);--stroke:rgba(255,255,255,.17);
+  --text:rgba(255,255,255,.96);--muted:rgba(255,255,255,.68);
+  --brand:#2d6bff;--brand2:#1c4fd6;--ok:#26d07c;--warn:#ffcc66;--amber:#ff9f43;--danger:#ff4d4d;--priority:#8b5cf6;
+  --shadow:0 14px 40px rgba(0,0,0,.35);--r18:18px;--r22:22px;
+  --sans:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;font-family:var(--sans);color:var(--text);
+  background:radial-gradient(700px 500px at 20% 0%, rgba(45,107,255,.20), transparent 60%),linear-gradient(180deg,var(--bg0),var(--bg1));
+  min-height:100dvh;
+}
+.wrap{max-width:460px;margin:0 auto;padding:14px 14px 90px;min-height:100dvh}
+.topbar-m{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.brand-m{display:flex;align-items:center;gap:10px;min-width:0}
+.logo-m{width:38px;height:38px;flex:0 0 38px}
+.logo-m img{display:block;width:100%;height:100%;object-fit:contain}
+.title-m{font-size:21px;font-weight:700;line-height:1.05}
+.brand-row-m{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-top:1px}
+.sub-m{font-size:11px;font-weight:400;color:var(--muted)}
+.lang-switch-m{display:flex;align-items:center;gap:5px}
+.lang-opt-m{appearance:none;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.15);color:var(--text);cursor:pointer;padding:2px 5px;border-radius:7px;font-size:12px;line-height:1;opacity:.55}
+.lang-opt-m.active{opacity:1;background:rgba(45,107,255,.15);border-color:rgba(45,107,255,.55);box-shadow:0 0 0 1px rgba(45,107,255,.2),0 0 6px rgba(45,107,255,.22)}
+.icon-btn-m{appearance:none;border:1px solid var(--stroke);background:rgba(255,255,255,.04);color:var(--text);border-radius:12px;width:44px;height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
+.icon-btn-m:active{background:rgba(255,255,255,.08)}
+.tabs-m{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.tab-m{appearance:none;border:1px solid var(--stroke);background:rgba(255,255,255,.035);color:var(--muted);border-radius:14px;padding:12px 8px;font-size:14px;font-weight:600;cursor:pointer;min-height:44px}
+.tab-m.active{color:var(--text);background:rgba(45,107,255,.16);border-color:rgba(45,107,255,.5);box-shadow:0 0 0 1px rgba(45,107,255,.18)}
+.search-m{margin-bottom:8px}
+.search-m input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--stroke);color:var(--text);border-radius:999px;padding:11px 14px;font-size:14.5px;outline:none;min-height:44px}
+.search-m input::placeholder{color:var(--muted)}
+.filters-m{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;margin-bottom:10px;scrollbar-width:none}
+.filters-m[hidden]{display:none}
+.filters-m::-webkit-scrollbar{display:none}
+.pill-m{appearance:none;flex:0 0 auto;border:1px solid var(--stroke);background:rgba(255,255,255,.035);color:var(--muted);border-radius:999px;padding:8px 13px;font-size:12.5px;font-weight:550;cursor:pointer;min-height:36px}
+.pill-m.active{color:var(--text);background:rgba(45,107,255,.16);border-color:rgba(45,107,255,.5)}
+.hint-m{font-size:12px;color:var(--muted);min-height:16px;margin-bottom:8px}
+.hint-m.err{color:var(--danger)}
+.list-m{display:flex;flex-direction:column;gap:10px}
+.empty-m{padding:20px 4px;color:var(--muted);font-size:13.5px;text-align:center}
+.card-m{border:1px solid var(--stroke);background:var(--panel);border-radius:var(--r18);padding:13px;box-shadow:var(--shadow);backdrop-filter:blur(6px)}
+.row-m{border:1px solid var(--stroke);background:rgba(255,255,255,.035);border-radius:var(--r18);padding:13px;cursor:pointer}
+.row-m:active{background:rgba(255,255,255,.06)}
+.row-top-m{display:flex;align-items:flex-start;gap:9px}
+.dot-m{width:11px;height:11px;border-radius:50%;flex:0 0 11px;margin-top:4px;border:1px solid rgba(255,255,255,.28)}
+.dot-m.green{background:var(--ok)}.dot-m.yellow{background:var(--warn)}.dot-m.orange{background:var(--amber)}.dot-m.red{background:var(--danger)}.dot-m.gray{background:rgba(255,255,255,.3)}
+.row-name-m{font-weight:600;font-size:15.5px;line-height:1.25;flex:1;min-width:0}
+.row-meta-m{font-size:12.5px;color:var(--muted);margin:5px 0 0 20px}
+.tags-m{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 0 20px}
+.tag-m{font-size:11.5px;font-weight:500;color:var(--text);background:rgba(255,255,255,.06);border:1px solid var(--stroke);padding:3px 8px;border-radius:999px}
+.tag-m.bad{border-color:rgba(255,77,77,.35);background:rgba(255,77,77,.1)}
+.tag-m.ok{border-color:rgba(38,208,124,.35);background:rgba(38,208,124,.1)}
+.tag-m.prio{border-color:rgba(139,92,246,.5);background:rgba(139,92,246,.14);font-weight:650}
+.qa-row-m{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:11px}
+.qa-m{appearance:none;border-radius:12px;min-height:46px;font-size:11.5px;font-weight:650;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;line-height:1.15}
+.qa-m:active{transform:scale(.96)}
+.qa-ok-m{border:1px solid rgba(38,208,124,.45);background:rgba(38,208,124,.13);color:var(--ok)}
+.qa-miss-m{border:1px solid rgba(255,77,77,.4);background:rgba(255,77,77,.1);color:var(--danger)}
+.qa-snooze-m{border:1px solid rgba(255,204,102,.4);background:rgba(255,204,102,.1);color:var(--warn)}
+.detail-overlay{position:fixed;inset:0;background:linear-gradient(180deg,var(--bg0),var(--bg1));z-index:50;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.detail-overlay[hidden]{display:none}
+.detail-inner{max-width:460px;margin:0 auto;padding:14px 14px 40px}
+.detail-top-m{display:flex;align-items:center;gap:10px;margin-bottom:14px;position:sticky;top:0;padding-top:2px}
+.detail-name-m{font-size:19px;font-weight:700;flex:1;min-width:0;line-height:1.2}
+.card-title-m{font-size:13px;font-weight:600;color:var(--text);margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
+.status-line-m{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2px}
+.stack-m{display:flex;flex-direction:column;gap:12px}
+.info-rows-m{display:flex;flex-direction:column;gap:7px}
+.info-row-m{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;border:1px solid var(--stroke);background:rgba(255,255,255,.03);border-radius:11px;padding:9px 11px}
+.info-label-m{font-size:11px;color:var(--muted);font-weight:450;flex:0 0 auto}
+.info-value-m{font-size:13.5px;font-weight:450;color:var(--text);text-align:right;word-break:break-word}
+.info-value-m a{color:var(--text);text-decoration:none}
+.info-value-m a:hover{text-decoration:underline}
+.field-m{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.field-m:last-of-type{margin-bottom:0}
+.label-m{font-size:11.5px;color:var(--muted);font-weight:450}
+.field-m input,.field-m textarea,.field-m select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--stroke);color:var(--text);border-radius:12px;padding:10px 12px;font-size:14.5px;outline:none;font-family:inherit;min-height:44px}
+.field-m textarea{min-height:70px;resize:vertical}
+.field-m select option{background:#0d1a33;color:#fff}
+.grid2-m{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-m{appearance:none;border:1px solid var(--stroke);background:rgba(255,255,255,.04);color:var(--text);border-radius:12px;padding:12px;font-weight:600;font-size:14px;cursor:pointer;min-height:46px;width:100%}
+.btn-m.primary{background:linear-gradient(180deg,rgba(51,112,255,.98),rgba(31,79,214,.98));border-color:rgba(45,107,255,.5);color:#fff}
+.btn-m.primary:active{background:linear-gradient(180deg,rgba(38,90,224,1),rgba(24,62,170,1))}
+.quick3-m{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+.quick3-m a,.quick3-m button{appearance:none;border:1px solid var(--stroke);background:rgba(255,255,255,.04);color:var(--text);border-radius:11px;padding:9px 4px;font-size:12.5px;font-weight:600;text-align:center;text-decoration:none;min-height:42px;display:flex;align-items:center;justify-content:center}
+.quick3-m [disabled]{opacity:.4;pointer-events:none}
+details.card-m summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.card-m summary::-webkit-details-marker{display:none}
+.hist-item-m{border:1px solid var(--stroke);background:rgba(255,255,255,.03);border-radius:12px;padding:10px;margin-top:8px}
+.hist-date-m{font-size:11.5px;color:var(--muted);font-weight:500}
+.hist-badges-m{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.hist-text-m{font-size:12.5px;line-height:1.4;margin-top:6px;white-space:pre-wrap}
+.saveflash-m.is-ok{background:rgba(38,208,124,.2)!important;border-color:rgba(38,208,124,.5)!important}
+.toast-m{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(0,0,0,.68);border:1px solid rgba(255,255,255,.18);color:#fff;padding:10px 16px;border-radius:999px;font-weight:600;font-size:13px;box-shadow:0 14px 30px rgba(0,0,0,.4);z-index:200;backdrop-filter:blur(6px)}
+.toast-m[hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar-m">
+    <div class="brand-m">
+      <div class="logo-m"><img alt="Opero" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Ik9wZXJvIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ib3Blcm9CbHVlIiB4MT0iODgiIHkxPSI3MiIgeDI9IjQyNCIgeTI9IjQ0MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwMEM4RkYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjQ1IiBzdG9wLWNvbG9yPSIjMEE4NEZGIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwNDZDOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ib3Blcm9CbHVlMiIgeDE9IjE1MCIgeTE9IjEyMCIgeDI9IjM3MCIgeTI9IjM5MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM3OEU4RkYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjM1IiBzdG9wLWNvbG9yPSIjMEE4NEZGIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwMzdBOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNvZnRHbG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VHcmFwaGljIiBzdGREZXZpYXRpb249IjEwIiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlQ29sb3JNYXRyaXggaW49ImJsdXIiIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAuMDQgIDAgMCAwIDAgMC41MiAgMCAwIDAgMCAxICAwIDAgMCAuNTUgMCIgcmVzdWx0PSJnbG93Ii8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iZ2xvdyIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTE4IiBmaWxsPSIjMDcxMjI2Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzA1MjY1RiIgc3Ryb2tlLXdpZHRoPSI1OCIgb3BhY2l0eT0iLjU1Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNvcGVyb0JsdWUpIiBzdHJva2Utd2lkdGg9IjUyIiBmaWx0ZXI9InVybCgjc29mdEdsb3cpIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMDgiIGZpbGw9IiMwNzEyMjYiLz4KICA8cGF0aCBkPSJNMTY0IDI1NmMwLTUzIDM5LTkyIDkyLTkyIDM1IDAgNjUgMTcgODIgNDMiCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI29wZXJvQmx1ZTIpIiBzdHJva2Utd2lkdGg9IjI4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNMzM4IDMwNWMtMTcgMjYtNDcgNDMtODIgNDMtNTMgMC05Mi0zOS05Mi05MiIKICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiMwQTg0RkYiIHN0cm9rZS13aWR0aD0iMjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg4Ii8+CiAgPHBhdGggZD0iTTExMiAxNjVjMzQtNTggODgtODcgMTQ0LTg3IDM4IDAgNzUgMTIgMTA1IDM1IgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlCRUZGRiIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuNTUiLz4KPC9zdmc+"></div>
+      <div>
+        <div class="title-m">Kontakti</div>
+        <div class="brand-row-m">
+          <span class="sub-m" data-i18n="byOpero">by Opero</span>
+          <div class="lang-switch-m" id="langSwitch">
+            <button type="button" class="lang-opt-m" data-lang="fi" aria-label="Suomi">🇫🇮</button>
+            <button type="button" class="lang-opt-m" data-lang="en" aria-label="English">🇬🇧</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="icon-btn-m" id="btnRefresh" type="button" aria-label="Päivitä">↻</button>
+  </header>
+
+  <nav class="tabs-m">
+    <button class="tab-m active" data-view="today" type="button" data-i18n="callToday">Soita tänään</button>
+    <button class="tab-m" data-view="customers" type="button" data-i18n="customers">Asiakkaat</button>
+  </nav>
+
+  <div class="search-m" id="searchWrapM" hidden><input id="search" data-i18n-ph="searchPlaceholder" placeholder="Hae asiakasta..."></div>
+  <div class="filters-m" id="filtersM" hidden>
+    <button class="pill-m" data-f="overdue" type="button" data-i18n="overdue">Erääntyneet</button>
+    <button class="pill-m" data-f="today" type="button" data-i18n="dueToday">Tänään</button>
+    <button class="pill-m" data-f="next7" type="button" data-i18n="next7">7 pv</button>
+    <button class="pill-m" data-f="priority" type="button" data-i18n="priorityOnly">Priority</button>
+  </div>
+
+  <div class="hint-m" id="statusM"></div>
+  <div id="list" class="list-m"></div>
+</div>
+
+<div class="detail-overlay" id="detailView" hidden>
+  <div class="detail-inner">
+    <div class="detail-top-m">
+      <button class="icon-btn-m" id="btnBack" type="button" aria-label="Takaisin">←</button>
+      <div class="detail-name-m" id="detailName"></div>
+    </div>
+    <div id="detailBody" class="stack-m"></div>
+  </div>
+</div>
+
+<div class="toast-m" id="toast" hidden></div>
+
+<script type="module">
+import{createClient}from'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://miahuckcphquawobehtk.supabase.co','sb_publishable_tY1y97VnFfhXyKJ_9XCNGw_-rEq2pLx');
+const $=id=>document.getElementById(id);
+const DESKTOP_LOGIN='https://hekse.github.io/kontakti-desktop/login.html';
+
+let user=null,ws=null,cs=[],ns=[],sel=null,view='today',search='',quickFilter='';
+
+// Sallittu poikkeus: localStoragea käytetään VAIN käyttöliittymän kieliasetukseen.
+// Sama avain kuin desktop-repon sivuilla, jotta kielivalinta on yhtenäinen.
+const LS_LANG='kontakti_v5_lang';
+let LANG=(localStorage.getItem(LS_LANG)==='en')?'en':'fi';
+const TRANSLATIONS={
+  fi:{
+    byOpero:'by Opero', callToday:'Soita tänään', customers:'Asiakkaat',
+    searchPlaceholder:'Hae asiakasta...',
+    overdue:'Erääntyneet', dueToday:'Tänään', next7:'7 pv', priorityOnly:'Priority',
+    noContact:'Ei kontaktia', daysSuffix:'pv', noDate:'Ei päivää', overdueStatus:'Erääntynyt', upcoming:'Tulossa',
+    unnamed:'(Nimetön)', next:'Seuraava', lastContact:'Viime kontakti', action:'Toimenpide',
+    calledBtn:'✅ Soitettu', noAnswerBtn:'❌ Ei vastattu', tomorrowBtn:'⏭ Huomenna',
+    calledToast:'Soitettu — seuraava 90 pv', noAnswerToast:'Ei vastattu — uusi yritys huomenna', tomorrowToast:'Siirretty huomiselle',
+    basicInfo:'Perustiedot', businessId:'Y-tunnus', phone:'Puhelin', email:'Sähköposti', contactPerson:'Yhteyshenkilö',
+    address:'Osoite', cityRegion:'Kaupunki / Maakunta',
+    call:'Soita', maps:'Maps',
+    newEntry:'Uusi merkintä', note:'Muistiinpano', notePlaceholder:'Kirjaa muistiinpano...',
+    purchases:'Ostokset', purchasesPlaceholder:'Kirjaa ostokset / tuotteet...',
+    sales:'Myynti €', nextAction:'Seuraava toimenpide', nextDate:'Seuraava päivä',
+    save:'Tallenna', saved:'Tallennettu', writeNoteOrPurchases:'Kirjaa muistiinpano tai ostokset.',
+    history:'Historia', noHistoryYet:'Ei historiatapahtumia vielä.', nextBadge:'Seuraava',
+    fetching:'Haetaan...', fetchedCount:'Haettu {n} asiakasta', genericError:'Virhe: {msg}',
+    noCustomersInView:'Ei asiakkaita tässä näkymässä.'
+  },
+  en:{
+    byOpero:'by Opero', callToday:'Call today', customers:'Customers',
+    searchPlaceholder:'Search customers...',
+    overdue:'Overdue', dueToday:'Today', next7:'7 days', priorityOnly:'Priority',
+    noContact:'No contact', daysSuffix:'d', noDate:'No date', overdueStatus:'Overdue', upcoming:'Upcoming',
+    unnamed:'(Unnamed)', next:'Next', lastContact:'Last contact', action:'Action',
+    calledBtn:'✅ Called', noAnswerBtn:'❌ No answer', tomorrowBtn:'⏭ Tomorrow',
+    calledToast:'Called — next in 90 days', noAnswerToast:'No answer — next attempt tomorrow', tomorrowToast:'Postponed to tomorrow',
+    basicInfo:'Basic info', businessId:'Business ID', phone:'Phone', email:'Email', contactPerson:'Contact person',
+    address:'Address', cityRegion:'City / Region',
+    call:'Call', maps:'Maps',
+    newEntry:'New entry', note:'Note', notePlaceholder:'Write a note...',
+    purchases:'Purchases', purchasesPlaceholder:'Enter purchases / products...',
+    sales:'Sales €', nextAction:'Next action', nextDate:'Next date',
+    save:'Save', saved:'Saved', writeNoteOrPurchases:'Enter a note or purchases.',
+    history:'History', noHistoryYet:'No entries yet.', nextBadge:'Next',
+    fetching:'Fetching...', fetchedCount:'Fetched {n} customers', genericError:'Error: {msg}',
+    noCustomersInView:'No customers in this view.'
+  }
+};
+function t(key,vars){
+  let s=(TRANSLATIONS[LANG]&&TRANSLATIONS[LANG][key]) ?? TRANSLATIONS.fi[key] ?? key;
+  if(vars) Object.keys(vars).forEach(k=>{ s=s.replace(new RegExp('\\{'+k+'\\}','g'),vars[k]); });
+  return s;
+}
+const ACTION_LABELS_EN={'Soitto':'Call','Tapaaminen':'Meeting','Tarjous':'Offer','Seuranta':'Follow-up','Sähköposti':'Email','Muu':'Other','Soitettu':'Called','Ei vastattu':'No answer'};
+function actionLabel(v){ if(!v) return v; if(LANG==='en') return ACTION_LABELS_EN[v]||v; return v; }
+function applyStaticI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent=t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder=t(el.getAttribute('data-i18n-ph')); });
+  document.documentElement.lang=LANG;
+}
+function updateLangSwitcherUI(){ document.querySelectorAll('.lang-opt-m').forEach(b=>b.classList.toggle('active',b.dataset.lang===LANG)); }
+function setLang(lang){ LANG=(lang==='en')?'en':'fi'; localStorage.setItem(LS_LANG,LANG); applyStaticI18n(); updateLangSwitcherUI(); renderAll(); }
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+// Paikallinen (ei UTC) YYYY-MM-DD. toISOString() siirtäisi päivämäärän vuorokauden taaksepäin
+// UTC:tä edellä olevissa aikavyöhykkeissä (esim. Suomi) keskiyön tienoilla — sama korjaus kuin desktopissa.
+const localISODate=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const todayISO=()=>localISODate(new Date());
+const toFI=iso=>iso?new Date(iso+'T00:00:00').toLocaleDateString(LANG==='en'?'en-GB':'fi-FI'):'–';
+const addDaysISO=(iso,n)=>{const d=new Date((iso||todayISO())+'T00:00:00');d.setDate(d.getDate()+n);return localISODate(d)};
+const daysBetween=(a,b)=>{if(!a||!b)return null;return Math.floor((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000)};
+const parseNum=v=>{if(v===null||v===undefined||v==='')return 0;const n=Number(String(v).trim().replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?n:0};
+const fmtMoney=n=>parseNum(n).toLocaleString(LANG==='en'?'en-GB':'fi-FI',{maximumFractionDigits:0});
+function contactStatus(lastContact){if(!lastContact)return{cls:'gray',text:t('noContact')};const d=daysBetween(lastContact,todayISO());if(d===null)return{cls:'gray',text:t('noContact')};if(d<=30)return{cls:'green',text:d+' '+t('daysSuffix')};if(d<=60)return{cls:'yellow',text:d+' '+t('daysSuffix')};if(d<=90)return{cls:'orange',text:d+' '+t('daysSuffix')};return{cls:'red',text:d+' '+t('daysSuffix')}}
+function dueTag(nextDate){if(!nextDate)return{text:t('noDate'),cls:''};const t0=todayISO();if(nextDate<t0)return{text:t('overdueStatus'),cls:'bad'};if(nextDate===t0)return{text:t('dueToday'),cls:'ok'};return{text:t('upcoming'),cls:''}}
+
+function toast(msg){const el=$('toast');el.textContent=msg;el.hidden=false;clearTimeout(window.__toastT);window.__toastT=setTimeout(()=>{el.hidden=true},1800)}
+function setStatus(msg,cls){const el=$('statusM');el.className='hint-m'+(cls==='err'?' err':'');el.textContent=msg||''}
+
+async function auth(){
+  try{ const r=await sb.auth.getUser(); user=r.data?.user||null; }
+  catch(e){ user=null; }
+  return user;
+}
+async function workspace(){
+  if(ws) return ws;
+  if(!await auth()) throw Error('no-session');
+  let r=await sb.from('kontakti_workspaces').select('*').limit(1);
+  if(r.error) throw r.error;
+  if(r.data?.length){ ws=r.data[0]; }
+  else{
+    // Säilytetty nykyisen mobile-supabase.html:n käytös: luo työtila jos sitä ei löydy.
+    let n=await sb.from('kontakti_workspaces').insert({name:'Kontakti',owner_id:user.id}).select().single();
+    if(n.error) throw n.error;
+    ws=n.data;
+  }
+  return ws;
+}
+
+async function load(){
+  try{
+    setStatus(t('fetching'));
+    const w=await workspace();
+    const a=await sb.from('kontakti_customers').select('*').eq('workspace_id',w.id).is('deleted_at',null).order('priority',{ascending:false}).order('next_date',{ascending:true,nullsFirst:false}).limit(1000);
+    if(a.error) throw a.error; cs=a.data||[];
+    const b=await sb.from('kontakti_notes').select('*').eq('workspace_id',w.id).is('deleted_at',null).order('note_date',{ascending:false}).order('created_at',{ascending:false}).limit(2000);
+    if(b.error) throw b.error; ns=b.data||[];
+    renderAll();
+    setStatus(t('fetchedCount',{n:cs.length}));
+  }catch(e){ setStatus(t('genericError',{msg:e.message}),'err'); }
+}
+
+function visible(){
+  let arr=[...cs];
+  if(view==='today'){
+    const t0=todayISO();
+    arr=arr.filter(c=>c.next_date&&c.next_date<=t0);
+    arr.sort((a,b)=>((a.priority?0:1)-(b.priority?0:1))||((a.next_date<t0?0:1)-(b.next_date<t0?0:1))||(a.next_date||'').localeCompare(b.next_date||'')||(a.name||'').localeCompare(b.name||''));
+  } else {
+    const q=search.toLowerCase();
+    if(q) arr=arr.filter(c=>[c.name,c.city,c.region,c.business_id,c.phone,c.email,c.address].map(x=>String(x||'').toLowerCase()).join(' | ').includes(q));
+    if(quickFilter==='overdue'){ const t0=todayISO(); arr=arr.filter(c=>c.next_date&&c.next_date<t0); }
+    else if(quickFilter==='today'){ const t0=todayISO(); arr=arr.filter(c=>c.next_date===t0); }
+    else if(quickFilter==='next7'){ const t0=todayISO(),t7=addDaysISO(t0,7); arr=arr.filter(c=>c.next_date&&c.next_date>=t0&&c.next_date<=t7); }
+    else if(quickFilter==='priority'){ arr=arr.filter(c=>c.priority===true); }
+    arr.sort((a,b)=>((a.priority?0:1)-(b.priority?0:1))||(a.next_date||'9999-99-99').localeCompare(b.next_date||'9999-99-99')||(a.name||'').localeCompare(b.name||''));
+  }
+  return arr;
+}
+
+function rowHtml(c,showQuick){
+  const due=dueTag(c.next_date), status=contactStatus(c.last_contact);
+  const cityText=[c.city,c.region].filter(Boolean).join(' • ')||'';
+  const quickHtml=showQuick?`<div class="qa-row-m"><button class="qa-m qa-ok-m" data-qa="${esc(c.id)}" data-qt="answered" type="button">${esc(t('calledBtn'))}</button><button class="qa-m qa-miss-m" data-qa="${esc(c.id)}" data-qt="missed" type="button">${esc(t('noAnswerBtn'))}</button><button class="qa-m qa-snooze-m" data-qa="${esc(c.id)}" data-qt="snooze" type="button">${esc(t('tomorrowBtn'))}</button></div>`:'';
+  return `<div class="row-m" data-id="${esc(c.id)}">
+    <div class="row-top-m"><span class="dot-m ${status.cls}"></span><div class="row-name-m">${esc(c.name||t('unnamed'))}</div>${c.priority?'<span class="tag-m prio">🟣</span>':''}</div>
+    ${cityText?`<div class="row-meta-m">${esc(cityText)}</div>`:''}
+    <div class="tags-m"><span class="tag-m ${due.cls}">${esc(t('next'))}: ${esc(toFI(c.next_date))}</span><span class="tag-m">${esc(actionLabel(c.next_action||'Soitto'))}</span></div>
+    ${quickHtml}
+  </div>`;
+}
+
+function renderList(){
+  const host=$('list');
+  const arr=visible();
+  if(!arr.length){ host.innerHTML=`<div class="empty-m">${esc(t('noCustomersInView'))}</div>`; return; }
+  const showQuick=view==='today';
+  host.innerHTML=arr.map(c=>rowHtml(c,showQuick)).join('');
+  host.querySelectorAll('.row-m').forEach(row=>{
+    row.addEventListener('click',(e)=>{ if(e.target.closest('[data-qa]')) return; openDetail(row.dataset.id); });
+  });
+  if(showQuick) host.querySelectorAll('[data-qa]').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); quickAction(btn.dataset.qa,btn.dataset.qt); }));
+}
+
+async function quickAction(id,type){
+  const c=cs.find(x=>x.id===id); if(!c) return;
+  try{
+    const w=await workspace(); const today=todayISO();
+    if(type==='answered'){
+      const next=addDaysISO(today,90);
+      const nr=await sb.from('kontakti_notes').insert({workspace_id:w.id,customer_id:c.id,note_type:'Soitettu',note_text:'Soitettu.',note_date:today,next_date:next,created_source:'mobile-cloud-ui-v1'});
+      if(nr.error) throw nr.error;
+      const ur=await sb.from('kontakti_customers').update({last_contact:today,next_date:next}).eq('id',c.id);
+      if(ur.error) throw ur.error;
+      toast(t('calledToast'));
+    } else if(type==='missed'){
+      const next=addDaysISO(today,1);
+      const nr=await sb.from('kontakti_notes').insert({workspace_id:w.id,customer_id:c.id,note_type:'Ei vastattu',note_text:'Ei vastattu. (soittoyritys)',note_date:today,next_date:next,created_source:'mobile-cloud-ui-v1'});
+      if(nr.error) throw nr.error;
+      const ur=await sb.from('kontakti_customers').update({next_date:next}).eq('id',c.id);
+      if(ur.error) throw ur.error;
+      toast(t('noAnswerToast'));
+    } else if(type==='snooze'){
+      const next=addDaysISO(today,1);
+      const ur=await sb.from('kontakti_customers').update({next_date:next}).eq('id',c.id);
+      if(ur.error) throw ur.error;
+      toast(t('tomorrowToast'));
+    }
+    await load();
+    if(sel===id) openDetail(id,true);
+  }catch(e){ setStatus(t('genericError',{msg:e.message}),'err'); toast(t('genericError',{msg:e.message})); }
+}
+
+const NEXT_ACTION_OPTIONS=['Soitto','Tapaaminen','Tarjous','Seuranta','Sähköposti','Muu'];
+function openDetail(id,skipScroll){
+  sel=id;
+  const c=cs.find(x=>x.id===id); if(!c) return;
+  const due=dueTag(c.next_date), status=contactStatus(c.last_contact);
+  const tel=c.phone?'tel:'+c.phone.replace(/\s/g,''):'', mail=c.email?'mailto:'+c.email:'';
+  const mapsUrl=(c.address||c.city)?'https://www.google.com/maps?q='+encodeURIComponent([c.address,c.city].filter(Boolean).join(', ')):'';
+  const optHtml=NEXT_ACTION_OPTIONS.map(x=>`<option value="${esc(x)}" ${(c.next_action||'Soitto')===x?'selected':''}>${esc(actionLabel(x))}</option>`).join('');
+
+  const infoRow=(label,valueHtml)=>valueHtml?`<div class="info-row-m"><span class="info-label-m">${esc(label)}</span><span class="info-value-m">${valueHtml}</span></div>`:'';
+  const cityRegionText=[c.city,c.region].filter(Boolean).join(' / ');
+  const infoRows=[
+    infoRow(t('businessId'),c.business_id?esc(c.business_id):''),
+    infoRow(t('phone'),c.phone?`<a href="${esc(tel)}">${esc(c.phone)}</a>`:''),
+    infoRow(t('email'),c.email?`<a href="${esc(mail)}">${esc(c.email)}</a>`:''),
+    infoRow(t('contactPerson'),c.contact_person?esc(c.contact_person):''),
+    infoRow(t('address'),c.address?`<a href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(c.address)}</a>`:''),
+    infoRow(t('cityRegion'),cityRegionText?esc(cityRegionText):'')
+  ].join('');
+
+  const items=ns.filter(n=>n.customer_id===c.id).slice().sort((a,b)=>(b.note_date||'').localeCompare(a.note_date||'')||(b.created_at||'').localeCompare(a.created_at||''));
+  const histHtml=items.length?items.map(n=>{
+    const hasNote=Boolean((n.note_text||'').trim()), hasPurch=Boolean((n.purchases_text||'').trim());
+    return `<div class="hist-item-m"><div class="hist-date-m">${esc(toFI(n.note_date))}</div><div class="hist-badges-m">${n.note_type?`<span class="tag-m">${esc(actionLabel(n.note_type))}</span>`:''}${n.sales?`<span class="tag-m ok">€${esc(fmtMoney(n.sales))}</span>`:''}${n.next_date?`<span class="tag-m">${esc(t('nextBadge'))} ${esc(toFI(n.next_date))}</span>`:''}</div>${hasNote?`<div class="hist-text-m"><b>${esc(t('note'))}:</b> ${esc(n.note_text)}</div>`:''}${hasPurch?`<div class="hist-text-m"><b>${esc(t('purchases'))}:</b> ${esc(n.purchases_text)}</div>`:''}</div>`;
+  }).join(''):`<div class="empty-m">${esc(t('noHistoryYet'))}</div>`;
+
+  $('detailName').textContent=c.name||t('unnamed');
+  $('detailBody').innerHTML=`
+    <div class="card-m">
+      <div class="status-line-m">
+        <span class="tag-m ${due.cls}">${esc(t('next'))}: ${esc(toFI(c.next_date))} (${esc(due.text)})</span>
+        <span class="tag-m">${esc(t('lastContact'))}: ${esc(toFI(c.last_contact))} (${esc(status.text)})</span>
+        ${c.priority?'<span class="tag-m prio">🟣 Priority</span>':''}
+      </div>
+      <div class="qa-row-m">
+        <button class="qa-m qa-ok-m" id="dqOk" type="button">${esc(t('calledBtn'))}</button>
+        <button class="qa-m qa-miss-m" id="dqMiss" type="button">${esc(t('noAnswerBtn'))}</button>
+        <button class="qa-m qa-snooze-m" id="dqSnooze" type="button">${esc(t('tomorrowBtn'))}</button>
+      </div>
+    </div>
+
+    <div class="card-m">
+      <div class="card-title-m">${esc(t('basicInfo'))}</div>
+      <div class="info-rows-m">${infoRows||`<div class="empty-m">–</div>`}</div>
+      <div class="quick3-m">
+        <a href="${esc(tel)}" ${c.phone?'':'disabled'}>${esc(t('call'))}</a>
+        <a href="${esc(mapsUrl)}" target="_blank" rel="noopener" ${(c.address||c.city)?'':'disabled'}>${esc(t('maps'))}</a>
+        <a href="${esc(mail)}" ${c.email?'':'disabled'}>${esc(t('email'))}</a>
+      </div>
+    </div>
+
+    <div class="card-m">
+      <div class="card-title-m">${esc(t('newEntry'))}</div>
+      <div class="field-m"><div class="label-m">${esc(t('note'))}</div><textarea id="fNote" placeholder="${esc(t('notePlaceholder'))}"></textarea></div>
+      <div class="field-m"><div class="label-m">${esc(t('purchases'))}</div><textarea id="fPurchases" placeholder="${esc(t('purchasesPlaceholder'))}"></textarea></div>
+      <div class="grid2-m">
+        <div class="field-m"><div class="label-m">${esc(t('sales'))}</div><input id="fSales" inputmode="decimal" placeholder="0"></div>
+        <div class="field-m"><div class="label-m">${esc(t('nextAction'))}</div><select id="fAction">${optHtml}</select></div>
+      </div>
+      <div class="field-m"><div class="label-m">${esc(t('nextDate'))}</div><input id="fNextDate" type="date" value="${esc(c.next_date||'')}"></div>
+      <button class="btn-m primary saveflash-m" id="btnSaveEntry" type="button">${esc(t('save'))}</button>
+    </div>
+
+    <details class="card-m">
+      <summary><div class="card-title-m" style="margin-bottom:0">${esc(t('history'))} (${items.length})<span>▾</span></div></summary>
+      ${histHtml}
+    </details>
+  `;
+
+  $('dqOk')?.addEventListener('click',()=>quickAction(c.id,'answered'));
+  $('dqMiss')?.addEventListener('click',()=>quickAction(c.id,'missed'));
+  $('dqSnooze')?.addEventListener('click',()=>quickAction(c.id,'snooze'));
+  $('btnSaveEntry')?.addEventListener('click',()=>saveEntry(c));
+
+  $('detailView').hidden=false;
+  if(!skipScroll) $('detailView').scrollTo({top:0});
+}
+
+async function saveEntry(c){
+  const noteText=($('fNote').value||'').trim();
+  const purchasesText=($('fPurchases').value||'').trim();
+  const sales=parseNum($('fSales').value);
+  const nextAction=$('fAction').value||'Soitto';
+  const nextDate=$('fNextDate').value||null;
+  if(!noteText&&!purchasesText){ alert(t('writeNoteOrPurchases')); return; }
+  const btn=$('btnSaveEntry'); btn.disabled=true;
+  try{
+    const w=await workspace(); const today=todayISO();
+    const row={workspace_id:w.id,customer_id:c.id,note_type:nextAction,note_text:noteText,purchases_text:purchasesText,sales:sales||0,note_date:today,next_date:nextDate,created_source:'mobile-cloud-ui-v1'};
+    const nr=await sb.from('kontakti_notes').insert(row);
+    if(nr.error) throw nr.error;
+    const patch={last_contact:today,next_date:nextDate,next_action:nextAction};
+    if(sales) patch.sales_ytd=Number(c.sales_ytd||0)+sales;
+    const ur=await sb.from('kontakti_customers').update(patch).eq('id',c.id);
+    if(ur.error) throw ur.error;
+    btn.classList.add('is-ok'); const old=btn.textContent; btn.textContent=t('saved');
+    setTimeout(()=>{ btn.classList.remove('is-ok'); btn.textContent=old; btn.disabled=false; },1400);
+    await load();
+    openDetail(c.id,true);
+  }catch(e){
+    btn.disabled=false;
+    setStatus(t('genericError',{msg:e.message}),'err');
+    alert(t('genericError',{msg:e.message}));
+  }
+}
+
+function closeDetail(){ $('detailView').hidden=true; sel=null; }
+
+function setActiveTab(){
+  document.querySelectorAll('.tab-m').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  $('searchWrapM').hidden = view!=='customers';
+  $('filtersM').hidden = view!=='customers';
+}
+function renderAll(){ setActiveTab(); renderList(); }
+
+function wire(){
+  document.querySelectorAll('.tab-m').forEach(btn=>btn.addEventListener('click',()=>{ view=btn.dataset.view; search=''; if($('search'))$('search').value=''; renderAll(); }));
+  $('search')?.addEventListener('input',e=>{ search=e.target.value||''; renderList(); });
+  document.querySelectorAll('.pill-m').forEach(btn=>btn.addEventListener('click',()=>{
+    quickFilter = quickFilter===btn.dataset.f ? '' : btn.dataset.f;
+    document.querySelectorAll('.pill-m').forEach(b=>b.classList.toggle('active',b.dataset.f===quickFilter));
+    renderList();
+  }));
+  $('btnRefresh')?.addEventListener('click',load);
+  $('btnBack')?.addEventListener('click',closeDetail);
+  document.querySelectorAll('.lang-opt-m').forEach(btn=>btn.addEventListener('click',()=>setLang(btn.dataset.lang)));
+}
+
+async function init(){
+  applyStaticI18n(); updateLangSwitcherUI();
+  wire();
+  await auth();
+  if(!user){ window.location.href=DESKTOP_LOGIN; return; }
+  await load();
+}
+init();
+</script>
+</body>
+</html>
