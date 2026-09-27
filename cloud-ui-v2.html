@@ -97,8 +97,12 @@ button{font-family:inherit}
 .qa .qa-ok{color:rgb(var(--ok-rgb));background:rgba(var(--ok-rgb),.07);border:1px solid rgba(var(--ok-rgb),.32)}
 .qa .qa-miss{color:rgb(var(--danger-rgb));background:rgba(var(--danger-rgb),.07);border:1px solid rgba(var(--danger-rgb),.30)}
 .qa .qa-snooze{color:rgb(var(--warn-rgb));background:rgba(var(--warn-rgb),.07);border:1px solid rgba(var(--warn-rgb),.30)}
-.sentinel{text-align:center;color:var(--muted);font-size:12.5px;padding:16px 0}
-.sentinel[hidden]{display:none}
+.list-foot{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px}
+.list-foot[hidden]{display:none}
+.list-count{font-size:12.5px;color:var(--muted)}
+.more-btn{appearance:none;min-height:44px;padding:0 22px;border-radius:999px;border:1px solid rgba(var(--brand-rgb),.40);background:rgba(var(--brand-rgb),.08);color:var(--text);font-size:14px;font-weight:540;cursor:pointer}
+.more-btn:active{background:rgba(var(--brand-rgb),.16)}
+.more-btn[hidden]{display:none}
 .foot{margin-top:22px;text-align:center;font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap}
 .foot[hidden]{display:none}
 .linkbtn{appearance:none;background:none;border:none;color:var(--muted);text-decoration:underline;font-size:12px;cursor:pointer;min-height:44px;padding:0 6px}
@@ -232,7 +236,10 @@ details.box[open]>summary::after{transform:rotate(180deg)}
   <div class="status" id="status"></div>
   <div class="list-meta" id="listMeta"></div>
   <div id="list" class="list"></div>
-  <div id="sentinel" class="sentinel" data-i18n="loadingMore" hidden>Ladataan lisää…</div>
+  <div class="list-foot" id="listFoot" hidden>
+    <div class="list-count" id="listCount"></div>
+    <button type="button" class="more-btn" id="btnMore" data-i18n="loadMore">Lataa 10 lisää</button>
+  </div>
   <footer class="foot" id="foot" hidden><span id="userEmail"></span><button type="button" class="linkbtn" id="btnSignOut" data-i18n="signOut">Kirjaudu ulos</button></footer>
 </div>
 
@@ -259,7 +266,7 @@ const $=id=>document.getElementById(id);
 const DESKTOP_LOGIN='https://hekse.github.io/kontakti-desktop/login.html';
 const SOURCE='mobile-cloud-ui-v2';
 const PAGE_SIZE=500;      // Supabase-haun sivukoko
-const RENDER_BATCH=50;    // montako korttia DOMiin kerrallaan
+const RENDER_BATCH=10;    // montako korttia näytetään kerrallaan; lisää vain käyttäjän napista
 
 let user=null,ws=null,cs=[],ns=[],loaded=false,loading=false;
 let notesByCustomer=new Map(),searchIndex=new Map();
@@ -293,7 +300,7 @@ const TRANSLATIONS={
     address:'Osoite', city:'Kaupunki', region:'Maakunta', country:'Maa',
     history:'Historia', noHistoryYet:'Ei historiatapahtumia vielä.', nextBadge:'Seuraava',
     nextCustomer:'Seuraava asiakas →', backToList:'Takaisin listaan', upNext:'Seuraavana:', callListDone:'Soittolista valmis.',
-    loading:'Ladataan asiakkaita…', loadingMore:'Ladataan lisää…', genericError:'Virhe: {msg}',
+    loading:'Ladataan asiakkaita…', loadMore:'Lataa 10 lisää', showingCount:'Näytetään {shown} / {total}', genericError:'Virhe: {msg}',
     callListEmpty:'Ei soitettavia tänään.', noResults:'Ei hakutuloksia.', noCustomers:'Ei asiakkaita.',
     customersCount:'{n} asiakasta', filteredCount:'{shown} / {total} asiakasta', signOut:'Kirjaudu ulos'
   },
@@ -316,7 +323,7 @@ const TRANSLATIONS={
     address:'Address', city:'City', region:'Region', country:'Country',
     history:'History', noHistoryYet:'No entries yet.', nextBadge:'Next',
     nextCustomer:'Next customer →', backToList:'Back to list', upNext:'Up next:', callListDone:'Call list complete.',
-    loading:'Loading customers…', loadingMore:'Loading more…', genericError:'Error: {msg}',
+    loading:'Loading customers…', loadMore:'Load 10 more', showingCount:'Showing {shown} / {total}', genericError:'Error: {msg}',
     callListEmpty:'Nothing to call today.', noResults:'No results.', noCustomers:'No customers.',
     customersCount:'{n} customers', filteredCount:'{shown} / {total} customers', signOut:'Sign out'
   }
@@ -485,29 +492,27 @@ function emptyText(){
   if(view==='today') return t('callListEmpty');
   return (search.trim()||quickFilter)?t('noResults'):t('noCustomers');
 }
-// Koko suodatettu tulosjoukko lasketaan aina koko datasta; DOMiin renderöidään vain ikkuna siitä.
+// Koko suodatettu tulosjoukko lasketaan aina koko datasta; ruudulle näytetään siitä vain käyttäjän
+// valitsema määrä (10 kerrallaan). Ei automaattista latausta scrollauksesta.
+// resetWindow=false säilyttää näkyvän määrän: jos asiakas poistuu jonosta, seuraava täyttää paikan.
 function renderList(resetWindow){
   listItems=view==='today'?todayList():customerList();
-  const host=$('list');
   const target=resetWindow?RENDER_BATCH:Math.max(RENDER_BATCH,renderedCount);
   renderedCount=Math.min(target,listItems.length);
-  host.innerHTML=listItems.length?listItems.slice(0,renderedCount).map(cardHtml).join(''):(loaded?`<div class="empty">${esc(emptyText())}</div>`:'');
-  updateListMeta(); updateSentinel(); fillViewport();
+  $('list').innerHTML=listItems.length?listItems.slice(0,renderedCount).map(cardHtml).join(''):(loaded?`<div class="empty">${esc(emptyText())}</div>`:'');
+  updateListMeta(); updateListFoot();
 }
-function renderMore(){
+function showMore(){
   if(renderedCount>=listItems.length) return;
   const next=Math.min(renderedCount+RENDER_BATCH,listItems.length);
   $('list').insertAdjacentHTML('beforeend',listItems.slice(renderedCount,next).map(cardHtml).join(''));
   renderedCount=next;
-  updateSentinel(); fillViewport();
+  updateListFoot();
 }
-function updateSentinel(){ $('sentinel').hidden=renderedCount>=listItems.length; }
-// IntersectionObserver laukeaa vain tilan muuttuessa - jos sentinel on yhä näkyvissä erän jälkeen
-// (iso näyttö), täytetään seuraava erä heti.
-function fillViewport(){
-  const s=$('sentinel');
-  if(s.hidden||!$('detail').hidden) return;
-  if(s.getBoundingClientRect().top<window.innerHeight+300) renderMore();
+function updateListFoot(){
+  $('listFoot').hidden=!listItems.length;
+  $('listCount').textContent=t('showingCount',{shown:renderedCount,total:listItems.length});
+  $('btnMore').hidden=renderedCount>=listItems.length;
 }
 function updateListMeta(){
   const el=$('listMeta');
@@ -814,11 +819,7 @@ function wire(){
   });
   window.addEventListener('popstate',()=>{ if(!$('detail').hidden) closeDetail(true); });
 
-  // IntersectionObserver ensisijaisesti, kevyt scroll-kuuntelija varmistuksena (esim. jos IO ei laukea uudelleen).
-  if('IntersectionObserver' in window){
-    new IntersectionObserver(entries=>{ if(entries.some(en=>en.isIntersecting)) renderMore(); },{rootMargin:'300px 0px'}).observe($('sentinel'));
-  }
-  window.addEventListener('scroll',fillViewport,{passive:true});
+  $('btnMore').addEventListener('click',showMore);
 }
 
 async function init(){
