@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="fi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071226">
+<title>Kontakti Mobile</title>
+<style>
+:root{
+  --bg0:#071226;--bg1:#091a35;--solid:#0a1731;--panel:rgba(255,255,255,.045);--stroke:rgba(255,255,255,.13);
+  --text:rgba(255,255,255,.95);--muted:rgba(255,255,255,.62);--tint:255,255,255;
+  --ok-rgb:38,208,124;--danger-rgb:255,92,108;--warn-rgb:255,204,102;--amber-rgb:255,159,67;--brand-rgb:45,107,255;--prio-rgb:167,139,250;
+  --call-bg:#178a51;--call-bg-active:#127543;
+  --shadow:0 12px 32px rgba(0,0,0,.30);
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+:root[data-theme="light"]{
+  --bg0:#eef2fa;--bg1:#e3eaf6;--solid:#e8eef8;--panel:rgba(24,46,90,.045);--stroke:rgba(24,46,90,.15);
+  --text:rgba(16,26,46,.94);--muted:rgba(30,46,76,.62);--tint:24,46,90;
+  --ok-rgb:18,150,88;--danger-rgb:210,50,70;--warn-rgb:176,112,20;--amber-rgb:196,110,20;--brand-rgb:37,99,235;--prio-rgb:124,58,237;
+  --shadow:0 12px 32px rgba(30,50,90,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{margin:0;font-family:var(--sans);color:var(--text);font-weight:400;
+  background:radial-gradient(700px 480px at 20% 0%, rgba(var(--brand-rgb),.16), transparent 60%),linear-gradient(180deg,var(--bg0),var(--bg1));
+  background-attachment:fixed;min-height:100dvh}
+body.detail-open{overflow:hidden}
+button{font-family:inherit}
+.app{max-width:520px;margin:0 auto;padding:0 12px calc(24px + env(safe-area-inset-bottom))}
+
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0 8px}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.brand img{width:34px;height:34px;flex:0 0 34px;display:block}
+.brand-name{font-size:19px;font-weight:620;line-height:1.1}
+.brand-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
+.hdr-actions{display:flex;align-items:center;gap:2px}
+.lang{appearance:none;background:none;border:none;cursor:pointer;min-width:36px;min-height:44px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;opacity:.42;border-radius:10px;transition:opacity .15s ease}
+.lang svg{width:22px;height:15px;display:block;border-radius:2px;box-shadow:0 0 0 1px rgba(var(--tint),.18)}
+.lang.active{opacity:1}
+.lang:active{background:rgba(var(--tint),.06)}
+.icon-btn{appearance:none;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);border-radius:12px;width:44px;height:44px;flex:0 0 44px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;margin-left:4px}
+.icon-btn:active{background:rgba(var(--tint),.09)}
+.icon-btn.spin span{display:inline-block;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Sticky controls */
+.controls{position:sticky;top:0;z-index:10;margin:0 -12px;padding:6px 12px 8px;background:rgba(var(--tint),0);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.controls::before{content:"";position:absolute;inset:0;background:var(--bg0);opacity:.88;z-index:-1}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tab{appearance:none;border:1px solid var(--stroke);background:rgba(var(--tint),.03);color:var(--muted);border-radius:13px;min-height:44px;padding:0 10px;font-size:14.5px;font-weight:540;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.tab.active{color:var(--text);background:rgba(var(--brand-rgb),.15);border-color:rgba(var(--brand-rgb),.45)}
+.tab .count{font-size:11.5px;font-weight:550;min-width:22px;padding:1px 7px;border-radius:999px;background:rgba(var(--tint),.08);color:var(--text)}
+.tab .count:empty{display:none}
+.cust-controls{margin-top:8px}
+.cust-controls[hidden]{display:none}
+.search{position:relative}
+.search input{width:100%;min-height:44px;border-radius:999px;border:1px solid var(--stroke);background:rgba(var(--tint),.05);color:var(--text);padding:0 40px 0 16px;font-size:16px;outline:none;font-family:inherit;-webkit-appearance:none;appearance:none}
+.search input::placeholder{color:var(--muted)}
+.search input:focus{border-color:rgba(var(--brand-rgb),.6)}
+.search input::-webkit-search-cancel-button{display:none}
+.search-clear{position:absolute;right:2px;top:0;width:44px;height:44px;border:none;background:none;color:var(--muted);font-size:20px;cursor:pointer}
+.search-clear[hidden]{display:none}
+.pills{display:flex;gap:6px;overflow-x:auto;margin-top:8px;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{appearance:none;flex:0 0 auto;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--stroke);background:rgba(var(--tint),.03);color:var(--muted);font-size:13.5px;font-weight:520;cursor:pointer}
+.pill.active{color:var(--text);background:rgba(var(--brand-rgb),.15);border-color:rgba(var(--brand-rgb),.45)}
+
+/* List */
+.list-meta{font-size:12px;color:var(--muted);margin:2px 2px 8px}
+.list-meta:empty{display:none}
+.list{margin-top:4px}
+.status{font-size:12.5px;color:var(--muted);margin:4px 2px 8px}
+.status:empty{display:none}
+.status.err{color:rgb(var(--danger-rgb))}
+.list{display:flex;flex-direction:column;gap:8px}
+.empty{padding:28px 8px;text-align:center;color:var(--muted);font-size:14px}
+.card{border:1px solid var(--stroke);background:var(--panel);border-radius:16px;padding:11px 12px;cursor:pointer;outline:none}
+.card:active{background:rgba(var(--tint),.07)}
+.card:focus-visible{border-color:rgba(var(--brand-rgb),.6)}
+.card-top{display:flex;align-items:flex-start;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px;margin-top:6px}
+.dot.green{background:rgb(var(--ok-rgb))}.dot.yellow{background:rgb(var(--warn-rgb))}.dot.orange{background:rgb(var(--amber-rgb))}.dot.red{background:rgb(var(--danger-rgb))}.dot.gray{background:rgba(var(--tint),.3)}
+.card-name{flex:1;min-width:0;font-size:15px;font-weight:560;line-height:1.3;overflow-wrap:anywhere}
+.chip-prio{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:550;line-height:1;padding:4px 8px;border-radius:999px;color:rgb(var(--prio-rgb));background:rgba(var(--prio-rgb),.12);border:1px solid rgba(var(--prio-rgb),.40)}
+.chip-prio::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip-prio[hidden]{display:none}
+.card-line{margin:3px 0 0 17px;font-size:12.5px;color:var(--muted);line-height:1.4;overflow-wrap:anywhere}
+.sep{opacity:.55;margin:0 2px}
+.due-bad{color:rgb(var(--danger-rgb))}
+.due-today{color:rgb(var(--ok-rgb))}
+.qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:9px}
+.qa button{appearance:none;min-height:44px;border-radius:11px;padding:0 4px;font-size:12.5px;font-weight:550;cursor:pointer;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa button:active{transform:scale(.97)}
+.qa button:disabled{opacity:.5}
+.qa .qa-ok{color:rgb(var(--ok-rgb));background:rgba(var(--ok-rgb),.07);border:1px solid rgba(var(--ok-rgb),.32)}
+.qa .qa-miss{color:rgb(var(--danger-rgb));background:rgba(var(--danger-rgb),.07);border:1px solid rgba(var(--danger-rgb),.30)}
+.qa .qa-snooze{color:rgb(var(--warn-rgb));background:rgba(var(--warn-rgb),.07);border:1px solid rgba(var(--warn-rgb),.30)}
+.sentinel{text-align:center;color:var(--muted);font-size:12.5px;padding:16px 0}
+.sentinel[hidden]{display:none}
+.foot{margin-top:22px;text-align:center;font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap}
+.foot[hidden]{display:none}
+.linkbtn{appearance:none;background:none;border:none;color:var(--muted);text-decoration:underline;font-size:12px;cursor:pointer;min-height:44px;padding:0 6px}
+
+/* Detail */
+.detail{position:fixed;inset:0;z-index:40;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:radial-gradient(700px 480px at 20% 0%, rgba(var(--brand-rgb),.12), transparent 60%),linear-gradient(180deg,var(--bg0),var(--bg1))}
+.detail[hidden]{display:none}
+.detail-inner{max-width:520px;margin:0 auto;padding:0 12px calc(120px + env(safe-area-inset-bottom))}
+.detail-bar{position:sticky;top:0;z-index:5;display:flex;align-items:flex-start;gap:10px;margin:0 -12px;padding:8px 12px}
+.detail-bar::before{content:"";position:absolute;inset:0;background:var(--bg0);opacity:.9;z-index:-1}
+.detail-bar .icon-btn{margin-left:0}
+.detail-title{flex:1;min-width:0;padding-top:3px}
+.detail-title h1{margin:0;font-size:19px;font-weight:620;line-height:1.25;overflow-wrap:anywhere}
+.detail-title .chip-prio{margin-top:5px}
+.dstack{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.stat{border:1px solid var(--stroke);background:var(--panel);border-radius:12px;padding:8px 9px;min-width:0}
+.stat-l{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-v{font-size:14px;font-weight:560;margin-top:3px;display:flex;align-items:center;gap:5px;overflow-wrap:anywhere}
+.stat-v .dot{margin-top:0;width:8px;height:8px;flex-basis:8px}
+.stat-s{font-size:11.5px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.prev{border:1px solid rgba(var(--brand-rgb),.32);background:rgba(var(--brand-rgb),.07);border-radius:14px;padding:10px 12px}
+.prev-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.prev-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:500}
+.prev-date{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.prev-body{margin-top:6px;font-size:14px;line-height:1.45;overflow-wrap:anywhere;white-space:pre-wrap}
+.prev-body.collapsed{max-height:8.7em;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,#000 70%,transparent);mask-image:linear-gradient(180deg,#000 70%,transparent)}
+.prev-purch{margin-top:6px}
+.prev-k{font-size:12px;color:var(--muted);font-weight:500}
+.prev-none{margin-top:4px;font-size:13.5px;color:var(--muted)}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.tags:empty{display:none}
+.tag{font-size:11.5px;font-weight:500;padding:3px 8px;border-radius:999px;border:1px solid var(--stroke);background:rgba(var(--tint),.05);color:var(--text)}
+.tag.ok{border-color:rgba(var(--ok-rgb),.35);background:rgba(var(--ok-rgb),.10)}
+.more{appearance:none;background:none;border:none;color:rgb(var(--brand-rgb));font-size:13px;font-weight:550;padding:0;margin-top:0;min-height:44px;cursor:pointer}
+.more[hidden]{display:none}
+.call{display:flex;align-items:center;justify-content:center;gap:12px;min-height:56px;border-radius:15px;background:var(--call-bg);color:#fff;text-decoration:none;padding:8px 14px;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.call:active{background:var(--call-bg-active)}
+.call svg{width:22px;height:22px;flex:0 0 22px}
+.call-txt{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.call-txt b{font-size:17px;font-weight:620;line-height:1.15}
+.call-txt small{font-size:12.5px;opacity:.88;overflow-wrap:anywhere}
+.call.disabled{background:rgba(var(--tint),.06);color:var(--muted);box-shadow:none;pointer-events:none;border:1px solid var(--stroke)}
+.sec2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sec{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);text-decoration:none;font-size:14px;font-weight:520;padding:0 8px;text-align:center}
+.sec:active{background:rgba(var(--tint),.09)}
+.sec.disabled{opacity:.4;pointer-events:none}
+.box{border:1px solid var(--stroke);background:var(--panel);border-radius:14px;padding:12px}
+.box-title{font-size:13.5px;font-weight:580;margin-bottom:10px}
+.sub-label{font-size:11.5px;color:var(--muted);margin-bottom:6px}
+.box .qa{margin-top:0;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.field label{font-size:12px;color:var(--muted)}
+.field input,.field textarea,.field select{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.05);color:var(--text);padding:10px 12px;font-size:16px;font-family:inherit;outline:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(var(--brand-rgb),.6)}
+.field textarea{min-height:76px;resize:vertical;line-height:1.4}
+.field select option{background:var(--solid);color:var(--text)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.grid2 .field{margin-bottom:10px}
+.form-err{font-size:13px;color:rgb(var(--danger-rgb));margin:0 0 10px}
+.form-err[hidden]{display:none}
+.btn{appearance:none;width:100%;min-height:48px;border-radius:13px;border:1px solid var(--stroke);background:rgba(var(--tint),.05);color:var(--text);font-size:15px;font-weight:580;cursor:pointer}
+.btn.primary{background:linear-gradient(180deg,rgba(51,112,255,.98),rgba(31,79,214,.98));border-color:rgba(var(--brand-rgb),.5);color:#fff}
+.btn.primary:active{background:linear-gradient(180deg,rgba(38,90,224,1),rgba(24,62,170,1))}
+.btn:disabled{opacity:.6}
+.kv{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:9px 0;border-top:1px solid rgba(var(--tint),.08)}
+.kv:first-child{border-top:none;padding-top:0}
+.kv-l{font-size:12px;color:var(--muted);flex:0 0 auto;max-width:48%}
+.kv-v{font-size:14px;text-align:right;overflow-wrap:anywhere;min-width:0}
+.kv-v a{color:var(--text);text-decoration:none;border-bottom:1px dotted rgba(var(--tint),.35)}
+details.box>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;min-height:24px;font-size:13.5px;font-weight:580}
+details.box>summary::-webkit-details-marker{display:none}
+details.box>summary::after{content:"▾";color:var(--muted);transition:transform .15s ease}
+details.box[open]>summary::after{transform:rotate(180deg)}
+.hist-item{border-top:1px solid rgba(var(--tint),.08);padding:10px 0 2px;margin-top:8px}
+.hist-date{font-size:12px;color:var(--muted);font-weight:500}
+.hist-text{font-size:13.5px;line-height:1.45;margin-top:5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.hist-text b{font-weight:560;color:var(--muted)}
+
+/* Next-customer bar */
+.nextbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--solid);border-top:1px solid var(--stroke);box-shadow:0 -12px 32px rgba(0,0,0,.35);padding:12px 12px calc(12px + env(safe-area-inset-bottom))}
+.nextbar[hidden]{display:none}
+.nextbar-inner{max-width:520px;margin:0 auto}
+.nb-msg{font-size:14px;font-weight:580;color:rgb(var(--ok-rgb))}
+.nb-sub{font-size:13px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.nb-sub b{color:var(--text);font-weight:560}
+.nb-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:8px;margin-top:10px}
+.nb-actions.single{grid-template-columns:1fr}
+
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:calc(100vw - 32px);background:rgba(0,0,0,.78);border:1px solid rgba(255,255,255,.16);color:#fff;padding:10px 16px;border-radius:999px;font-weight:550;font-size:13.5px;box-shadow:0 14px 30px rgba(0,0,0,.4);z-index:200;text-align:center}
+.toast[hidden]{display:none}
+.toast.lifted{bottom:calc(150px + env(safe-area-inset-bottom))}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="hdr">
+    <div class="brand">
+      <img alt="Opero" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Ik9wZXJvIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ib3Blcm9CbHVlIiB4MT0iODgiIHkxPSI3MiIgeDI9IjQyNCIgeTI9IjQ0MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwMEM4RkYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjQ1IiBzdG9wLWNvbG9yPSIjMEE4NEZGIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwNDZDOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ib3Blcm9CbHVlMiIgeDE9IjE1MCIgeTE9IjEyMCIgeDI9IjM3MCIgeTI9IjM5MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM3OEU4RkYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjM1IiBzdG9wLWNvbG9yPSIjMEE4NEZGIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwMzdBOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNvZnRHbG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VHcmFwaGljIiBzdGREZXZpYXRpb249IjEwIiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlQ29sb3JNYXRyaXggaW49ImJsdXIiIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAuMDQgIDAgMCAwIDAgMC41MiAgMCAwIDAgMCAxICAwIDAgMCAuNTUgMCIgcmVzdWx0PSJnbG93Ii8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iZ2xvdyIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTE4IiBmaWxsPSIjMDcxMjI2Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzA1MjY1RiIgc3Ryb2tlLXdpZHRoPSI1OCIgb3BhY2l0eT0iLjU1Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNvcGVyb0JsdWUpIiBzdHJva2Utd2lkdGg9IjUyIiBmaWx0ZXI9InVybCgjc29mdEdsb3cpIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMDgiIGZpbGw9IiMwNzEyMjYiLz4KICA8cGF0aCBkPSJNMTY0IDI1NmMwLTUzIDM5LTkyIDkyLTkyIDM1IDAgNjUgMTcgODIgNDMiCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI29wZXJvQmx1ZTIpIiBzdHJva2Utd2lkdGg9IjI4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNMzM4IDMwNWMtMTcgMjYtNDcgNDMtODIgNDMtNTMgMC05Mi0zOS05Mi05MiIKICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiMwQTg0RkYiIHN0cm9rZS13aWR0aD0iMjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg4Ii8+CiAgPHBhdGggZD0iTTExMiAxNjVjMzQtNTggODgtODcgMTQ0LTg3IDM4IDAgNzUgMTIgMTA1IDM1IgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlCRUZGRiIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuNTUiLz4KPC9zdmc+">
+      <div>
+        <div class="brand-name">Kontakti</div>
+        <div class="brand-sub" data-i18n="byOpero">by Opero</div>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <button type="button" class="lang" data-lang="fi" aria-label="Suomi"><svg viewBox="0 0 18 11" aria-hidden="true"><rect width="18" height="11" fill="#fff"/><rect x="5" width="3" height="11" fill="#003580"/><rect y="4" width="18" height="3" fill="#003580"/></svg></button>
+      <button type="button" class="lang" data-lang="en" aria-label="English"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukS"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="ukT"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#ukS)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ukT)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg></button>
+      <button class="icon-btn" id="btnRefresh" type="button" data-i18n-aria="refresh" aria-label="Päivitä"><span>↻</span></button>
+    </div>
+  </header>
+
+  <div class="controls">
+    <nav class="tabs">
+      <button class="tab active" data-view="today" type="button"><span data-i18n="callToday">Soita tänään</span><span class="count" id="countToday"></span></button>
+      <button class="tab" data-view="customers" type="button"><span data-i18n="customers">Asiakkaat</span><span class="count" id="countCustomers"></span></button>
+    </nav>
+    <div class="cust-controls" id="custControls" hidden>
+      <div class="search">
+        <input id="search" type="search" inputmode="search" autocomplete="off" autocorrect="off" spellcheck="false" data-i18n-ph="searchPlaceholder" placeholder="Hae asiakasta...">
+        <button type="button" class="search-clear" id="searchClear" aria-label="×" hidden>×</button>
+      </div>
+      <div class="pills">
+        <button class="pill" data-f="overdue" type="button" data-i18n="overdue">Erääntyneet</button>
+        <button class="pill" data-f="today" type="button" data-i18n="dueToday">Tänään</button>
+        <button class="pill" data-f="next7" type="button" data-i18n="next7">7 pv</button>
+        <button class="pill" data-f="priority" type="button" data-i18n="priority">Priority</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="list-meta" id="listMeta"></div>
+  <div id="list" class="list"></div>
+  <div id="sentinel" class="sentinel" data-i18n="loadingMore" hidden>Ladataan lisää…</div>
+  <footer class="foot" id="foot" hidden><span id="userEmail"></span><button type="button" class="linkbtn" id="btnSignOut" data-i18n="signOut">Kirjaudu ulos</button></footer>
+</div>
+
+<div class="detail" id="detail" hidden>
+  <div class="detail-inner">
+    <div class="detail-bar">
+      <button class="icon-btn" id="btnBack" type="button" data-i18n-aria="back" aria-label="Takaisin">←</button>
+      <div class="detail-title">
+        <h1 id="dName"></h1>
+        <span class="chip-prio" id="dPrio" hidden></span>
+      </div>
+    </div>
+    <div class="dstack" id="dBody"></div>
+  </div>
+</div>
+
+<div class="nextbar" id="nextBar" hidden><div class="nextbar-inner" id="nextBarInner"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script type="module">
+import{createClient}from'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://miahuckcphquawobehtk.supabase.co','sb_publishable_tY1y97VnFfhXyKJ_9XCNGw_-rEq2pLx');
+const $=id=>document.getElementById(id);
+const DESKTOP_LOGIN='https://hekse.github.io/kontakti-desktop/login.html';
+const SOURCE='mobile-cloud-ui-v2';
+const PAGE_SIZE=500;      // Supabase-haun sivukoko
+const RENDER_BATCH=50;    // montako korttia DOMiin kerrallaan
+
+let user=null,ws=null,cs=[],ns=[],loaded=false,loading=false;
+let notesByCustomer=new Map(),searchIndex=new Map();
+let view='today',search='',quickFilter='';
+let listItems=[],renderedCount=0;
+let detailId=null,detailFromToday=false,callQueue=[];
+
+// localStorage vain käyttöliittymäasetuksiin (kieli, teema) - samat avaimet kuin desktopissa.
+const LS_LANG='kontakti_v5_lang', LS_THEME='kontakti_theme';
+const lsGet=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const lsSet=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+let LANG=lsGet(LS_LANG)==='en'?'en':'fi';
+
+const TRANSLATIONS={
+  fi:{
+    byOpero:'by Opero', callToday:'Soita tänään', customers:'Asiakkaat', refresh:'Päivitä', back:'Takaisin',
+    searchPlaceholder:'Hae nimi, kaupunki, yhteyshenkilö…',
+    overdue:'Erääntyneet', dueToday:'Tänään', next7:'7 pv', priority:'Priority',
+    noContact:'Ei kontaktia', daysSuffix:'pv', overdueStatus:'erääntynyt', todayStatus:'tänään', noDate:'–',
+    unnamed:'(Nimetön)', next:'Seuraava', lastContact:'Viime kontakti', salesYTD:'Myynti YTD',
+    calledBtn:'✓ Soitettu', noAnswerBtn:'× Ei vastattu', tomorrowBtn:'→ Huomenna',
+    calledToast:'Soitettu — seuraava 90 pv päästä', noAnswerToast:'Ei vastattu — uusi yritys huomenna', tomorrowToast:'Siirretty huomiselle',
+    previousContact:'Edellinen kontakti', noPreviousEntries:'Ei aiempia merkintöjä.', showAll:'Näytä kaikki', showLess:'Näytä vähemmän',
+    call:'Soita', noPhone:'Ei puhelinnumeroa', maps:'Maps', email:'Sähköposti',
+    logContact:'Kirjaa kontakti', quickLog:'Pikakirjaus', note:'Muistiinpano', notePlaceholder:'Mitä sovittiin?',
+    purchases:'Ostokset / tuotteet', purchasesShort:'Ostokset', purchasesPlaceholder:'Tilatut tuotteet…', sales:'Myynti €',
+    nextAction:'Seuraava toimenpide', nextDate:'Seuraava päivä', save:'Tallenna', saving:'Tallennetaan…',
+    saved:'✓ Tallennettu', logged:'✓ Kirjattu', writeNoteOrPurchases:'Kirjaa muistiinpano tai ostokset.', saveError:'Tallennus epäonnistui: {msg}',
+    basicInfo:'Perustiedot', customerName:'Asiakkaan nimi', businessId:'Y-tunnus', ownerName:'Yrittäjä', contactPerson:'Yhteyshenkilö',
+    phone:'Puhelin', contactPhone:'Yhteyshenkilön numero', contactEmail:'Yhteyshenkilön sähköposti',
+    address:'Osoite', city:'Kaupunki', region:'Maakunta', country:'Maa',
+    history:'Historia', noHistoryYet:'Ei historiatapahtumia vielä.', nextBadge:'Seuraava',
+    nextCustomer:'Seuraava asiakas →', backToList:'Takaisin listaan', upNext:'Seuraavana:', callListDone:'Soittolista valmis.',
+    loading:'Ladataan asiakkaita…', loadingMore:'Ladataan lisää…', genericError:'Virhe: {msg}',
+    callListEmpty:'Ei soitettavia tänään.', noResults:'Ei hakutuloksia.', noCustomers:'Ei asiakkaita.',
+    customersCount:'{n} asiakasta', filteredCount:'{shown} / {total} asiakasta', signOut:'Kirjaudu ulos'
+  },
+  en:{
+    byOpero:'by Opero', callToday:'Call today', customers:'Customers', refresh:'Refresh', back:'Back',
+    searchPlaceholder:'Search name, city, contact…',
+    overdue:'Overdue', dueToday:'Today', next7:'7 days', priority:'Priority',
+    noContact:'No contact', daysSuffix:'d', overdueStatus:'overdue', todayStatus:'today', noDate:'–',
+    unnamed:'(Unnamed)', next:'Next', lastContact:'Last contact', salesYTD:'Sales YTD',
+    calledBtn:'✓ Called', noAnswerBtn:'× No answer', tomorrowBtn:'→ Tomorrow',
+    calledToast:'Called — next in 90 days', noAnswerToast:'No answer — next attempt tomorrow', tomorrowToast:'Postponed to tomorrow',
+    previousContact:'Previous contact', noPreviousEntries:'No previous entries.', showAll:'Show all', showLess:'Show less',
+    call:'Call', noPhone:'No phone number', maps:'Maps', email:'Email',
+    logContact:'Log contact', quickLog:'Quick log', note:'Note', notePlaceholder:'What was agreed?',
+    purchases:'Purchases / products', purchasesShort:'Purchases', purchasesPlaceholder:'Ordered products…', sales:'Sales €',
+    nextAction:'Next action', nextDate:'Next date', save:'Save', saving:'Saving…',
+    saved:'✓ Saved', logged:'✓ Logged', writeNoteOrPurchases:'Enter a note or purchases.', saveError:'Saving failed: {msg}',
+    basicInfo:'Customer details', customerName:'Customer name', businessId:'Business ID', ownerName:'Owner', contactPerson:'Contact person',
+    phone:'Phone', contactPhone:'Contact phone', contactEmail:'Contact email',
+    address:'Address', city:'City', region:'Region', country:'Country',
+    history:'History', noHistoryYet:'No entries yet.', nextBadge:'Next',
+    nextCustomer:'Next customer →', backToList:'Back to list', upNext:'Up next:', callListDone:'Call list complete.',
+    loading:'Loading customers…', loadingMore:'Loading more…', genericError:'Error: {msg}',
+    callListEmpty:'Nothing to call today.', noResults:'No results.', noCustomers:'No customers.',
+    customersCount:'{n} customers', filteredCount:'{shown} / {total} customers', signOut:'Sign out'
+  }
+};
+function t(key,vars){
+  let s=(TRANSLATIONS[LANG]&&TRANSLATIONS[LANG][key])??TRANSLATIONS.fi[key]??key;
+  if(vars) Object.keys(vars).forEach(k=>{ s=s.replace(new RegExp('\\{'+k+'\\}','g'),vars[k]); });
+  return s;
+}
+const ACTION_LABELS_EN={'Soitto':'Call','Tapaaminen':'Meeting','Tarjous':'Offer','Seuranta':'Follow-up','Sähköposti':'Email','Muu':'Other','Soitettu':'Called','Ei vastattu':'No answer'};
+const actionLabel=v=>(!v?v:(LANG==='en'?(ACTION_LABELS_EN[v]||v):v));
+const NEXT_ACTION_OPTIONS=['Soitto','Tapaaminen','Tarjous','Seuranta','Sähköposti','Muu'];
+
+function applyTheme(){ document.documentElement.setAttribute('data-theme',lsGet(LS_THEME)==='light'?'light':'dark'); }
+function applyStaticI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent=t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder=t(el.getAttribute('data-i18n-ph')); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{ el.setAttribute('aria-label',t(el.getAttribute('data-i18n-aria'))); });
+  document.documentElement.lang=LANG;
+}
+function updateLangUI(){ document.querySelectorAll('.lang').forEach(b=>b.classList.toggle('active',b.dataset.lang===LANG)); }
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+// Paikallinen (ei UTC) YYYY-MM-DD - toISOString() siirtäisi päivää Suomen aikavyöhykkeellä keskiyön tienoilla.
+const localISODate=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const todayISO=()=>localISODate(new Date());
+const toFI=iso=>iso?new Date(iso+'T00:00:00').toLocaleDateString(LANG==='en'?'en-GB':'fi-FI'):t('noDate');
+const addDaysISO=(iso,n)=>{const d=new Date((iso||todayISO())+'T00:00:00');d.setDate(d.getDate()+n);return localISODate(d)};
+const daysBetween=(a,b)=>{if(!a||!b)return null;return Math.floor((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000)};
+const parseNum=v=>{if(v===null||v===undefined||v==='')return 0;const n=Number(String(v).trim().replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?n:0};
+const fmtMoney=n=>parseNum(n).toLocaleString(LANG==='en'?'en-GB':'fi-FI',{maximumFractionDigits:0});
+function contactStatus(lastContact){
+  const d=lastContact?daysBetween(lastContact,todayISO()):null;
+  if(d===null) return {cls:'gray',text:t('noContact')};
+  const text=d+' '+t('daysSuffix');
+  return {cls:d<=30?'green':d<=60?'yellow':d<=90?'orange':'red',text};
+}
+function dueInfo(nextDate){
+  if(!nextDate) return {cls:'',label:''};
+  const t0=todayISO();
+  if(nextDate<t0) return {cls:'due-bad',label:t('overdueStatus')};
+  if(nextDate===t0) return {cls:'due-today',label:t('todayStatus')};
+  return {cls:'',label:''};
+}
+const callNumber=c=>c.contact_phone||c.phone||'';
+const telHref=num=>num?'tel:'+String(num).replace(/[^\d+]/g,''):'';
+const emailAddress=c=>c.contact_email||c.email||'';
+function mapsUrl(c){ const parts=[c.address,c.city,c.region,c.country].filter(Boolean); return parts.length?'https://www.google.com/maps?q='+encodeURIComponent(parts.join(', ')):''; }
+
+let toastT=null;
+function toast(msg){ const el=$('toast'); el.textContent=msg; el.classList.toggle('lifted',!$('nextBar').hidden); el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>{ el.hidden=true; },2000); }
+function setStatus(msg,cls){ const el=$('status'); el.className='status'+(cls==='err'?' err':''); el.textContent=msg||''; }
+
+// ── Auth / data ─────────────────────────────────────────────────────────
+async function auth(){
+  try{ const r=await sb.auth.getUser(); user=r.data?.user||null; }
+  catch(e){ user=null; }
+  return user;
+}
+async function workspace(){
+  if(ws) return ws;
+  if(!await auth()) throw Error('no-session');
+  const r=await sb.from('kontakti_workspaces').select('*').limit(1);
+  if(r.error) throw r.error;
+  if(r.data?.length){ ws=r.data[0]; }
+  else{
+    // Säilytetty v1:n käytös: luo työtila jos sitä ei löydy.
+    const n=await sb.from('kontakti_workspaces').insert({name:'Kontakti',owner_id:user.id}).select().single();
+    if(n.error) throw n.error;
+    ws=n.data;
+  }
+  return ws;
+}
+// Sivutettu haku ilman kiinteää ylärajaa. Järjestetään id:n mukaan, jotta sivut ovat stabiileja
+// (priority/next_date eivät ole uniikkeja -> sivujen väliin voisi jäädä tai tuplautua rivejä).
+// Edetään palautetun sivun todellisen koon mukaan ja lopetetaan tyhjään sivuun: näin haku toimii
+// oikein myös jos palvelimen max-rows-asetus olisi pienempi kuin PAGE_SIZE.
+async function fetchAllRows(table,workspaceId){
+  const rows=[],seen=new Set();
+  let from=0;
+  for(;;){
+    const r=await sb.from(table).select('*').eq('workspace_id',workspaceId).is('deleted_at',null).order('id',{ascending:true}).range(from,from+PAGE_SIZE-1);
+    if(r.error) throw r.error;
+    const page=r.data||[];
+    let added=0;
+    for(const row of page){ if(!seen.has(row.id)){ seen.add(row.id); rows.push(row); added++; } }
+    if(!page.length||!added) break;
+    from+=page.length;
+  }
+  return rows;
+}
+const noteSortDesc=(a,b)=>(b.note_date||'').localeCompare(a.note_date||'')||(b.created_at||'').localeCompare(a.created_at||'');
+const searchText=c=>[c.name,c.city,c.region,c.contact_person,c.owner_name,c.business_id,c.phone,c.contact_phone,c.email,c.contact_email,c.address].map(x=>String(x||'').toLowerCase()).join(' | ');
+function indexData(){
+  notesByCustomer=new Map();
+  for(const n of ns){ if(!notesByCustomer.has(n.customer_id)) notesByCustomer.set(n.customer_id,[]); notesByCustomer.get(n.customer_id).push(n); }
+  for(const list of notesByCustomer.values()) list.sort(noteSortDesc);
+  searchIndex=new Map(cs.map(c=>[c.id,searchText(c)]));
+}
+const notesFor=id=>notesByCustomer.get(id)||[];
+function addLocalNote(note){
+  ns.push(note);
+  const list=notesByCustomer.get(note.customer_id)||[];
+  list.push(note); list.sort(noteSortDesc);
+  notesByCustomer.set(note.customer_id,list);
+}
+// Myynti lasketaan aina kontakti_notes.sales + note_date -datasta (ei legacy sales_ytd -kentästä).
+function ytdSalesFor(id){
+  const t0=todayISO(), start=t0.slice(0,4)+'-01-01';
+  return notesFor(id).reduce((s,n)=>(n.note_date>=start&&n.note_date<=t0)?s+Number(n.sales||0):s,0);
+}
+
+async function load(){
+  if(loading) return;
+  loading=true; $('btnRefresh').classList.add('spin');
+  if(!loaded) setStatus(t('loading'));
+  try{
+    const w=await workspace();
+    const [customers,notes]=await Promise.all([fetchAllRows('kontakti_customers',w.id),fetchAllRows('kontakti_notes',w.id)]);
+    cs=customers; ns=notes; indexData(); loaded=true;
+    setStatus('');
+    renderAll(false);
+    const c=detailId&&cs.find(x=>x.id===detailId);
+    if(c) renderDetail(c,{keepForm:true});
+  }catch(e){ setStatus(t('genericError',{msg:e.message}),'err'); }
+  finally{ loading=false; $('btnRefresh').classList.remove('spin'); }
+}
+
+// ── Lists ───────────────────────────────────────────────────────────────
+const isDue=(c,t0)=>!!c.next_date&&c.next_date<=t0;
+function todayList(){
+  const t0=todayISO();
+  return cs.filter(c=>isDue(c,t0)).sort((a,b)=>((a.priority?0:1)-(b.priority?0:1))||((a.next_date<t0?0:1)-(b.next_date<t0?0:1))||(a.next_date||'').localeCompare(b.next_date||'')||(a.name||'').localeCompare(b.name||'','fi'));
+}
+function customerList(){
+  let arr=cs;
+  const q=search.trim().toLowerCase();
+  if(q) arr=arr.filter(c=>(searchIndex.get(c.id)||'').includes(q));
+  const t0=todayISO();
+  if(quickFilter==='overdue') arr=arr.filter(c=>c.next_date&&c.next_date<t0);
+  else if(quickFilter==='today') arr=arr.filter(c=>c.next_date===t0);
+  else if(quickFilter==='next7'){ const t7=addDaysISO(t0,7); arr=arr.filter(c=>c.next_date&&c.next_date>=t0&&c.next_date<=t7); }
+  else if(quickFilter==='priority') arr=arr.filter(c=>c.priority===true);
+  return arr.slice().sort((a,b)=>((a.priority?0:1)-(b.priority?0:1))||(a.next_date||'9999-99-99').localeCompare(b.next_date||'9999-99-99')||(a.name||'').localeCompare(b.name||'','fi'));
+}
+
+function cardHtml(c){
+  const st=contactStatus(c.last_contact), due=dueInfo(c.next_date);
+  const loc=[c.city,c.region].filter(Boolean).join(' • ');
+  const phone=callNumber(c);
+  const info=[loc,phone].filter(Boolean).map(esc).join('<span class="sep"> · </span>');
+  const nextTxt=`${esc(t('next'))} ${esc(toFI(c.next_date))}${due.label?' · '+esc(due.label):''}`;
+  const qa=view==='today'?`<div class="qa">
+      <button type="button" class="qa-ok" data-qt="answered" data-id="${esc(c.id)}">${esc(t('calledBtn'))}</button>
+      <button type="button" class="qa-miss" data-qt="missed" data-id="${esc(c.id)}">${esc(t('noAnswerBtn'))}</button>
+      <button type="button" class="qa-snooze" data-qt="snooze" data-id="${esc(c.id)}">${esc(t('tomorrowBtn'))}</button>
+    </div>`:'';
+  return `<article class="card" data-id="${esc(c.id)}" tabindex="0">
+    <div class="card-top"><span class="dot ${st.cls}" title="${esc(t('lastContact'))}: ${esc(st.text)}"></span><div class="card-name">${esc(c.name||t('unnamed'))}</div>${c.priority?`<span class="chip-prio">${esc(t('priority'))}</span>`:''}</div>
+    ${info?`<div class="card-line">${info}</div>`:''}
+    <div class="card-line"><span class="${due.cls}">${nextTxt}</span><span class="sep"> · </span>${esc(actionLabel(c.next_action||'Soitto'))}</div>
+    ${qa}
+  </article>`;
+}
+function emptyText(){
+  if(view==='today') return t('callListEmpty');
+  return (search.trim()||quickFilter)?t('noResults'):t('noCustomers');
+}
+// Koko suodatettu tulosjoukko lasketaan aina koko datasta; DOMiin renderöidään vain ikkuna siitä.
+function renderList(resetWindow){
+  listItems=view==='today'?todayList():customerList();
+  const host=$('list');
+  const target=resetWindow?RENDER_BATCH:Math.max(RENDER_BATCH,renderedCount);
+  renderedCount=Math.min(target,listItems.length);
+  host.innerHTML=listItems.length?listItems.slice(0,renderedCount).map(cardHtml).join(''):(loaded?`<div class="empty">${esc(emptyText())}</div>`:'');
+  updateListMeta(); updateSentinel(); fillViewport();
+}
+function renderMore(){
+  if(renderedCount>=listItems.length) return;
+  const next=Math.min(renderedCount+RENDER_BATCH,listItems.length);
+  $('list').insertAdjacentHTML('beforeend',listItems.slice(renderedCount,next).map(cardHtml).join(''));
+  renderedCount=next;
+  updateSentinel(); fillViewport();
+}
+function updateSentinel(){ $('sentinel').hidden=renderedCount>=listItems.length; }
+// IntersectionObserver laukeaa vain tilan muuttuessa - jos sentinel on yhä näkyvissä erän jälkeen
+// (iso näyttö), täytetään seuraava erä heti.
+function fillViewport(){
+  const s=$('sentinel');
+  if(s.hidden||!$('detail').hidden) return;
+  if(s.getBoundingClientRect().top<window.innerHeight+300) renderMore();
+}
+function updateListMeta(){
+  const el=$('listMeta');
+  if(!loaded||view!=='customers'){ el.textContent=''; return; }
+  el.textContent=listItems.length===cs.length?t('customersCount',{n:cs.length}):t('filteredCount',{shown:listItems.length,total:cs.length});
+}
+function updateCounts(){
+  $('countToday').textContent=loaded?String(todayList().length):'';
+  $('countCustomers').textContent=loaded?String(cs.length):'';
+}
+function renderAll(resetWindow){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  $('custControls').hidden=view!=='customers';
+  document.querySelectorAll('.pill').forEach(b=>b.classList.toggle('active',b.dataset.f===quickFilter));
+  $('searchClear').hidden=!search;
+  $('foot').hidden=!user;
+  updateCounts();
+  renderList(resetWindow);
+}
+
+// ── Quick actions (sama logiikka kuin v1) ───────────────────────────────
+async function insertNote(row){
+  let r=await sb.from('kontakti_notes').insert(row).select().single();
+  if(r.error&&row.note_type===null){
+    const m=(r.error.message||'').toLowerCase();
+    if(m.includes('note_type')||m.includes('null value')) r=await sb.from('kontakti_notes').insert({...row,note_type:'Muu'}).select().single();
+  }
+  if(r.error) throw r.error;
+  return r.data||{...row,id:'local-'+Date.now(),created_at:new Date().toISOString()};
+}
+async function updateCustomer(c,patch){
+  const r=await sb.from('kontakti_customers').update(patch).eq('id',c.id);
+  if(r.error) throw r.error;
+  Object.assign(c,patch);
+}
+async function quickAction(id,type,btn){
+  const c=cs.find(x=>x.id===id); if(!c) return;
+  const group=btn?.closest('.qa'); group?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  try{
+    const w=await workspace(); const today=todayISO();
+    let msgKey;
+    if(type==='answered'){
+      const next=addDaysISO(today,90);
+      addLocalNote(await insertNote({workspace_id:w.id,customer_id:c.id,note_type:'Soitettu',note_text:'Soitettu.',note_date:today,next_date:next,created_source:SOURCE}));
+      await updateCustomer(c,{last_contact:today,next_date:next});
+      msgKey='calledToast';
+    } else if(type==='missed'){
+      const next=addDaysISO(today,1);
+      addLocalNote(await insertNote({workspace_id:w.id,customer_id:c.id,note_type:'Ei vastattu',note_text:'Ei vastattu. (soittoyritys)',note_date:today,next_date:next,created_source:SOURCE}));
+      await updateCustomer(c,{next_date:next});
+      msgKey='noAnswerToast';
+    } else {
+      await updateCustomer(c,{next_date:addDaysISO(today,1)});
+      msgKey='tomorrowToast';
+    }
+    afterWrite(c,msgKey);
+  }catch(e){
+    group?.querySelectorAll('button').forEach(b=>b.disabled=false);
+    toast(t('genericError',{msg:e.message}));
+  }
+}
+function afterWrite(c,msgKey){
+  updateCounts(); renderList(false);
+  if(detailId===c.id&&!$('detail').hidden){
+    renderDetail(c,{keepForm:false});
+    if(detailFromToday){ showNextBar(msgKey); return; }
+  }
+  toast(t(msgKey));
+}
+
+// ── Detail ──────────────────────────────────────────────────────────────
+function openDetail(id,opts={}){
+  const c=cs.find(x=>x.id===id); if(!c) return;
+  const d=$('detail'), wasOpen=!d.hidden;
+  if(opts.fromToday!==undefined){
+    detailFromToday=opts.fromToday;
+    if(opts.fromToday&&!opts.keepQueue) callQueue=listItems.map(x=>x.id);
+  }
+  detailId=id;
+  hideNextBar();
+  renderDetail(c,{keepForm:false});
+  d.hidden=false; document.body.classList.add('detail-open'); d.scrollTop=0;
+  measurePrev();
+  // Androidin takaisin-ele/-nappi sulkee detailin eikä poistu sovelluksesta.
+  if(wasOpen) history.replaceState({detail:id},''); else history.pushState({detail:id},'');
+}
+function closeDetail(fromPop){
+  const d=$('detail'); if(d.hidden) return;
+  d.hidden=true; document.body.classList.remove('detail-open');
+  detailId=null; hideNextBar();
+  renderAll(false);
+  if(!fromPop&&history.state&&history.state.detail) history.back();
+}
+function readForm(){
+  if(!$('fNote')) return null;
+  return {note:$('fNote').value,purch:$('fPurchases').value,sales:$('fSales').value,action:$('fAction').value,date:$('fNextDate').value};
+}
+function writeForm(f){
+  if(!f||!$('fNote')) return;
+  $('fNote').value=f.note; $('fPurchases').value=f.purch; $('fSales').value=f.sales; $('fAction').value=f.action; $('fNextDate').value=f.date;
+}
+function kvRow(label,valueHtml){ return valueHtml?`<div class="kv"><span class="kv-l">${esc(label)}</span><span class="kv-v">${valueHtml}</span></div>`:''; }
+function renderDetail(c,{keepForm}={}){
+  const saved=keepForm?readForm():null;
+  $('dName').textContent=c.name||t('unnamed');
+  $('dPrio').hidden=!c.priority; $('dPrio').textContent=t('priority');
+
+  const st=contactStatus(c.last_contact), due=dueInfo(c.next_date);
+  const notes=notesFor(c.id), last=notes[0]||null;
+  const callNum=callNumber(c), usingContact=!!c.contact_phone;
+  const callSub=[callNum,usingContact&&c.contact_person?c.contact_person:''].filter(Boolean).join(' · ');
+  const mail=emailAddress(c), maps=mapsUrl(c);
+
+  let prevHtml;
+  if(last){
+    const noteTxt=(last.note_text||'').trim(), purchTxt=(last.purchases_text||'').trim();
+    const tags=[
+      Number(last.sales)?`<span class="tag ok">€${esc(fmtMoney(last.sales))}</span>`:'',
+      last.note_type?`<span class="tag">${esc(actionLabel(last.note_type))}</span>`:'',
+      last.next_date?`<span class="tag">${esc(t('nextBadge'))} ${esc(toFI(last.next_date))}</span>`:''
+    ].join('');
+    prevHtml=`<section class="prev">
+      <div class="prev-head"><span class="prev-label">${esc(t('previousContact'))}</span><span class="prev-date">${esc(toFI(last.note_date))}</span></div>
+      ${(noteTxt||purchTxt)?`<div class="prev-body" id="prevBody">${noteTxt?esc(noteTxt):''}${purchTxt?`<div class="prev-purch"><span class="prev-k">${esc(t('purchasesShort'))}:</span> ${esc(purchTxt)}</div>`:''}</div>`:''}
+      <button type="button" class="more" id="prevMore" hidden>${esc(t('showAll'))}</button>
+      <div class="tags">${tags}</div>
+    </section>`;
+  } else {
+    prevHtml=`<section class="prev"><div class="prev-label">${esc(t('previousContact'))}</div><div class="prev-none">${esc(t('noPreviousEntries'))}</div></section>`;
+  }
+
+  const optHtml=NEXT_ACTION_OPTIONS.map(x=>`<option value="${esc(x)}" ${(c.next_action||'Soitto')===x?'selected':''}>${esc(actionLabel(x))}</option>`).join('');
+  const tel=v=>v?`<a href="${esc(telHref(v))}">${esc(v)}</a>`:'';
+  const mailA=v=>v?`<a href="mailto:${esc(v)}">${esc(v)}</a>`:'';
+  const info=[
+    kvRow(t('customerName'),esc(c.name||t('unnamed'))),
+    kvRow(t('businessId'),esc(c.business_id||'')),
+    kvRow(t('ownerName'),esc(c.owner_name||'')),
+    kvRow(t('contactPerson'),esc(c.contact_person||'')),
+    kvRow(t('phone'),tel(c.phone)),
+    kvRow(t('contactPhone'),tel(c.contact_phone)),
+    kvRow(t('email'),mailA(c.email)),
+    kvRow(t('contactEmail'),mailA(c.contact_email)),
+    kvRow(t('address'),c.address?(maps?`<a href="${esc(maps)}" target="_blank" rel="noopener">${esc(c.address)}</a>`:esc(c.address)):''),
+    kvRow(t('city'),esc(c.city||'')),
+    kvRow(t('region'),esc(c.region||'')),
+    kvRow(t('country'),esc(c.country||''))
+  ].join('');
+
+  const histHtml=notes.length?notes.map(n=>{
+    const noteTxt=(n.note_text||'').trim(), purchTxt=(n.purchases_text||'').trim();
+    const tags=[n.note_type?`<span class="tag">${esc(actionLabel(n.note_type))}</span>`:'',Number(n.sales)?`<span class="tag ok">€${esc(fmtMoney(n.sales))}</span>`:'',n.next_date?`<span class="tag">${esc(t('nextBadge'))} ${esc(toFI(n.next_date))}</span>`:''].join('');
+    return `<div class="hist-item"><div class="hist-date">${esc(toFI(n.note_date))}</div><div class="tags">${tags}</div>${noteTxt?`<div class="hist-text">${esc(noteTxt)}</div>`:''}${purchTxt?`<div class="hist-text"><b>${esc(t('purchasesShort'))}:</b> ${esc(purchTxt)}</div>`:''}</div>`;
+  }).join(''):`<div class="empty">${esc(t('noHistoryYet'))}</div>`;
+
+  $('dBody').innerHTML=`
+    <div class="stats">
+      <div class="stat"><div class="stat-l">${esc(t('lastContact'))}</div><div class="stat-v"><span class="dot ${st.cls}"></span>${esc(toFI(c.last_contact))}</div><div class="stat-s">${esc(st.text)}</div></div>
+      <div class="stat"><div class="stat-l">${esc(t('next'))}</div><div class="stat-v ${due.cls}">${esc(toFI(c.next_date))}</div><div class="stat-s">${esc(actionLabel(c.next_action||'Soitto'))}${due.label?' · '+esc(due.label):''}</div></div>
+      <div class="stat"><div class="stat-l">${esc(t('salesYTD'))}</div><div class="stat-v">€${esc(fmtMoney(ytdSalesFor(c.id)))}</div></div>
+    </div>
+    ${prevHtml}
+    <a class="call${callNum?'':' disabled'}" ${callNum?`href="${esc(telHref(callNum))}"`:'aria-disabled="true"'}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span class="call-txt"><b>${esc(callNum?t('call'):t('noPhone'))}</b>${callNum?`<small>${esc(callSub)}</small>`:''}</span>
+    </a>
+    <div class="sec2">
+      <a class="sec${maps?'':' disabled'}" ${maps?`href="${esc(maps)}" target="_blank" rel="noopener"`:'aria-disabled="true"'}>${esc(t('maps'))}</a>
+      <a class="sec${mail?'':' disabled'}" ${mail?`href="mailto:${esc(mail)}"`:'aria-disabled="true"'}>${esc(t('email'))}</a>
+    </div>
+    <section class="box">
+      <div class="box-title">${esc(t('logContact'))}</div>
+      <div class="sub-label">${esc(t('quickLog'))}</div>
+      <div class="qa">
+        <button type="button" class="qa-ok" data-qt="answered" data-id="${esc(c.id)}">${esc(t('calledBtn'))}</button>
+        <button type="button" class="qa-miss" data-qt="missed" data-id="${esc(c.id)}">${esc(t('noAnswerBtn'))}</button>
+        <button type="button" class="qa-snooze" data-qt="snooze" data-id="${esc(c.id)}">${esc(t('tomorrowBtn'))}</button>
+      </div>
+      <div class="field"><label for="fNote">${esc(t('note'))}</label><textarea id="fNote" placeholder="${esc(t('notePlaceholder'))}"></textarea></div>
+      <div class="field"><label for="fPurchases">${esc(t('purchases'))}</label><textarea id="fPurchases" placeholder="${esc(t('purchasesPlaceholder'))}"></textarea></div>
+      <div class="grid2">
+        <div class="field"><label for="fSales">${esc(t('sales'))}</label><input id="fSales" inputmode="decimal" placeholder="0"></div>
+        <div class="field"><label for="fAction">${esc(t('nextAction'))}</label><select id="fAction">${optHtml}</select></div>
+      </div>
+      <div class="field"><label for="fNextDate">${esc(t('nextDate'))}</label><input id="fNextDate" type="date" value="${esc(c.next_date||'')}"></div>
+      <div class="form-err" id="entryErr" hidden></div>
+      <button class="btn primary" id="btnSave" type="button">${esc(t('save'))}</button>
+    </section>
+    <section class="box">
+      <div class="box-title">${esc(t('basicInfo'))}</div>
+      ${info}
+    </section>
+    <details class="box" id="histBox"><summary>${esc(t('history'))} (${notes.length})</summary>${histHtml}</details>
+  `;
+  writeForm(saved);
+  measurePrev();
+}
+// Pitkä edellinen muistiinpano rajataan ~6 riviin "Näytä kaikki" -napilla. Mitataan vasta kun detail on näkyvissä.
+function measurePrev(){
+  const body=$('prevBody');
+  if(!body||$('detail').hidden) return;
+  body.classList.add('collapsed');
+  if(body.scrollHeight>body.clientHeight+2) $('prevMore').hidden=false;
+  else body.classList.remove('collapsed');
+}
+async function saveEntry(){
+  const c=cs.find(x=>x.id===detailId); if(!c) return;
+  const noteText=($('fNote').value||'').trim(), purchasesText=($('fPurchases').value||'').trim();
+  const sales=parseNum($('fSales').value);
+  const nextAction=$('fAction').value||'Soitto', nextDate=$('fNextDate').value||null;
+  const err=$('entryErr'), btn=$('btnSave');
+  if(!noteText&&!purchasesText){ err.textContent=t('writeNoteOrPurchases'); err.hidden=false; $('fNote').focus(); return; }
+  err.hidden=true; btn.disabled=true; btn.textContent=t('saving');
+  try{
+    const w=await workspace(); const today=todayISO();
+    // note_type kuvaa tehdyn merkinnän tyyppiä, ei seuraavaa toimenpidettä - sama korjaus kuin desktopissa.
+    // Myynti tallentuu vain kontakti_notes.sales-riville; legacy sales_ytd:tä ei enää kasvateta.
+    const note=await insertNote({workspace_id:w.id,customer_id:c.id,note_type:null,note_text:noteText,purchases_text:purchasesText,sales:sales||0,note_date:today,next_date:nextDate,created_source:SOURCE});
+    addLocalNote(note);
+    await updateCustomer(c,{last_contact:today,next_date:nextDate,next_action:nextAction});
+    afterWrite(c,'saved');
+  }catch(e){
+    err.textContent=t('saveError',{msg:e.message}); err.hidden=false;
+    btn.disabled=false; btn.textContent=t('save');
+  }
+}
+
+// ── Seuraava asiakas ────────────────────────────────────────────────────
+// Seuraava haetaan siitä Soita tänään -järjestyksestä, joka oli voimassa kun asiakas avattiin listalta,
+// ohittaen asiakkaat joita ei enää tarvitse soittaa tänään. Listan lopusta jatketaan alusta,
+// jotta aiemmin ohitetut jäävät kiinni; valmis vasta kun ketään muuta ei ole jäljellä.
+function findNextCustomer(){
+  const t0=todayISO(), idx=callQueue.indexOf(detailId);
+  const order=[...callQueue.slice(idx+1),...callQueue.slice(0,Math.max(idx,0))];
+  for(const id of order){ if(id===detailId) continue; const c=cs.find(x=>x.id===id); if(c&&isDue(c,t0)) return c; }
+  return null;
+}
+let nextBarKey=null;
+function showNextBar(msgKey){
+  nextBarKey=msgKey;
+  const next=findNextCustomer();
+  $('nextBarInner').innerHTML=`
+    <div class="nb-msg">${esc(t(msgKey))}</div>
+    <div class="nb-sub">${next?`${esc(t('upNext'))} <b>${esc(next.name||t('unnamed'))}</b>`:esc(t('callListDone'))}</div>
+    <div class="nb-actions${next?'':' single'}">
+      <button type="button" class="btn" id="nbBack">${esc(t('backToList'))}</button>
+      ${next?`<button type="button" class="btn primary" id="nbNext" data-id="${esc(next.id)}">${esc(t('nextCustomer'))}</button>`:''}
+    </div>`;
+  $('nextBar').hidden=false;
+}
+function hideNextBar(){ $('nextBar').hidden=true; }
+
+// ── Wiring ──────────────────────────────────────────────────────────────
+function setLang(lang){
+  LANG=lang==='en'?'en':'fi'; lsSet(LS_LANG,LANG);
+  applyStaticI18n(); updateLangUI(); renderAll(false);
+  const c=detailId&&cs.find(x=>x.id===detailId);
+  if(c) renderDetail(c,{keepForm:true});
+  if(!$('nextBar').hidden&&nextBarKey) showNextBar(nextBarKey);
+}
+function setView(v){ if(v===view) return; view=v; renderAll(true); window.scrollTo(0,0); }
+let searchT=null;
+function wire(){
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+  $('search').addEventListener('input',e=>{
+    clearTimeout(searchT);
+    searchT=setTimeout(()=>{ search=e.target.value||''; $('searchClear').hidden=!search; renderList(true); window.scrollTo(0,0); },120);
+  });
+  $('searchClear').addEventListener('click',()=>{ $('search').value=''; search=''; $('searchClear').hidden=true; renderList(true); $('search').focus(); });
+  document.querySelectorAll('.pill').forEach(b=>b.addEventListener('click',()=>{
+    quickFilter=quickFilter===b.dataset.f?'':b.dataset.f;
+    document.querySelectorAll('.pill').forEach(x=>x.classList.toggle('active',x.dataset.f===quickFilter));
+    renderList(true); window.scrollTo(0,0);
+  }));
+  $('btnRefresh').addEventListener('click',load);
+  $('btnBack').addEventListener('click',()=>closeDetail(false));
+  $('btnSignOut').addEventListener('click',async()=>{ try{ await sb.auth.signOut(); }catch(e){} window.location.href=DESKTOP_LOGIN; });
+  document.querySelectorAll('.lang').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+
+  $('list').addEventListener('click',e=>{
+    const qa=e.target.closest('[data-qt]');
+    if(qa){ e.stopPropagation(); quickAction(qa.dataset.id,qa.dataset.qt,qa); return; }
+    const card=e.target.closest('.card');
+    if(card) openDetail(card.dataset.id,{fromToday:view==='today'});
+  });
+  $('list').addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return;
+    const card=e.target.closest('.card');
+    if(card&&e.target===card) openDetail(card.dataset.id,{fromToday:view==='today'});
+  });
+  $('dBody').addEventListener('click',e=>{
+    const qa=e.target.closest('[data-qt]');
+    if(qa){ quickAction(qa.dataset.id,qa.dataset.qt,qa); return; }
+    if(e.target.closest('#btnSave')){ saveEntry(); return; }
+    if(e.target.closest('#prevMore')){
+      const body=$('prevBody'), collapsed=body.classList.toggle('collapsed');
+      $('prevMore').textContent=collapsed?t('showAll'):t('showLess');
+    }
+  });
+  $('nextBar').addEventListener('click',e=>{
+    if(e.target.closest('#nbBack')){ closeDetail(false); return; }
+    const nx=e.target.closest('#nbNext');
+    if(nx) openDetail(nx.dataset.id,{fromToday:true,keepQueue:true});
+  });
+  window.addEventListener('popstate',()=>{ if(!$('detail').hidden) closeDetail(true); });
+
+  // IntersectionObserver ensisijaisesti, kevyt scroll-kuuntelija varmistuksena (esim. jos IO ei laukea uudelleen).
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(entries=>{ if(entries.some(en=>en.isIntersecting)) renderMore(); },{rootMargin:'300px 0px'}).observe($('sentinel'));
+  }
+  window.addEventListener('scroll',fillViewport,{passive:true});
+}
+
+async function init(){
+  applyTheme(); applyStaticI18n(); updateLangUI(); wire();
+  if(history.state&&history.state.detail) history.replaceState(null,'');
+  renderAll(true);
+  await auth();
+  if(!user){ window.location.href=DESKTOP_LOGIN; return; }
+  $('userEmail').textContent=user.email||'';
+  $('foot').hidden=false;
+  await load();
+}
+init();
+</script>
+</body>
+</html>
