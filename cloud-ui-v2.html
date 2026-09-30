@@ -195,9 +195,69 @@ details.box[open]>summary::after{transform:rotate(180deg)}
 .toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:calc(100vw - 32px);background:rgba(0,0,0,.78);border:1px solid rgba(255,255,255,.16);color:#fff;padding:10px 16px;border-radius:999px;font-weight:550;font-size:13.5px;box-shadow:0 14px 30px rgba(0,0,0,.4);z-index:200;text-align:center}
 .toast[hidden]{display:none}
 .toast.lifted{bottom:calc(150px + env(safe-area-inset-bottom))}
+
+/* Käynnistyksen latausnäkymä: peittää sovelluksen kunnes data on haettu ja ensimmäinen render tehty */
+body.booting>*:not(#splash){visibility:hidden}
+.splash{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;
+  padding:calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
+  color:rgba(255,255,255,.96);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:
+    radial-gradient(900px 620px at 16% 18%, rgba(45,107,255,.24), transparent 60%),
+    radial-gradient(760px 580px at 88% 84%, rgba(130,92,246,.14), transparent 62%),
+    radial-gradient(620px 420px at 82% 6%, rgba(45,210,220,.08), transparent 60%),
+    linear-gradient(180deg,#050b1a,#0a1830);
+  opacity:1;transition:opacity .22s ease}
+.splash[hidden]{display:none}
+.splash.hide{opacity:0;pointer-events:none}
+.splash-inner{width:min(340px,100%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px}
+.splash-logo{width:64px;height:64px;display:block;object-fit:contain}
+.splash-title{font-size:30px;font-weight:720;line-height:1.05;letter-spacing:-.01em}
+.splash-sub{font-size:12px;color:rgba(255,255,255,.62);margin-top:4px}
+.splash-spinner{width:26px;height:26px;margin-top:10px;border-radius:50%;border:3px solid rgba(45,107,255,.22);border-top-color:#3d7bff;animation:splash-spin .9s linear infinite}
+@keyframes splash-spin{to{transform:rotate(360deg)}}
+.splash-status{font-size:13px;color:rgba(255,255,255,.68);min-height:18px}
+.splash-error{display:none;flex-direction:column;align-items:center;gap:10px;margin-top:6px}
+.splash.is-error .splash-spinner,.splash.is-error .splash-status{display:none}
+.splash.is-error .splash-error{display:flex}
+.splash-err-title{font-size:16px;font-weight:620}
+.splash-err-msg{font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.8);overflow-wrap:anywhere}
+.splash-err-detail{font-size:11.5px;line-height:1.4;color:rgba(255,255,255,.5);overflow-wrap:anywhere}
+.splash-err-detail:empty{display:none}
+.splash-retry{appearance:none;min-height:44px;padding:0 22px;border-radius:13px;border:1px solid rgba(45,107,255,.5);background:linear-gradient(180deg,rgba(51,112,255,.98),rgba(31,79,214,.98));color:#fff;font:inherit;font-size:14.5px;font-weight:600;cursor:pointer;margin-top:4px}
+.splash-retry:disabled{opacity:.6;cursor:default}
+.splash-err-hint{font-size:12px;color:rgba(255,255,255,.55)}
+@media (prefers-reduced-motion:reduce){.splash-spinner{animation-duration:2.4s}.splash{transition:none}}
+.hist-del{appearance:none;background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;font-weight:500;min-height:40px;min-width:48px;padding:0 10px;margin:2px 0 0 -10px;border-radius:10px;cursor:pointer}
+.hist-del:active,.hist-del:focus-visible{color:rgb(var(--danger-rgb));background:rgba(var(--danger-rgb),.08)}
+.btn.danger{background:rgba(var(--danger-rgb),.14);border-color:rgba(var(--danger-rgb),.45);color:rgb(var(--danger-rgb))}
+.mback{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;padding:16px calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+.mbox{width:min(440px,100%);background:var(--solid);border:1px solid var(--stroke);border-radius:18px;box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:10px}
+.mtitle{font-size:16px;font-weight:620}
+.mtext{font-size:14px;line-height:1.5;color:var(--muted)}
+.mactions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 </style>
 </head>
-<body>
+<body class="booting">
+<div class="splash" id="splash" role="status" aria-live="polite">
+  <div class="splash-inner">
+    <img class="splash-logo" alt="Opero" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Ik9wZXJvIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ib3Blcm9CbHVlIiB4MT0iODgiIHkxPSI3MiIgeDI9IjQyNCIgeTI9IjQ0MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwMEM4RkYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjQ1IiBzdG9wLWNvbG9yPSIjMEE4NEZGIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwNDZDOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ib3Blcm9CbHVlMiIgeDE9IjE1MCIgeTE9IjEyMCIgeDI9IjM3MCIgeTI9IjM5MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM3OEU4RkYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjM1IiBzdG9wLWNvbG9yPSIjMEE4NEZGIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwMzdBOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNvZnRHbG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VHcmFwaGljIiBzdGREZXZpYXRpb249IjEwIiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlQ29sb3JNYXRyaXggaW49ImJsdXIiIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAuMDQgIDAgMCAwIDAgMC41MiAgMCAwIDAgMCAxICAwIDAgMCAuNTUgMCIgcmVzdWx0PSJnbG93Ii8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iZ2xvdyIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTE4IiBmaWxsPSIjMDcxMjI2Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzA1MjY1RiIgc3Ryb2tlLXdpZHRoPSI1OCIgb3BhY2l0eT0iLjU1Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNvcGVyb0JsdWUpIiBzdHJva2Utd2lkdGg9IjUyIiBmaWx0ZXI9InVybCgjc29mdEdsb3cpIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMDgiIGZpbGw9IiMwNzEyMjYiLz4KICA8cGF0aCBkPSJNMTY0IDI1NmMwLTUzIDM5LTkyIDkyLTkyIDM1IDAgNjUgMTcgODIgNDMiCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI29wZXJvQmx1ZTIpIiBzdHJva2Utd2lkdGg9IjI4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNMzM4IDMwNWMtMTcgMjYtNDcgNDMtODIgNDMtNTMgMC05Mi0zOS05Mi05MiIKICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiMwQTg0RkYiIHN0cm9rZS13aWR0aD0iMjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg4Ii8+CiAgPHBhdGggZD0iTTExMiAxNjVjMzQtNTggODgtODcgMTQ0LTg3IDM4IDAgNzUgMTIgMTA1IDM1IgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlCRUZGRiIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuNTUiLz4KPC9zdmc+">
+    <div><div class="splash-title">Kontakti</div><div class="splash-sub">by Opero</div></div>
+    <div class="splash-spinner" aria-hidden="true"></div>
+    <div class="splash-status" id="splashStatus">Ladataan Kontaktia…</div>
+    <div class="splash-error" id="splashError" role="alert">
+      <div class="splash-err-title" id="splashErrTitle"></div>
+      <div class="splash-err-msg" id="splashErrMsg"></div>
+      <div class="splash-err-detail" id="splashErrDetail"></div>
+      <button type="button" class="splash-retry" id="splashRetry"></button>
+      <div class="splash-err-hint" id="splashErrHint"></div>
+    </div>
+  </div>
+</div>
+<script>
+// Splash näkyy heti HTML:n jäsennyksessä, ennen moduuliskriptiä. Minimiaika mitataan tästä hetkestä.
+window.__splashT0=performance.now();
+try{ if(localStorage.getItem('kontakti_v5_lang')==='en') document.getElementById('splashStatus').textContent='Loading Kontakti…'; }catch(e){}
+</script>
 <div class="app" id="app">
   <header class="hdr">
     <div class="brand">
@@ -286,6 +346,11 @@ const TRANSLATIONS={
     searchPlaceholder:'Hae nimi, kaupunki, yhteyshenkilö…',
     overdue:'Erääntyneet', dueToday:'Tänään', next7:'7 pv', priority:'Priority',
     noContact:'Ei kontaktia', daysSuffix:'pv', overdueStatus:'erääntynyt', todayStatus:'tänään', noDate:'–',
+    splashLoading:'Ladataan Kontaktia…', splashErrorTitle:'Kontakti ei latautunut', splashRetry:'Yritä uudelleen', splashErrorHint:'Jos ongelma jatkuu, päivitä sivu hetken päästä.',
+    splashErrNetwork:'Yhteyttä palvelimeen ei saatu. Tarkista verkkoyhteys.', splashErrGeneric:'Tietojen lataaminen epäonnistui.',
+    deleteNote:'Poista merkintä', deleteNoteTitle:'Poistetaanko tämä merkintä?', deleteNoteSales:'Merkintään liittyy {amount} myyntiä.', deleteNoteSalesEffect:'Poistaminen poistaa summan myös myyntiluvuista.',
+    noteDeleted:'Merkintä poistettu', noteDeleteFailed:'Poisto epäonnistui: {msg}', noteDeleteNotApplied:'Merkintä ei poistunut. Tarkista käyttöoikeudet.',
+    deleteShort:'Poista', cancelBtn:'Peruuta', deleting:'Poistetaan…',
     unnamed:'(Nimetön)', next:'Seuraava', lastContact:'Viime kontakti', salesYTD:'Myynti YTD',
     calledBtn:'✓ Soitettu', noAnswerBtn:'× Ei vastattu', tomorrowBtn:'→ Huomenna',
     calledToast:'Soitettu — seuraava 90 pv päästä', noAnswerToast:'Ei vastattu — uusi yritys huomenna', tomorrowToast:'Siirretty huomiselle',
@@ -309,6 +374,11 @@ const TRANSLATIONS={
     searchPlaceholder:'Search name, city, contact…',
     overdue:'Overdue', dueToday:'Today', next7:'7 days', priority:'Priority',
     noContact:'No contact', daysSuffix:'d', overdueStatus:'overdue', todayStatus:'today', noDate:'–',
+    splashLoading:'Loading Kontakti…', splashErrorTitle:'Kontakti could not be loaded', splashRetry:'Try again', splashErrorHint:'If the problem continues, refresh the page in a moment.',
+    splashErrNetwork:'Could not reach the server. Check your connection.', splashErrGeneric:'Loading data failed.',
+    deleteNote:'Delete entry', deleteNoteTitle:'Delete this entry?', deleteNoteSales:'This entry includes {amount} in sales.', deleteNoteSalesEffect:'Deleting it will also remove the amount from sales totals.',
+    noteDeleted:'Entry deleted', noteDeleteFailed:'Delete failed: {msg}', noteDeleteNotApplied:'The entry was not deleted. Check permissions.',
+    deleteShort:'Delete', cancelBtn:'Cancel', deleting:'Deleting…',
     unnamed:'(Unnamed)', next:'Next', lastContact:'Last contact', salesYTD:'Sales YTD',
     calledBtn:'✓ Called', noAnswerBtn:'× No answer', tomorrowBtn:'→ Tomorrow',
     calledToast:'Called — next in 90 days', noAnswerToast:'No answer — next attempt tomorrow', tomorrowToast:'Postponed to tomorrow',
@@ -436,19 +506,21 @@ function ytdSalesFor(id){
   return notesFor(id).reduce((s,n)=>(n.note_date>=start&&n.note_date<=t0)?s+Number(n.sales||0):s,0);
 }
 
+async function fetchData(){
+  const w=await workspace();
+  const [customers,notes]=await Promise.all([fetchAllRows('kontakti_customers',w.id),fetchAllRows('kontakti_notes',w.id)]);
+  cs=customers; ns=notes; indexData(); loaded=true;
+  setStatus('');
+  renderAll(false);
+  const c=detailId&&cs.find(x=>x.id===detailId);
+  if(c) renderDetail(c,{keepForm:true});
+}
 async function load(){
   if(loading) return;
   loading=true; $('btnRefresh').classList.add('spin');
   if(!loaded) setStatus(t('loading'));
-  try{
-    const w=await workspace();
-    const [customers,notes]=await Promise.all([fetchAllRows('kontakti_customers',w.id),fetchAllRows('kontakti_notes',w.id)]);
-    cs=customers; ns=notes; indexData(); loaded=true;
-    setStatus('');
-    renderAll(false);
-    const c=detailId&&cs.find(x=>x.id===detailId);
-    if(c) renderDetail(c,{keepForm:true});
-  }catch(e){ setStatus(t('genericError',{msg:e.message}),'err'); }
+  try{ await fetchData(); }
+  catch(e){ setStatus(t('genericError',{msg:e.message}),'err'); }
   finally{ loading=false; $('btnRefresh').classList.remove('spin'); }
 }
 
@@ -665,7 +737,7 @@ function renderDetail(c,{keepForm}={}){
   const histHtml=notes.length?notes.map(n=>{
     const noteTxt=(n.note_text||'').trim(), purchTxt=(n.purchases_text||'').trim();
     const tags=[n.note_type?`<span class="tag">${esc(actionLabel(n.note_type))}</span>`:'',Number(n.sales)?`<span class="tag ok">€${esc(fmtMoney(n.sales))}</span>`:'',n.next_date?`<span class="tag">${esc(t('nextBadge'))} ${esc(toFI(n.next_date))}</span>`:''].join('');
-    return `<div class="hist-item"><div class="hist-date">${esc(toFI(n.note_date))}</div><div class="tags">${tags}</div>${noteTxt?`<div class="hist-text">${esc(noteTxt)}</div>`:''}${purchTxt?`<div class="hist-text"><b>${esc(t('purchasesShort'))}:</b> ${esc(purchTxt)}</div>`:''}</div>`;
+    return `<div class="hist-item"><div class="hist-date">${esc(toFI(n.note_date))}</div><div class="tags">${tags}</div>${noteTxt?`<div class="hist-text">${esc(noteTxt)}</div>`:''}${purchTxt?`<div class="hist-text"><b>${esc(t('purchasesShort'))}:</b> ${esc(purchTxt)}</div>`:''}${canDeleteNote(n)?`<button type="button" class="hist-del" data-del="${esc(n.id)}">${esc(t('deleteShort'))}</button>`:''}</div>`;
   }).join(''):`<div class="empty">${esc(t('noHistoryYet'))}</div>`;
 
   $('dBody').innerHTML=`
@@ -775,6 +847,67 @@ function setLang(lang){
 }
 function setView(v){ if(v===view) return; view=v; renderAll(true); window.scrollTo(0,0); }
 let searchT=null;
+
+// ── Yksittäisen merkinnän poisto (soft delete) ─────────────────────────
+// Vain deleted_at asetetaan; rivi säilyy kannassa. Kaikki myyntiluvut lasketaan aktiivisista noteista,
+// joten poistettu summa poistuu niistä automaattisesti. customers.sales_ytd:hen ei kosketa.
+// Legacy-myynnin migraatiorivejä ei voi poistaa käyttöliittymästä.
+const LEGACY_MIGRATION_SOURCE='legacy_sales_migration_2026';
+const canDeleteNote=n=>!!n&&n.created_source!==LEGACY_MIGRATION_SOURCE;
+function fmtAmount(v){
+  const n=parseNum(v), o={minimumFractionDigits:2,maximumFractionDigits:2};
+  return LANG==='en'?'€'+n.toLocaleString('en-GB',o):n.toLocaleString('fi-FI',o)+' €';
+}
+async function softDeleteNote(n){
+  if(!canDeleteNote(n)) throw new Error(t('noteDeleteNotApplied'));
+  const w=await workspace();
+  const ur=await sb.from('kontakti_notes').update({deleted_at:new Date().toISOString()}).eq('id',n.id).eq('workspace_id',w.id);
+  if(ur.error) throw ur.error;
+  // RLS voi ohittaa päivityksen hiljaa (0 riviä ilman virhettä) -> varmistetaan ettei merkintä ole enää aktiivinen.
+  const chk=await sb.from('kontakti_notes').select('id').eq('id',n.id).eq('workspace_id',w.id).is('deleted_at',null);
+  if(chk.error) throw chk.error;
+  if(chk.data&&chk.data.length) throw new Error(t('noteDeleteNotApplied'));
+}
+function closeNoteModal(){ $('noteModal')?.remove(); }
+function confirmDeleteNote(id){
+  const n=ns.find(x=>x.id===id); if(!canDeleteNote(n)) return;
+  closeNoteModal();
+  const sales=parseNum(n.sales);
+  const el=document.createElement('div');
+  el.id='noteModal'; el.className='mback';
+  el.innerHTML=`<div class="mbox" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+    <div class="mtitle" id="noteModalTitle">${esc(t('deleteNoteTitle'))}</div>
+    ${sales>0?`<div class="mtext">${esc(t('deleteNoteSales',{amount:fmtAmount(sales)}))}<br>${esc(t('deleteNoteSalesEffect'))}</div>`:''}
+    <div class="form-err" id="noteModalErr" hidden></div>
+    <div class="mactions">
+      <button type="button" class="btn" id="noteModalCancel">${esc(t('cancelBtn'))}</button>
+      <button type="button" class="btn danger" id="noteModalOk">${esc(t('deleteNote'))}</button>
+    </div>
+  </div>`;
+  el.addEventListener('click',e=>{
+    if(e.target===el||e.target.closest('#noteModalCancel')){ closeNoteModal(); return; }
+    if(e.target.closest('#noteModalOk')) deleteNote(n);
+  });
+  document.body.appendChild(el);
+  $('noteModalCancel').focus();
+}
+async function deleteNote(n){
+  const btn=$('noteModalOk'), err=$('noteModalErr');
+  if(btn){ btn.disabled=true; btn.textContent=t('deleting'); }
+  try{
+    await softDeleteNote(n);
+    ns=ns.filter(x=>x.id!==n.id); indexData();
+    closeNoteModal();
+    updateCounts(); renderList(false);
+    const c=cs.find(x=>x.id===n.customer_id);
+    if(c&&detailId===c.id&&!$('detail').hidden){ renderDetail(c,{keepForm:true}); const hb=$('histBox'); if(hb) hb.open=true; }
+    toast(t('noteDeleted'));
+  }catch(e){
+    if(err){ err.hidden=false; err.textContent=t('noteDeleteFailed',{msg:e.message}); }
+    if(btn){ btn.disabled=false; btn.textContent=t('deleteNote'); }
+  }
+}
+
 function wire(){
   document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
   $('search').addEventListener('input',e=>{
@@ -807,6 +940,8 @@ function wire(){
     const qa=e.target.closest('[data-qt]');
     if(qa){ quickAction(qa.dataset.id,qa.dataset.qt,qa); return; }
     if(e.target.closest('#btnSave')){ saveEntry(); return; }
+    const del=e.target.closest('[data-del]');
+    if(del){ confirmDeleteNote(del.dataset.del); return; }
     if(e.target.closest('#prevMore')){
       const body=$('prevBody'), collapsed=body.classList.toggle('collapsed');
       $('prevMore').textContent=collapsed?t('showAll'):t('showLess');
@@ -822,15 +957,74 @@ function wire(){
   $('btnMore').addEventListener('click',showMore);
 }
 
+
+// ── Käynnistys ──────────────────────────────────────────────────────────
+// Splash peittää sovelluksen, kunnes auth on tarkistettu, workspace + asiakkaat + kaikki merkinnät on haettu
+// (fetchAllRows), indeksit rakennettu ja ensimmäinen render tehty. Virheessä splash vaihtuu virhetilaan
+// eikä keskeneräistä sovellusta näytetä. Ei automaattista uudelleenyritystä.
+const SPLASH_MIN_MS=350;
+const splashT0=typeof window.__splashT0==='number'?window.__splashT0:performance.now();
+let bootRunning=false;
+function splashShowLoading(){
+  const s=$('splash'); if(!s) return;
+  s.hidden=false; s.classList.remove('is-error','hide');
+  $('splashStatus').textContent=t('splashLoading');
+}
+function splashShowError(e){
+  console.error('[Kontakti] käynnistys epäonnistui',e);
+  const s=$('splash'); if(!s) return;
+  const msg=String((e&&e.message)||e||'');
+  const network=(e&&e.name==='AuthRetryableFetchError')||/failed to fetch|networkerror|load failed|network request failed/i.test(msg);
+  $('splashErrTitle').textContent=t('splashErrorTitle');
+  $('splashErrMsg').textContent=network?t('splashErrNetwork'):t('splashErrGeneric');
+  $('splashErrDetail').textContent=network?'':msg.split('\n')[0].slice(0,160);
+  $('splashRetry').textContent=t('splashRetry');
+  $('splashErrHint').textContent=t('splashErrorHint');
+  document.body.classList.add('booting');
+  s.hidden=false; s.classList.remove('hide'); s.classList.add('is-error');
+  $('splashRetry').disabled=false; $('splashRetry').focus();
+}
+async function hideSplash(){
+  const wait=SPLASH_MIN_MS-(performance.now()-splashT0);
+  if(wait>0) await new Promise(r=>setTimeout(r,wait));
+  const s=$('splash');
+  document.body.classList.remove('booting');
+  if(!s) return;
+  s.classList.add('hide');
+  setTimeout(()=>{ if(s.classList.contains('hide')){ s.hidden=true; s.classList.remove('hide'); } },260);
+}
+// Ei istuntoa -> login. Verkko-/palvelinvirhe -> virhetila (ei turhaa ohjausta loginiin).
+async function bootAuth(){
+  const r=await sb.auth.getUser();
+  const err=r&&r.error;
+  if(err&&(err.name==='AuthRetryableFetchError'||err.status===0||(err.status||0)>=500)) throw err;
+  user=(r&&r.data&&r.data.user)||null;
+  return user;
+}
+async function boot(){
+  if(bootRunning) return;
+  bootRunning=true; $('splashRetry').disabled=true;
+  splashShowLoading();
+  try{
+    await bootAuth();
+    if(!user){ window.location.href=DESKTOP_LOGIN; return; }   // splash pysyy näkyvissä ohjaukseen asti
+    $('userEmail').textContent=user.email||'';
+    $('foot').hidden=false;
+    await fetchData();
+
+    await hideSplash();
+  }catch(e){ splashShowError(e); }
+  finally{ bootRunning=false; $('splashRetry').disabled=false; }
+}
+
 async function init(){
-  applyTheme(); applyStaticI18n(); updateLangUI(); wire();
-  if(history.state&&history.state.detail) history.replaceState(null,'');
-  renderAll(true);
-  await auth();
-  if(!user){ window.location.href=DESKTOP_LOGIN; return; }
-  $('userEmail').textContent=user.email||'';
-  $('foot').hidden=false;
-  await load();
+  try{
+    applyTheme(); applyStaticI18n(); updateLangUI(); wire();
+    if(history.state&&history.state.detail) history.replaceState(null,'');
+    renderAll(true);
+    $('splashRetry').addEventListener('click',boot);
+  }catch(e){ splashShowError(e); return; }
+  await boot();
 }
 init();
 </script>
