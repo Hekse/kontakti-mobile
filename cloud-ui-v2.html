@@ -237,6 +237,9 @@ body.booting>*:not(#splash){visibility:hidden}
 .mactions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .mbox textarea{width:100%;min-height:120px;resize:vertical;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);font:inherit;font-size:15px;line-height:1.45;padding:10px 12px}
 .msub{font-size:12.5px;color:var(--muted)}
+:root{color-scheme:dark} :root[data-theme="light"]{color-scheme:light}
+.mbox input{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);font:inherit;font-size:15px;padding:0 12px}
+.mlabel{font-size:12.5px;color:var(--muted);margin-bottom:-4px}
 .edit-latest{appearance:none;background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;font-weight:500;min-height:40px;padding:0 10px;margin:2px 0 0 -10px;border-radius:10px;cursor:pointer}
 .edit-latest:active,.edit-latest:focus-visible{color:var(--text);background:rgba(var(--tint),.06)}
 </style>
@@ -363,7 +366,7 @@ const TRANSLATIONS={
     logContact:'Kirjaa kontakti', quickLog:'Pikakirjaus', note:'Muistiinpano', notePlaceholder:'Mitä sovittiin?',
     purchases:'Ostokset / tuotteet', purchasesShort:'Ostokset', purchasesPlaceholder:'Tilatut tuotteet…', sales:'Myynti €',
     nextAction:'Seuraava toimenpide', nextDate:'Seuraava päivä', save:'Tallenna', saving:'Tallennetaan…',
-    saved:'✓ Tallennettu', logged:'✓ Kirjattu', writeNoteOrPurchases:'Kirjoita muistiinpano tai ostokset, tai muuta seuraavaa toimenpidettä tai päivää.', editLatest:'Muokkaa viimeisintä muistiinpanoa', editingNote:'Muokataan merkintää {date}', saveChanges:'Tallenna muutokset', noteEmpty:'Muistiinpano ei voi olla tyhjä.', noteUpdated:'Muistiinpano päivitetty', noteUpdateNotApplied:'Muutos ei tallentunut. Tarkista käyttöoikeudet.', saveError:'Tallennus epäonnistui: {msg}',
+    saved:'✓ Tallennettu', logged:'✓ Kirjattu', writeNoteOrPurchases:'Kirjoita muistiinpano tai ostokset, tai muuta seuraavaa toimenpidettä tai päivää.', editLatest:'Muokkaa viimeisintä muistiinpanoa', editPurchase:'Muokkaa edellistä ostosta', editingPurchase:'Muokkaat ostosta päivältä {date}', purchaseUpdated:'Ostos päivitetty', purchaseEditEmpty:'Kirjoita ostokset tai summa. Koko merkinnän voi poistaa historiasta.', invalidAmount:'Tarkista summa (esim. 48 tai 48,50).', editingNote:'Muokataan merkintää {date}', saveChanges:'Tallenna muutokset', noteEmpty:'Muistiinpano ei voi olla tyhjä.', noteUpdated:'Muistiinpano päivitetty', noteUpdateNotApplied:'Muutos ei tallentunut. Tarkista käyttöoikeudet.', saveError:'Tallennus epäonnistui: {msg}',
     basicInfo:'Perustiedot', customerName:'Asiakkaan nimi', businessId:'Y-tunnus', ownerName:'Yrittäjä', contactPerson:'Yhteyshenkilö',
     phone:'Puhelin', contactPhone:'Yhteyshenkilön numero', contactEmail:'Yhteyshenkilön sähköposti',
     address:'Osoite', city:'Kaupunki', region:'Maakunta', country:'Maa',
@@ -391,7 +394,7 @@ const TRANSLATIONS={
     logContact:'Log contact', quickLog:'Quick log', note:'Note', notePlaceholder:'What was agreed?',
     purchases:'Purchases / products', purchasesShort:'Purchases', purchasesPlaceholder:'Ordered products…', sales:'Sales €',
     nextAction:'Next action', nextDate:'Next date', save:'Save', saving:'Saving…',
-    saved:'✓ Saved', logged:'✓ Logged', writeNoteOrPurchases:'Enter a note or purchases, or change the next action or date.', editLatest:'Edit latest note', editingNote:'Editing entry from {date}', saveChanges:'Save changes', noteEmpty:'The note cannot be empty.', noteUpdated:'Note updated', noteUpdateNotApplied:'The change was not saved. Check permissions.', saveError:'Saving failed: {msg}',
+    saved:'✓ Saved', logged:'✓ Logged', writeNoteOrPurchases:'Enter a note or purchases, or change the next action or date.', editLatest:'Edit latest note', editPurchase:'Edit previous purchase', editingPurchase:'Editing purchase from {date}', purchaseUpdated:'Purchase updated', purchaseEditEmpty:'Enter purchases or an amount. The whole entry can be deleted from the history.', invalidAmount:'Check the amount (e.g. 48 or 48.50).', editingNote:'Editing entry from {date}', saveChanges:'Save changes', noteEmpty:'The note cannot be empty.', noteUpdated:'Note updated', noteUpdateNotApplied:'The change was not saved. Check permissions.', saveError:'Saving failed: {msg}',
     basicInfo:'Customer details', customerName:'Customer name', businessId:'Business ID', ownerName:'Owner', contactPerson:'Contact person',
     phone:'Phone', contactPhone:'Contact phone', contactEmail:'Contact email',
     address:'Address', city:'City', region:'Region', country:'Country',
@@ -716,6 +719,7 @@ function renderDetail(c,{keepForm}={}){
       <button type="button" class="more" id="prevMore" hidden>${esc(t('showAll'))}</button>
       <div class="tags">${tags}</div>
       ${latestTextNote(c.id)?`<button type="button" class="edit-latest" id="btnEditLatest">${esc(t('editLatest'))}</button>`:''}
+      ${latestPurchaseNote(c.id)?`<button type="button" class="edit-latest" id="btnEditPurchase">${esc(t('editPurchase'))}</button>`:''}
     </section>`;
   } else {
     prevHtml=`<section class="prev"><div class="prev-label">${esc(t('previousContact'))}</div><div class="prev-none">${esc(t('noPreviousEntries'))}</div></section>`;
@@ -878,6 +882,65 @@ async function saveEditedNote(c,n){
   }
 }
 
+// ── Edellisen ostoksen muokkaus ────────────────────────────────────────
+// Uusin aktiivinen rivi, jossa ostosteksti tai myyntiä (ei legacy-migraatioriviä). Sama rivi päivitetään.
+function canEditPurchase(n){ return !!n&&n.created_source!==LEGACY_MIGRATION_SOURCE&&(!!(n.purchases_text||'').trim()||parseNum(n.sales)>0); }
+function latestPurchaseNote(customerId){ return notesFor(customerId).find(canEditPurchase)||null; }
+const validAmount=v=>{ const s=String(v||'').replace(/\s/g,''); return !s||/^\d+([.,]\d{1,2})?$/.test(s); };
+function openEditPurchase(){
+  const c=cs.find(x=>x.id===detailId); if(!c) return;
+  const n=latestPurchaseNote(c.id); if(!n) return;
+  closeNoteModal();
+  const el=document.createElement('div');
+  el.id='noteModal'; el.className='mback';
+  el.innerHTML=`<div class="mbox" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+    <div class="mtitle" id="noteModalTitle">${esc(t('editPurchase'))}</div>
+    <div class="msub">${esc(t('editingPurchase',{date:toFI(n.note_date)}))}</div>
+    <div class="mlabel">${esc(t('purchases'))}</div>
+    <textarea id="editPurchasesText">${esc(n.purchases_text||'')}</textarea>
+    <div class="mlabel">${esc(t('sales'))}</div>
+    <input id="editSalesInput" inputmode="decimal" placeholder="0" value="${esc(parseNum(n.sales)?String(parseNum(n.sales)).replace('.',','):'')}">
+    <div class="form-err" id="noteModalErr" hidden></div>
+    <div class="mactions">
+      <button type="button" class="btn" id="noteModalCancel">${esc(t('cancelBtn'))}</button>
+      <button type="button" class="btn primary" id="noteModalOk">${esc(t('saveChanges'))}</button>
+    </div>
+  </div>`;
+  el.addEventListener('click',e=>{
+    if(e.target===el||e.target.closest('#noteModalCancel')){ closeNoteModal(); return; }
+    if(e.target.closest('#noteModalOk')) saveEditedPurchase(c,n);
+  });
+  document.body.appendChild(el);
+  $('editPurchasesText').focus();
+}
+async function saveEditedPurchase(c,n){
+  const btn=$('noteModalOk'), err=$('noteModalErr');
+  if(!btn||btn.disabled) return;
+  if(!canEditPurchase(n)){ closeNoteModal(); return; }
+  const text=($('editPurchasesText').value||'').trim(), salesRaw=($('editSalesInput').value||'').trim();
+  if(!validAmount(salesRaw)){ err.textContent=t('invalidAmount'); err.hidden=false; return; }
+  const sales=parseNum(salesRaw);
+  if(!text&&!(sales>0)){ err.textContent=t('purchaseEditEmpty'); err.hidden=false; return; }
+  if(text===(n.purchases_text||'').trim()&&sales===parseNum(n.sales)){ closeNoteModal(); return; }
+  btn.disabled=true; btn.textContent=t('saving');
+  try{
+    const w=await workspace();
+    const ur=await sb.from('kontakti_notes').update({purchases_text:text||null,sales}).eq('id',n.id).eq('workspace_id',w.id);
+    if(ur.error) throw ur.error;
+    const chk=await sb.from('kontakti_notes').select('id,purchases_text,sales').eq('id',n.id).eq('workspace_id',w.id);
+    if(chk.error) throw chk.error;
+    const got=chk.data&&chk.data[0];
+    if(!got||(got.purchases_text||'')!==text||parseNum(got.sales)!==sales) throw new Error(t('noteUpdateNotApplied'));
+    n.purchases_text=text||null; n.sales=sales;
+    closeNoteModal();
+    if(detailId===c.id&&!$('detail').hidden) renderDetail(c,{keepForm:true});
+    toast(t('purchaseUpdated'));
+  }catch(e){
+    err.textContent=t('saveError',{msg:e.message}); err.hidden=false;
+    btn.disabled=false; btn.textContent=t('saveChanges');
+  }
+}
+
 // ── Seuraava asiakas ────────────────────────────────────────────────────
 // Seuraava haetaan siitä Soita tänään -järjestyksestä, joka oli voimassa kun asiakas avattiin listalta,
 // ohittaen asiakkaat joita ei enää tarvitse soittaa tänään. Listan lopusta jatketaan alusta,
@@ -1007,6 +1070,7 @@ function wire(){
     if(qa){ quickAction(qa.dataset.id,qa.dataset.qt,qa); return; }
     if(e.target.closest('#btnSave')){ saveEntry(); return; }
     if(e.target.closest('#btnEditLatest')){ openEditLatest(); return; }
+    if(e.target.closest('#btnEditPurchase')){ openEditPurchase(); return; }
     const del=e.target.closest('[data-del]');
     if(del){ confirmDeleteNote(del.dataset.del); return; }
     if(e.target.closest('#prevMore')){
