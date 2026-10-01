@@ -46,7 +46,7 @@ button{font-family:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Sticky controls */
-.controls{position:sticky;top:0;z-index:10;margin:0 -12px;padding:6px 12px 8px;background:rgba(var(--tint),0);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.controls{position:sticky;top:0;z-index:10;margin:0 -12px;padding:6px 12px 8px;background:var(--bg0);border-bottom:1px solid var(--stroke)}
 .controls::before{content:"";position:absolute;inset:0;background:var(--bg0);opacity:.88;z-index:-1}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .tab{appearance:none;border:1px solid var(--stroke);background:rgba(var(--tint),.03);color:var(--muted);border-radius:13px;min-height:44px;padding:0 10px;font-size:14.5px;font-weight:540;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
@@ -76,7 +76,7 @@ button{font-family:inherit}
 .status.err{color:rgb(var(--danger-rgb))}
 .list{display:flex;flex-direction:column;gap:8px}
 .empty{padding:28px 8px;text-align:center;color:var(--muted);font-size:14px}
-.card{border:1px solid var(--stroke);background:var(--panel);border-radius:16px;padding:11px 12px;cursor:pointer;outline:none}
+.card{border:1px solid var(--stroke);background:linear-gradient(var(--panel),var(--panel)) var(--solid);border-radius:16px;padding:11px 12px;cursor:pointer;outline:none}
 .card:active{background:rgba(var(--tint),.07)}
 .card:focus-visible{border-color:rgba(var(--brand-rgb),.6)}
 .card-top{display:flex;align-items:flex-start;gap:8px}
@@ -96,6 +96,9 @@ button{font-family:inherit}
 .qa button:disabled{opacity:.5}
 .qa .qa-ok{color:rgb(var(--ok-rgb));background:rgba(var(--ok-rgb),.07);border:1px solid rgba(var(--ok-rgb),.32)}
 .qa .qa-miss{color:rgb(var(--danger-rgb));background:rgba(var(--danger-rgb),.07);border:1px solid rgba(var(--danger-rgb),.30)}
+.qa.card-qa .qa-call{grid-column:auto;display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:11px;padding:0 4px;font-size:12.5px;font-weight:600;text-decoration:none;white-space:nowrap;color:var(--text);background:rgba(var(--brand-rgb),.16);border:1px solid rgba(var(--brand-rgb),.45)}
+.qa.card-qa .qa-call:disabled{opacity:.45}
+.qa.card-qa .qa-snooze{grid-column:1/-1;min-height:38px}
 .qa .qa-snooze{color:rgb(var(--warn-rgb));background:rgba(var(--warn-rgb),.07);border:1px solid rgba(var(--warn-rgb),.30)}
 .list-foot{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px}
 .list-foot[hidden]{display:none}
@@ -112,14 +115,14 @@ button{font-family:inherit}
 .detail[hidden]{display:none}
 .detail-inner{max-width:520px;margin:0 auto;padding:0 12px calc(120px + env(safe-area-inset-bottom))}
 .detail-bar{position:sticky;top:0;z-index:5;display:flex;align-items:flex-start;gap:10px;margin:0 -12px;padding:8px 12px}
-.detail-bar::before{content:"";position:absolute;inset:0;background:var(--bg0);opacity:.9;z-index:-1}
+.detail-bar::before{content:"";position:absolute;inset:0;background:var(--bg0);z-index:-1}
 .detail-bar .icon-btn{margin-left:0}
 .detail-title{flex:1;min-width:0;padding-top:3px}
 .detail-title h1{margin:0;font-size:19px;font-weight:620;line-height:1.25;overflow-wrap:anywhere}
 .detail-title .chip-prio{margin-top:5px}
 .dstack{display:flex;flex-direction:column;gap:10px;margin-top:4px}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.stat{border:1px solid var(--stroke);background:var(--panel);border-radius:12px;padding:8px 9px;min-width:0}
+.stat{border:1px solid var(--stroke);background:linear-gradient(var(--panel),var(--panel)) var(--solid);border-radius:12px;padding:8px 9px;min-width:0}
 .stat-l{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat-v{font-size:14px;font-weight:560;margin-top:3px;display:flex;align-items:center;gap:5px;overflow-wrap:anywhere}
 .stat-v .dot{margin-top:0;width:8px;height:8px;flex-basis:8px}
@@ -150,7 +153,7 @@ button{font-family:inherit}
 .sec{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);text-decoration:none;font-size:14px;font-weight:520;padding:0 8px;text-align:center}
 .sec:active{background:rgba(var(--tint),.09)}
 .sec.disabled{opacity:.4;pointer-events:none}
-.box{border:1px solid var(--stroke);background:var(--panel);border-radius:14px;padding:12px}
+.box{border:1px solid var(--stroke);background:linear-gradient(var(--panel),var(--panel)) var(--solid);border-radius:14px;padding:12px}
 .box-title{font-size:13.5px;font-weight:580;margin-bottom:10px}
 .sub-label{font-size:11.5px;color:var(--muted);margin-bottom:6px}
 .box .qa{margin-top:0;margin-bottom:12px}
@@ -235,10 +238,10 @@ body.booting>*:not(#splash){visibility:hidden}
 .mtitle{font-size:16px;font-weight:620}
 .mtext{font-size:14px;line-height:1.5;color:var(--muted)}
 .mactions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
-.mbox textarea{width:100%;min-height:120px;resize:vertical;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);font:inherit;font-size:15px;line-height:1.45;padding:10px 12px}
+.mbox textarea{width:100%;min-height:120px;resize:vertical;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);font:inherit;font-size:16px;line-height:1.45;padding:10px 12px}
 .msub{font-size:12.5px;color:var(--muted)}
 :root{color-scheme:dark} :root[data-theme="light"]{color-scheme:light}
-.mbox input{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);font:inherit;font-size:15px;padding:0 12px}
+.mbox input{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--stroke);background:rgba(var(--tint),.04);color:var(--text);font:inherit;font-size:16px;padding:0 12px}
 .mlabel{font-size:12.5px;color:var(--muted);margin-bottom:-4px}
 .edit-latest{appearance:none;background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;font-weight:500;min-height:40px;padding:0 10px;margin:2px 0 0 -10px;border-radius:10px;cursor:pointer}
 .edit-links{display:flex;flex-wrap:wrap;gap:0 6px;margin:2px 0 0 -10px}
@@ -290,7 +293,7 @@ try{ if(localStorage.getItem('kontakti_v5_lang')==='en') document.getElementById
     </nav>
     <div class="cust-controls" id="custControls" hidden>
       <div class="search">
-        <input id="search" type="search" inputmode="search" autocomplete="off" autocorrect="off" spellcheck="false" data-i18n-ph="searchPlaceholder" placeholder="Hae asiakasta...">
+        <input id="search" type="search" inputmode="search" autocomplete="off" autocorrect="off" spellcheck="false" data-i18n-ph="searchPlaceholder" placeholder="Hae asiakasta…">
         <button type="button" class="search-clear" id="searchClear" aria-label="×" hidden>×</button>
       </div>
       <div class="pills">
@@ -352,7 +355,7 @@ let LANG=lsGet(LS_LANG)==='en'?'en':'fi';
 const TRANSLATIONS={
   fi:{
     byOpero:'by Opero', callToday:'Soita tänään', customers:'Asiakkaat', refresh:'Päivitä', back:'Takaisin',
-    searchPlaceholder:'Hae nimi, kaupunki, yhteyshenkilö…',
+    searchPlaceholder:'Hae asiakasta…',
     overdue:'Erääntyneet', dueToday:'Tänään', next7:'7 pv', priority:'Priority',
     noContact:'Ei kontaktia', daysSuffix:'pv', overdueStatus:'erääntynyt', todayStatus:'tänään', noDate:'–',
     splashLoading:'Ladataan Kontaktia…', splashErrorTitle:'Kontakti ei latautunut', splashRetry:'Yritä uudelleen', splashErrorHint:'Jos ongelma jatkuu, päivitä sivu hetken päästä.',
@@ -371,7 +374,7 @@ const TRANSLATIONS={
     saved:'✓ Tallennettu', logged:'✓ Kirjattu', writeNoteOrPurchases:'Kirjoita muistiinpano tai ostokset, tai muuta seuraavaa toimenpidettä tai päivää.', editLatest:'Muokkaa muistiinpanoa', editPurchase:'Muokkaa ostosta', editingPurchase:'Muokkaat ostosta päivältä {date}', purchaseUpdated:'Ostos päivitetty', purchaseEditEmpty:'Kirjoita ostokset tai summa. Koko merkinnän voi poistaa historiasta.', invalidAmount:'Tarkista summa (esim. 48 tai 48,50).', editingNote:'Muokataan merkintää {date}', saveChanges:'Tallenna muutokset', noteEmpty:'Muistiinpano ei voi olla tyhjä.', noteUpdated:'Muistiinpano päivitetty', noteUpdateNotApplied:'Muutos ei tallentunut. Tarkista käyttöoikeudet.', saveError:'Tallennus epäonnistui: {msg}',
     basicInfo:'Perustiedot', customerName:'Asiakkaan nimi', businessId:'Y-tunnus', ownerName:'Yrittäjä', contactPerson:'Yhteyshenkilö',
     phone:'Puhelin', contactPhone:'Yhteyshenkilön numero', contactEmail:'Yhteyshenkilön sähköposti',
-    address:'Osoite', city:'Kaupunki', region:'Maakunta', country:'Maa',
+    address:'Osoite', postalCode:'Postinumero', city:'Kaupunki', region:'Maakunta', country:'Maa',
     history:'Historia', noHistoryYet:'Ei historiatapahtumia vielä.', nextBadge:'Seuraava',
     nextCustomer:'Seuraava asiakas →', backToList:'Takaisin listaan', upNext:'Seuraavana:', callListDone:'Soittolista valmis.',
     loading:'Ladataan asiakkaita…', loadMore:'Lataa 10 lisää', showingCount:'Näytetään {shown} / {total}', genericError:'Virhe: {msg}',
@@ -380,7 +383,7 @@ const TRANSLATIONS={
   },
   en:{
     byOpero:'by Opero', callToday:'Call today', customers:'Customers', refresh:'Refresh', back:'Back',
-    searchPlaceholder:'Search name, city, contact…',
+    searchPlaceholder:'Search customers…',
     overdue:'Overdue', dueToday:'Today', next7:'7 days', priority:'Priority',
     noContact:'No contact', daysSuffix:'d', overdueStatus:'overdue', todayStatus:'today', noDate:'–',
     splashLoading:'Loading Kontakti…', splashErrorTitle:'Kontakti could not be loaded', splashRetry:'Try again', splashErrorHint:'If the problem continues, refresh the page in a moment.',
@@ -399,7 +402,7 @@ const TRANSLATIONS={
     saved:'✓ Saved', logged:'✓ Logged', writeNoteOrPurchases:'Enter a note or purchases, or change the next action or date.', editLatest:'Edit note', editPurchase:'Edit purchase', editingPurchase:'Editing purchase from {date}', purchaseUpdated:'Purchase updated', purchaseEditEmpty:'Enter purchases or an amount. The whole entry can be deleted from the history.', invalidAmount:'Check the amount (e.g. 48 or 48.50).', editingNote:'Editing entry from {date}', saveChanges:'Save changes', noteEmpty:'The note cannot be empty.', noteUpdated:'Note updated', noteUpdateNotApplied:'The change was not saved. Check permissions.', saveError:'Saving failed: {msg}',
     basicInfo:'Customer details', customerName:'Customer name', businessId:'Business ID', ownerName:'Owner', contactPerson:'Contact person',
     phone:'Phone', contactPhone:'Contact phone', contactEmail:'Contact email',
-    address:'Address', city:'City', region:'Region', country:'Country',
+    address:'Address', postalCode:'Postal code', city:'City', region:'Region', country:'Country',
     history:'History', noHistoryYet:'No entries yet.', nextBadge:'Next',
     nextCustomer:'Next customer →', backToList:'Back to list', upNext:'Up next:', callListDone:'Call list complete.',
     loading:'Loading customers…', loadMore:'Load 10 more', showingCount:'Showing {shown} / {total}', genericError:'Error: {msg}',
@@ -450,7 +453,7 @@ function dueInfo(nextDate){
 const callNumber=c=>c.contact_phone||c.phone||'';
 const telHref=num=>num?'tel:'+String(num).replace(/[^\d+]/g,''):'';
 const emailAddress=c=>c.contact_email||c.email||'';
-function mapsUrl(c){ const parts=[c.address,c.city,c.region,c.country].filter(Boolean); return parts.length?'https://www.google.com/maps?q='+encodeURIComponent(parts.join(', ')):''; }
+function mapsUrl(c){ const parts=[c.address,[c.postal_code,c.city].filter(Boolean).join(' '),c.region,c.country].filter(Boolean); return parts.length?'https://www.google.com/maps?q='+encodeURIComponent(parts.join(', ')):''; }
 
 let toastT=null;
 function toast(msg){ const el=$('toast'); el.textContent=msg; el.classList.toggle('lifted',!$('nextBar').hidden); el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>{ el.hidden=true; },2000); }
@@ -557,7 +560,9 @@ function cardHtml(c){
   const phone=callNumber(c);
   const info=[loc,phone].filter(Boolean).map(esc).join('<span class="sep"> · </span>');
   const nextTxt=`${esc(t('next'))} ${esc(toFI(c.next_date))}${due.label?' · '+esc(due.label):''}`;
-  const qa=view==='today'?`<div class="qa">
+  const callHrefCard=telHref(callNumber(c));
+  const qa=view==='today'?`<div class="qa card-qa">
+      ${callHrefCard?`<a class="qa-call" href="${esc(callHrefCard)}">📞 ${esc(t('call'))}</a>`:`<button type="button" class="qa-call" disabled>📞 ${esc(t('call'))}</button>`}
       <button type="button" class="qa-ok" data-qt="answered" data-id="${esc(c.id)}">${esc(t('calledBtn'))}</button>
       <button type="button" class="qa-miss" data-qt="missed" data-id="${esc(c.id)}">${esc(t('noAnswerBtn'))}</button>
       <button type="button" class="qa-snooze" data-qt="snooze" data-id="${esc(c.id)}">${esc(t('tomorrowBtn'))}</button>
@@ -744,6 +749,7 @@ function renderDetail(c,{keepForm}={}){
     kvRow(t('email'),mailA(c.email)),
     kvRow(t('contactEmail'),mailA(c.contact_email)),
     kvRow(t('address'),c.address?(maps?`<a href="${esc(maps)}" target="_blank" rel="noopener">${esc(c.address)}</a>`:esc(c.address)):''),
+    kvRow(t('postalCode'),esc(c.postal_code||'')),
     kvRow(t('city'),esc(c.city||'')),
     kvRow(t('region'),esc(c.region||'')),
     kvRow(t('country'),esc(c.country||''))
@@ -1061,6 +1067,8 @@ function wire(){
   document.querySelectorAll('.lang').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
 
   $('list').addEventListener('click',e=>{
+    // Soita-linkki avaa puhelun (tel:) eikä avaa asiakasta eikä tee kirjausta
+    if(e.target.closest('.qa-call')){ e.stopPropagation(); return; }
     const qa=e.target.closest('[data-qt]');
     if(qa){ e.stopPropagation(); quickAction(qa.dataset.id,qa.dataset.qt,qa); return; }
     const card=e.target.closest('.card');
