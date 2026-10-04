@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#071226">
 <title>Kontakti Mobile</title>
+<link rel="stylesheet" href="./ajo-kulut.css">
 <style>
 :root{
   --bg0:#071226;--bg1:#091a35;--solid:#0a1731;--panel:rgba(255,255,255,.045);--stroke:rgba(255,255,255,.13);
@@ -290,6 +291,7 @@ try{ if(localStorage.getItem('kontakti_v5_lang')==='en') document.getElementById
     <nav class="tabs">
       <button class="tab active" data-view="today" type="button"><span data-i18n="callToday">Soita tänään</span><span class="count" id="countToday"></span></button>
       <button class="tab" data-view="customers" type="button"><span data-i18n="customers">Asiakkaat</span><span class="count" id="countCustomers"></span></button>
+      <button class="tab" data-view="ajo" type="button"><span class="ajo-tab-label">Ajo ja kulut</span></button>
     </nav>
     <div class="cust-controls" id="custControls" hidden>
       <div class="search">
@@ -308,6 +310,7 @@ try{ if(localStorage.getItem('kontakti_v5_lang')==='en') document.getElementById
   <div class="status" id="status"></div>
   <div class="list-meta" id="listMeta"></div>
   <div id="list" class="list"></div>
+  <section id="ajoApp" class="ajo-app" hidden aria-label="Ajo ja kulut"></section>
   <div class="list-foot" id="listFoot" hidden>
     <div class="list-count" id="listCount"></div>
     <button type="button" class="more-btn" id="btnMore" data-i18n="loadMore">Lataa 10 lisää</button>
@@ -333,6 +336,7 @@ try{ if(localStorage.getItem('kontakti_v5_lang')==='en') document.getElementById
 
 <script type="module">
 import{createClient}from'https://esm.sh/@supabase/supabase-js@2.117.2';
+import{createAjoKulut}from'./ajo-kulut.js';
 const sb=createClient('https://miahuckcphquawobehtk.supabase.co','sb_publishable_tY1y97VnFfhXyKJ_9XCNGw_-rEq2pLx');
 const $=id=>document.getElementById(id);
 const DESKTOP_LOGIN='https://hekse.github.io/kontakti-desktop/login.html';
@@ -345,6 +349,7 @@ let notesByCustomer=new Map(),searchIndex=new Map();
 let view='today',search='',quickFilter='';
 let listItems=[],renderedCount=0;
 let detailId=null,detailFromToday=false,callQueue=[];
+const ajoKulut=createAjoKulut({sb,getWorkspace:()=>workspace(),getUser:()=>user,getCustomers:()=>cs});
 
 // localStorage vain käyttöliittymäasetuksiin (kieli, teema) - samat avaimet kuin desktopissa.
 const LS_LANG='kontakti_v5_lang', LS_THEME='kontakti_theme';
@@ -612,6 +617,11 @@ function updateCounts(){
 function renderAll(resetWindow){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
   $('custControls').hidden=view!=='customers';
+  $('ajoApp').hidden=view!=='ajo';
+  $('list').hidden=view==='ajo';
+  $('listMeta').hidden=view==='ajo';
+  $('listFoot').hidden=view==='ajo';
+  if(view==='ajo'){ajoKulut.open($('ajoApp'));updateCounts();return;}
   document.querySelectorAll('.pill').forEach(b=>b.classList.toggle('active',b.dataset.f===quickFilter));
   $('searchClear').hidden=!search;
   $('foot').hidden=!user;
@@ -798,6 +808,7 @@ function renderDetail(c,{keepForm}={}){
       <div class="box-title">${esc(t('basicInfo'))}</div>
       ${info}
     </section>
+    <button class="btn" type="button" id="btnCustomerAjo">Ajo ja kulut · ${esc(c.name||'')}</button>
     <details class="box" id="histBox"><summary>${esc(t('history'))} (${notes.length})</summary>${histHtml}</details>
   `;
   writeForm(saved);
@@ -1080,6 +1091,7 @@ function wire(){
     if(card&&e.target===card) openDetail(card.dataset.id,{fromToday:view==='today'});
   });
   $('dBody').addEventListener('click',e=>{
+    if(e.target.closest('#btnCustomerAjo')){const selected=detailId;closeDetail(false);setView('ajo');ajoKulut.prefillCustomer(selected);return;}
     const qa=e.target.closest('[data-qt]');
     if(qa){ quickAction(qa.dataset.id,qa.dataset.qt,qa); return; }
     if(e.target.closest('#btnSave')){ saveEntry(); return; }
