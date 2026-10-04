@@ -95,7 +95,7 @@ export function createAjoKulut({sb,getWorkspace,getUser,getCustomers}){
     q('ajoFrom').value=iso(a);q('ajoTo').value=iso(b);renderReport();
   }
   function renderTripOptions(){const selected=q('ajoExpenseTrip').value;q('ajoExpenseTrip').innerHTML='<option value="">Ei ajoa</option>'+trips.map(t=>`<option value="${t.id}">${escapeHtml(t.trip_date+' · '+t.route_text.slice(0,65))}</option>`).join('');q('ajoExpenseTrip').value=trips.some(t=>t.id===selected)?selected:''}
-  async function load(){try{const w=await getWorkspace();const [t,l,e,r]=await Promise.all([page('kontakti_trips',w.id,true),page('kontakti_trip_customers',w.id),page('kontakti_expenses',w.id,true),page('kontakti_expense_receipts',w.id)]);trips=t.sort((a,b)=>b.trip_date.localeCompare(a.trip_date)||b.created_at.localeCompare(a.created_at));links=l;expenses=e.sort((a,b)=>b.expense_date.localeCompare(a.expense_date)||b.created_at.localeCompare(a.created_at));receipts=r;loadedAt=Date.now();renderTripOptions();renderReport();}catch(error){status('ajoTripStatus','Tietojen lataus epäonnistui: '+error.message,true)}}
+  async function load(){try{const w=await getWorkspace();const [t,l,e,r]=await Promise.all([page('kontakti_trips',w.id,true),page('kontakti_trip_customers',w.id),page('kontakti_expenses',w.id,true),page('kontakti_expense_receipts',w.id)]);trips=t.sort((a,b)=>b.trip_date.localeCompare(a.trip_date)||b.created_at.localeCompare(a.created_at));links=l;expenses=e.sort((a,b)=>b.expense_date.localeCompare(a.expense_date)||b.created_at.localeCompare(a.created_at));receipts=r;loadedAt=Date.now();renderTripOptions();renderReport();return true}catch(error){loadedAt=0;status('ajoTripStatus','Tietojen lataus epäonnistui: '+error.message,true);return false}}
   async function saveTrip(event){event.preventDefault();if(savingTrip)return;savingTrip=true;q('ajoTripSave').disabled=true;
     try{const w=await getWorkspace(),u=getUser();if(!u)throw Error('Kirjaudu uudelleen.');
     const date=q('ajoTripDate').value,route=q('ajoRoute').value.trim(),km=decimal(q('ajoKm').value),rate=decimal(q('ajoRate').value),notes=q('ajoTripNotes').value.trim()||null,customers=[...tripCustomers].sort();
@@ -104,7 +104,7 @@ export function createAjoKulut({sb,getWorkspace,getUser,getCustomers}){
     status('ajoTripStatus','Tallennetaan…');
     must(await sb.rpc('kontakti_create_trip',{p_id:id,p_workspace:w.id,p_date:date,p_route:route,p_km:km,p_rate:rate,p_notes:notes,p_customers:customers}),'Ajon tallennus');
       const row=must(await sb.from('kontakti_trips').select('id,workspace_id,reimbursement').eq('id',id).eq('workspace_id',w.id).single(),'Ajon varmennus');if(row.id!==id)throw Error('Ajon varmennus ei täsmää');
-      sessionStorage.removeItem('kontakti-trip-pending');q('ajoTripForm').reset();q('ajoTripDate').value=today();tripCustomers.clear();renderCustomers('trip');calc();await load();status('ajoTripStatus','Ajo tallennettu · '+money(row.reimbursement));
+      sessionStorage.removeItem('kontakti-trip-pending');q('ajoTripForm').reset();q('ajoTripDate').value=today();tripCustomers.clear();renderCustomers('trip');calc();const refreshed=await load();status('ajoTripStatus',refreshed?'Ajo tallennettu · '+money(row.reimbursement):'Ajo tallentui, mutta listan päivitys epäonnistui. Avaa näkymä uudelleen.',!refreshed);
     }catch(error){status('ajoTripStatus',error.message+' Sama tallennus voidaan yrittää uudelleen.',true)}finally{savingTrip=false;q('ajoTripSave').disabled=false}
   }
   async function saveExpense(event){event.preventDefault();if(savingExpense)return;savingExpense=true;q('ajoExpenseSave').disabled=true;
@@ -123,7 +123,7 @@ export function createAjoKulut({sb,getWorkspace,getUser,getCustomers}){
       must(await sb.rpc('kontakti_create_expense',{p_id:id,p_workspace:w.id,p_date:date,p_category:category,p_amount:amount,p_notes:notes,p_customer:customerId,p_trip:tripId,p_sha:hash,p_path:path,p_mime:mime,p_size:size}),'Kulun tallennus');
       const row=must(await sb.from('kontakti_expenses').select('id,amount').eq('id',id).eq('workspace_id',w.id).single(),'Kulun varmennus');if(row.id!==id)throw Error('Kulun varmennus ei täsmää');
       if(hash){const receipt=must(await sb.from('kontakti_expense_receipts').select('expense_id,image_sha256').eq('expense_id',id).single(),'Kuitin varmennus');if(receipt.image_sha256!==hash)throw Error('Kuitin varmennus ei täsmää')}
-      sessionStorage.removeItem('kontakti-expense-pending');q('ajoExpenseForm').reset();q('ajoExpenseDate').value=today();expenseCustomer='';renderCustomers('expense');preview();status('ajoExpenseStatus','Kulu tallennettu · '+money(row.amount));await load();
+      sessionStorage.removeItem('kontakti-expense-pending');q('ajoExpenseForm').reset();q('ajoExpenseDate').value=today();expenseCustomer='';renderCustomers('expense');preview();const refreshed=await load();status('ajoExpenseStatus',refreshed?'Kulu tallennettu · '+money(row.amount):'Kulu tallentui, mutta listan päivitys epäonnistui. Avaa näkymä uudelleen.',!refreshed);
     }catch(error){
       // A lost response may mean the DB transaction succeeded. Keep the stable UUID
       // and content-addressed object for a safe retry when the state is uncertain.
