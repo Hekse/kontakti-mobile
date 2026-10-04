@@ -128,7 +128,9 @@ export function createAjoKulut({sb,getWorkspace,getUser,getCustomers}){
       // A lost response may mean the DB transaction succeeded. Keep the stable UUID
       // and content-addressed object for a safe retry when the state is uncertain.
       if(uploaded&&hash&&w){try{const used=must(await sb.from('kontakti_expense_receipts').select('id').eq('workspace_id',w.id).eq('image_sha256',hash).maybeSingle(),'Kuitin tarkistus');if(!used){const removed=await sb.storage.from(BUCKET).remove([path]);if(removed.error)throw removed.error}}catch(cleanupError){status('ajoExpenseStatus','Kuitin tilaa ei voitu varmistaa. Säilytä lomake ja yritä uudelleen.',true);return}}
-      status('ajoExpenseStatus',error.message+' Sama tallennus voidaan yrittää uudelleen.',true);
+      status('ajoExpenseStatus',error.message.startsWith('Sama kuittikuva on jo liitetty toiseen kuluun.')
+        ? error.message+' Valitse toinen kuva tai tarkista aiempi kulu.'
+        : error.message+' Sama tallennus voidaan yrittää uudelleen.',true);
     }finally{savingExpense=false;q('ajoExpenseSave').disabled=false}
   }
   async function viewReceipt(path){try{const signed=must(await sb.storage.from(BUCKET).createSignedUrl(path,60),'Kuitin avaus');window.location.assign(signed.signedUrl)}catch(error){status('ajoExpenseStatus',error.message,true)}}
