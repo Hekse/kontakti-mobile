@@ -35,8 +35,8 @@ export function createAjoKulut({sb,getWorkspace,getUser,getCustomers}){
     for(;;){let query=sb.from(table).select('*').eq('workspace_id',workspace);query=table==='kontakti_trip_customers'?query.order('trip_id',{ascending:true}).order('customer_id',{ascending:true}):query.order('id',{ascending:true});query=query.range(from,from+499);if(deleted)query=query.is('deleted_at',null);const rows=must(await query,table)||[];let added=0;for(const row of rows){const key=row.id||`${row.trip_id}:${row.customer_id}`;if(!seen.has(key)){seen.add(key);all.push(row);added++}}if(!rows.length||!added)return all;from+=rows.length;}
   };
   function markup(){
-    root.innerHTML=`<div class="ajo-head"><h2>Ajo ja kulut</h2><p>Kirjaa kentällä, tarkista koonti ja tulosta raportti.</p></div>
-    <section class="ajo-panel"><div class="ajo-title"><h3>Uusi ajo ja kulut</h3><button type="button" class="ajo-small" id="ajoClear">Tyhjennä</button></div><form id="ajoTripForm">
+    root.innerHTML=`<div class="ajo-head"><h2>Ajo ja kulut</h2></div>
+    <section class="ajo-panel"><div class="ajo-title"><span></span><button type="button" class="ajo-small" id="ajoClear">Tyhjennä</button></div><form id="ajoTripForm">
       <fieldset id="ajoFields"><div class="ajo-field"><label for="ajoTripDate">Päivämäärä</label><input id="ajoTripDate" type="date" required></div>
       <div class="ajo-field"><label for="ajoStart">Lähtöpaikka</label><div class="ajo-place"><input id="ajoStart" list="ajoPlaces" maxlength="120" required></div></div>
       <div id="ajoDestinations"></div><datalist id="ajoPlaces"></datalist><details class="ajo-saved"><summary>Tallennetut lähtöpaikat ja kohteet</summary><div class="ajo-field"><label for="ajoNewPlace">Uusi paikka / osoite</label><div class="ajo-place"><input id="ajoNewPlace" maxlength="120"><button type="button" class="ajo-small" data-save-place="ajoNewPlace">Tallenna paikka</button></div></div><div id="ajoSavedList"></div></details>

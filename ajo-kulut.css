@@ -71,3 +71,27 @@
 .ajo-app .ajo-expense-summary{font-size:14px;font-weight:500;overflow-wrap:anywhere}
 .ajo-app .ajo-expense .ajo-upload{margin-top:10px}
 .ajo-app [hidden]{display:none!important}
+/* Shared Kontakti themes, mobile first. */
+.ajo-app{--ajo-field:#102239;--ajo-line:#39516c;gap:18px}
+:root[data-theme="light"] .ajo-app{--ajo-field:#fff;--ajo-line:#bbc9db}
+.ajo-app h2{font-size:24px;letter-spacing:-.5px;font-weight:600;margin-bottom:8px}
+.ajo-app .ajo-panel{padding:20px;border-radius:20px}
+:root[data-theme="light"] .ajo-app .ajo-panel{background:#fff;border-color:#d1dbe7;box-shadow:0 3px 14px rgba(30,50,80,.04)}
+.ajo-app .ajo-field{margin-bottom:18px;gap:8px}
+.ajo-app label{font-size:14px;color:var(--text);font-weight:450}
+.ajo-app input,.ajo-app select,.ajo-app textarea{background:var(--ajo-field);border-color:var(--ajo-line);min-height:48px;border-radius:10px}
+.ajo-app input:focus,.ajo-app select:focus,.ajo-app textarea:focus{outline:2px solid rgba(var(--brand-rgb),.6);outline-offset:2px}
+.ajo-app input[type=date]{color-scheme:dark}
+:root[data-theme="light"] .ajo-app input[type=date]{color-scheme:light}
+.ajo-app .ajo-title>.ajo-small,.ajo-app [data-remove-row],.ajo-app [data-edit-expense]{border:0;background:transparent;color:var(--muted);padding:8px 6px;font-size:13px}
+.ajo-app #ajoAddTarget,.ajo-app #ajoAddExpense{width:auto;min-height:44px;border:0;background:none;color:rgb(var(--brand-rgb));padding:8px 0;text-align:left;font-weight:550}
+.ajo-app .ajo-expense{border:0;border-top:1px solid var(--stroke);border-radius:0;padding:16px 0;margin:0}
+.ajo-app .ajo-total{padding:14px 16px;margin:22px 0 18px;background:rgba(var(--brand-rgb),.06);border-radius:14px}
+.ajo-app .ajo-total div:last-child{margin-top:4px;font-size:17px}
+.ajo-app .ajo-total div:last-child strong{font-size:23px;letter-spacing:-.5px}
+.ajo-app .ajo-total strong{font-variant-numeric:tabular-nums}
+.ajo-app .ajo-btn.primary{min-height:52px;border:0;border-radius:12px;box-shadow:0 4px 12px rgba(var(--brand-rgb),.15)}
+.ajo-app .ajo-saved summary{font-size:13px;color:var(--muted);font-weight:450}
+@media(max-width:420px){.ajo-app .ajo-panel{padding:16px}.ajo-app .ajo-dialog{padding:20px}}
+.ajo-app .ajo-panel>.ajo-title{justify-content:flex-end;margin-bottom:4px}
+.ajo-app .ajo-panel>.ajo-title>span{display:none}
