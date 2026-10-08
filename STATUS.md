@@ -13,3 +13,5 @@ Tarkistukset: 8 Node-testiä läpäisi. Paikallinen selaintesti simuloidulla pil
 Julkaisutila: paikallinen toteutus ja testattu esikatselu. GitHub Pagesin tuotantolähde on main, tämä työ on feat/ajo-ja-kulut-haarassa. Tuotantojulkaisua tai oikean puhelimen pilvitallennusta ei tämän työn yhteydessä varmennettu.
 
 Esikatselu: http://127.0.0.1:3011/tests/preview.html (paikallinen esimerkkitietokanta). Aito sovellus: cloud-ui-v2.html, tarvitsee normaalin kirjautumisen.
+
+Hub-raportointi: Renderin istunto päättyi päivityksen hyväksyntäyrityksen yhteydessä; lopputulosta ei saatu uudella luvulla varmennettua. Ehdotus ja este: output/hub-pending/contact-2026-10-08.json. Seuraavaksi kirjaudu Hubiin, lue nykyinen contact-tila ja historia; sovita/lähetä vain jos muutos puuttuu.
