@@ -15,3 +15,7 @@ Julkaisutila: paikallinen toteutus ja testattu esikatselu. GitHub Pagesin tuotan
 Esikatselu: http://127.0.0.1:3011/tests/preview.html (paikallinen esimerkkitietokanta). Aito sovellus: cloud-ui-v2.html, tarvitsee normaalin kirjautumisen.
 
 Hub-raportointi: Renderin istunto päättyi päivityksen hyväksyntäyrityksen yhteydessä; lopputulosta ei saatu uudella luvulla varmennettua. Ehdotus ja este: output/hub-pending/contact-2026-10-08.json. Seuraavaksi kirjaudu Hubiin, lue nykyinen contact-tila ja historia; sovita/lähetä vain jos muutos puuttuu.
+
+Hub-varmennus 8.10.2026: uusi kirjautuminen, odottanut contact-päivitys hyväksytty. Nykytila ja historia varmennettu täydellä sivulatauksella. Pending-ehdotus merkitty varmennetuksi; sitä ei lähetetä uudelleen.
+
+UI-viimeistely 8.10.2026 käyttäjän palautteen mukaan: esikatselun testitekstit/testipainike piilotettu, esimerkkipaikkatekstit poistettu. Kulun lisääminen erillisessä dialogissa (kululaji, vapaaehtoinen kuvaus, summa), tiivis yhteenvetorivi, muokkaus ja peruutus. Raportin lihavointeja kevennetty ja kuitin tekninen hash poistettu näkyvästä kulurivistä. Kahdeksan testiä läpäisi; selaimessa kulun lisääminen, muokkaus ja peruutus tarkistettu. Tuotantoon ei julkaistu.
