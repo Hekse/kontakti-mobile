@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {tripValues,expenseValues,batchIds} from '../ajo-form.js';
+const base={date:'2026-10-08',start:'Koti',targets:['Asiakas A','Koti'],purpose:'Asiakaskäynti',km:'12,5',rate:'0,55',notes:''};
+test('route preserves stop order and Finnish decimals',()=>{assert.deepEqual(tripValues(base),{date:'2026-10-08',route:'Koti → Asiakas A → Koti',km:12.5,rate:.55,notes:'Asiakaskäynti'})});
+test('missing km is not silently saved as zero; zero is explicit',()=>{assert.throws(()=>tripValues({...base,km:''}));assert.equal(tripValues({...base,km:'0'}).km,0)});
+test('rejects missing stops, invalid amount, negative km and long route',()=>{assert.throws(()=>tripValues({...base,targets:['']}));assert.throws(()=>tripValues({...base,km:'-1'}));assert.throws(()=>tripValues({...base,targets:['a'.repeat(501)]}));assert.throws(()=>expenseValues([{category:'hotel',amount:''}]));assert.throws(()=>expenseValues([{category:'fuel',amount:'Infinity'}]))});
+test('multiple costs keep category, optional description and receipt reference',()=>{const file={name:'kuitti.jpg'};assert.deepEqual(expenseValues([{category:'parking',amount:'3,50',notes:'',file},{category:'other',amount:'0',notes:'Vain kuitti'}]),[{category:'parking',amount:3.5,notes:null,file},{category:'other',amount:0,notes:'Vain kuitti'}])});
+test('partial retry retains trip and every cost ID',()=>{const map=new Map(),storage={getItem:k=>map.get(k),setItem:(k,v)=>map.set(k,v)};let i=0;const uuid=()=>`id-${++i}`;const first=batchIds(storage,'user:workspace','same',3,uuid);assert.deepEqual(batchIds(storage,'user:workspace','same',3,uuid),first);assert.notEqual(batchIds(storage,'user:workspace','changed',3,uuid).trip,first.trip);assert.notEqual(batchIds(storage,'other:workspace','same',3,uuid).trip,first.trip)});

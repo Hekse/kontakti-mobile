@@ -1,0 +1,15 @@
+# Kontakti: Ajo ja kulut – yksinkertaistaminen 8.10.2026
+
+Toteutettu feat/ajo-ja-kulut-haarassa käyttäjän hyväksymä yksi lomake: päivämäärä, lähtöpaikka, useita kohteita, ajon tarkoitus, käsin syötetty km ja €/km, lisättävät kulut ja kuittikuvat, vapaaehtoinen muistiinpano, yhteenveto sekä yksi tallennuspainike. Kilometrihakua/karttapainiketta ei lisätty.
+
+Tallennetut omat lähtöpaikat ja kohteet muistetaan käyttäjä- ja workspacekohtaisesti tässä selaimessa. Kontaktin olemassa olevat asiakasosoitteet näkyvät valinnoissa. Kululajit käyttävät olemassa olevia palvelimen hyväksymiä kategorioita. €/km muistetaan käyttäjän antamasta arvosta; koodiin ei asetettu korvaustaksaa.
+
+Yhdistetty tallennus käyttää olemassa olevia kontakti_create_trip / kontakti_create_expense -RPC:itä, nykyisiä RLS-rajoja ja yksityistä kuittibucketia. Ajo ja jokainen kulu varmennetaan erikseen. Koko kirjaus ei ole yksi tietokantatransaktio: osittaisessa onnistumisessa lomake lukitaan ja samoilla UUID-tunnisteilla voi jatkaa ilman tuplia. Luonnos säilyy sessionStorageen; sivulatauksen jälkeen kuittikuvat valitaan uudelleen. Pysyvästi epäselvän tallennuksen selvitys voi vaatia historiatarkistuksen. Käyttäjälle ei näytetä onnistumista ennen varmennusta.
+
+Kuitti ilman kulusummaa tallennetaan Muu-kategorian nollasummaisena liitteenä. Raportti avataan erikseen. PDF/tulostus hakee kuittikuvat lyhytikäisillä allekirjoitetuilla osoitteilla ja odottaa kuvien latautumisen.
+
+Tarkistukset: 8 Node-testiä läpäisi. Paikallinen selaintesti simuloidulla pilvipolulla: kaksi kulua, yhteyskatko ensimmäisen kulun tallennuksen jälkeen, uudelleenyritys ilman tuplia (1 ajo / 2 kulua), luonnoksen palautus, osittaisen tallennuksen palautus sivulatauksen yli (1 ajo / 1 kulu), kuittiliite ilman summaa, raportin kuvan lataus. 390 px puhelinleveys: ei kenttien ylivuotoa. Testit eivät kirjoittaneet tuotanto-Supabaseen.
+
+Julkaisutila: paikallinen toteutus ja testattu esikatselu. GitHub Pagesin tuotantolähde on main, tämä työ on feat/ajo-ja-kulut-haarassa. Tuotantojulkaisua tai oikean puhelimen pilvitallennusta ei tämän työn yhteydessä varmennettu.
+
+Esikatselu: http://127.0.0.1:3011/tests/preview.html (paikallinen esimerkkitietokanta). Aito sovellus: cloud-ui-v2.html, tarvitsee normaalin kirjautumisen.

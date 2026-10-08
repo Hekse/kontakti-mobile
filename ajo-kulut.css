@@ -44,3 +44,20 @@
   #ajoPrint h1{font-size:18pt}
   #ajoPrint h2{font-size:13pt;margin-top:8mm}
 }
+.ajo-app fieldset{border:0;margin:0;padding:0;min-width:0}
+.ajo-app fieldset:disabled{opacity:.7}
+.ajo-app .ajo-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.ajo-app .ajo-title h3{margin:0}
+.ajo-app .ajo-place{display:flex;gap:6px;flex-wrap:wrap}
+.ajo-app .ajo-place input{flex:1 1 170px}
+.ajo-app .ajo-small{min-height:44px;border:1px solid var(--stroke);border-radius:10px;background:var(--bg0);color:var(--text);padding:8px 10px;font:inherit;font-size:13px}
+.ajo-app #ajoAddTarget,.ajo-app #ajoAddExpense,.ajo-app #ajoAddReceipt{margin-bottom:14px}
+.ajo-app .ajo-expense{border:1px solid var(--stroke);border-radius:14px;padding:12px;margin-bottom:12px}
+.ajo-app .ajo-upload{display:flex;align-items:center;justify-content:center;color:var(--text);cursor:pointer}
+.ajo-app .ajo-total div{display:flex;justify-content:space-between;align-items:center;padding:9px 0;gap:8px;border-bottom:1px solid var(--stroke)}
+.ajo-app .ajo-total div:last-child{border:0}
+.ajo-app .ajo-total strong{font-size:17px}
+.ajo-app summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:650}
+.ajo-app details>.ajo-panel{border:0;padding:12px 0 0}
+@media print{#ajoPrint figure{break-inside:avoid;margin:8mm 0}#ajoPrint figure img{max-width:100%;max-height:210mm;object-fit:contain}#ajoPrint tr{break-inside:avoid}}
+.ajo-app,.ajo-app *{box-sizing:border-box}
