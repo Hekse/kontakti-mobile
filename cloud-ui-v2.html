@@ -711,6 +711,17 @@ function writeForm(f){
   $('fNote').value=f.note; $('fPurchases').value=f.purch; $('fSales').value=f.sales; $('fAction').value=f.action; $('fNextDate').value=f.date;
 }
 function kvRow(label,valueHtml){ return valueHtml?`<div class="kv"><span class="kv-l">${esc(label)}</span><span class="kv-v">${valueHtml}</span></div>`:''; }
+function getRelatedByBusinessId(c){
+  const businessId=String(c?.business_id||'').toLowerCase().trim();
+  if(!businessId) return [];
+  return cs.filter(x=>x.id!==c.id&&String(x.business_id||'').toLowerCase().trim()===businessId)
+    .sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+}
+function renderRelatedPlaces(c){
+  const related=getRelatedByBusinessId(c);
+  if(!related.length) return '';
+  return `<section class="box"><div class="box-title">${esc(LANG==='en'?'Other locations of the same company':'Muut saman yrityksen paikat')}</div>${related.map(x=>`<button class="btn" type="button" data-related-id="${esc(x.id)}">${esc(x.name||'')}${x.city?` · ${esc(x.city)}`:''}</button>`).join('')}</section>`;
+}
 function renderDetail(c,{keepForm}={}){
   const saved=keepForm?readForm():null;
   $('dName').textContent=c.name||t('unnamed');
@@ -808,9 +819,11 @@ function renderDetail(c,{keepForm}={}){
       <div class="box-title">${esc(t('basicInfo'))}</div>
       ${info}
     </section>
+    ${renderRelatedPlaces(c)}
     <button class="btn" type="button" id="btnCustomerAjo">Ajo ja kulut · ${esc(c.name||'')}</button>
     <details class="box" id="histBox"><summary>${esc(t('history'))} (${notes.length})</summary>${histHtml}</details>
   `;
+  $('dBody').querySelectorAll('[data-related-id]').forEach(btn=>btn.addEventListener('click',()=>openDetail(btn.dataset.relatedId,{fromToday:false})));
   writeForm(saved);
   measurePrev();
 }
