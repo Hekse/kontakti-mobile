@@ -248,6 +248,7 @@ body.booting>*:not(#splash){visibility:hidden}
 .edit-links{display:flex;flex-wrap:wrap;gap:0 6px;margin:2px 0 0 -10px}
 .edit-links .edit-latest{margin:0}
 .edit-latest:active,.edit-latest:focus-visible{color:var(--text);background:rgba(var(--tint),.06)}
+.tomorrow-group{margin-top:24px;border-top:1px solid var(--stroke);padding-top:16px}.tomorrow-group h2{font-size:14px;color:var(--muted);margin:0 0 12px}.card.tomorrow-preview{opacity:.62}.card.tomorrow-preview:focus,.card.tomorrow-preview:hover{opacity:.85}
 </style>
 </head>
 <body class="booting">
@@ -559,20 +560,20 @@ function customerList(){
   return arr.slice().sort((a,b)=>((a.priority?0:1)-(b.priority?0:1))||(a.next_date||'9999-99-99').localeCompare(b.next_date||'9999-99-99')||(a.name||'').localeCompare(b.name||'','fi'));
 }
 
-function cardHtml(c){
+function cardHtml(c,preview=false){
   const st=contactStatus(c.last_contact), due=dueInfo(c.next_date);
   const loc=[c.city,c.region].filter(Boolean).join(' • ');
   const phone=callNumber(c);
   const info=[loc,phone].filter(Boolean).map(esc).join('<span class="sep"> · </span>');
   const nextTxt=`${esc(t('next'))} ${esc(toFI(c.next_date))}${due.label?' · '+esc(due.label):''}`;
   const callHrefCard=telHref(callNumber(c));
-  const qa=view==='today'?`<div class="qa card-qa">
+  const qa=view==='today'&&!preview?`<div class="qa card-qa">
       ${callHrefCard?`<a class="qa-call" href="${esc(callHrefCard)}">📞 ${esc(t('call'))}</a>`:`<button type="button" class="qa-call" disabled>📞 ${esc(t('call'))}</button>`}
       <button type="button" class="qa-ok" data-qt="answered" data-id="${esc(c.id)}">${esc(t('calledBtn'))}</button>
       <button type="button" class="qa-miss" data-qt="missed" data-id="${esc(c.id)}">${esc(t('noAnswerBtn'))}</button>
       <button type="button" class="qa-snooze" data-qt="snooze" data-id="${esc(c.id)}">${esc(t('tomorrowBtn'))}</button>
     </div>`:'';
-  return `<article class="card" data-id="${esc(c.id)}" tabindex="0">
+  return `<article class="card${preview?' tomorrow-preview':''}" data-id="${esc(c.id)}" tabindex="0">
     <div class="card-top"><span class="dot ${st.cls}" title="${esc(t('lastContact'))}: ${esc(st.text)}"></span><div class="card-name">${esc(c.name||t('unnamed'))}</div>${c.priority?`<span class="chip-prio">${esc(t('priority'))}</span>`:''}</div>
     ${info?`<div class="card-line">${info}</div>`:''}
     <div class="card-line"><span class="${due.cls}">${nextTxt}</span><span class="sep"> · </span>${esc(actionLabel(c.next_action||'Soitto'))}</div>
@@ -590,15 +591,18 @@ function renderList(resetWindow){
   listItems=view==='today'?todayList():customerList();
   const target=resetWindow?RENDER_BATCH:Math.max(RENDER_BATCH,renderedCount);
   renderedCount=Math.min(target,listItems.length);
-  $('list').innerHTML=listItems.length?listItems.slice(0,renderedCount).map(cardHtml).join(''):(loaded?`<div class="empty">${esc(emptyText())}</div>`:'');
+  $('list').innerHTML=listItems.length?listItems.slice(0,renderedCount).map(c=>cardHtml(c)).join(''):(loaded?`<div class="empty">${esc(emptyText())}</div>`:'');
+  if(view==='today'&&renderedCount===listItems.length){
+    const tomorrow=cs.filter(c=>c.next_date===addDaysISO(todayISO(),1)).sort((a,b)=>(a.name||'').localeCompare(b.name||'','fi'));
+    if(tomorrow.length) $('list').insertAdjacentHTML('beforeend',`<section class="tomorrow-group"><h2>${esc(LANG==='en'?'Tomorrow · preview':'Huomenna · ennakkonäkymä')} (${tomorrow.length})</h2>${tomorrow.map(c=>cardHtml(c,true)).join('')}</section>`);
+  }
   updateListMeta(); updateListFoot();
 }
 function showMore(){
   if(renderedCount>=listItems.length) return;
   const next=Math.min(renderedCount+RENDER_BATCH,listItems.length);
-  $('list').insertAdjacentHTML('beforeend',listItems.slice(renderedCount,next).map(cardHtml).join(''));
   renderedCount=next;
-  updateListFoot();
+  renderList(false);
 }
 function updateListFoot(){
   $('listFoot').hidden=!listItems.length;
@@ -1096,12 +1100,12 @@ function wire(){
     const qa=e.target.closest('[data-qt]');
     if(qa){ e.stopPropagation(); quickAction(qa.dataset.id,qa.dataset.qt,qa); return; }
     const card=e.target.closest('.card');
-    if(card) openDetail(card.dataset.id,{fromToday:view==='today'});
+    if(card) openDetail(card.dataset.id,{fromToday:view==='today'&&!card.classList.contains('tomorrow-preview')});
   });
   $('list').addEventListener('keydown',e=>{
     if(e.key!=='Enter') return;
     const card=e.target.closest('.card');
-    if(card&&e.target===card) openDetail(card.dataset.id,{fromToday:view==='today'});
+    if(card&&e.target===card) openDetail(card.dataset.id,{fromToday:view==='today'&&!card.classList.contains('tomorrow-preview')});
   });
   $('dBody').addEventListener('click',e=>{
     if(e.target.closest('#btnCustomerAjo')){const selected=detailId;closeDetail(false);setView('ajo');ajoKulut.prefillCustomer(selected);return;}
